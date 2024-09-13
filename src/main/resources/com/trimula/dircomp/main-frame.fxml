@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.HBox?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.trimula.dircomp.HelloController">
+	  
+	  <SplitPane orientation="VERTICAL">
+        <VBox>
+            <ToolBar>
+                <CheckBox text="Show Same" fx:id="checkBoxShowSame" selected="true"/>
+                <Button text="Compare" fx:id="buttonCompare" onAction="#onCompareClicked"/>
+            </ToolBar>
+            <SplitPane orientation="HORIZONTAL">
+                <VBox fx:id="paneDirectory1">
+                    <ToolBar>
+                        <ComboBox fx:id="comboBoxDirectory1" promptText="Select Directory 1"/>
+                        <ToggleButton text="Show All" selected="true"/>
+                        <ToggleButton text="Show Full Match"/>
+                        <ToggleButton text="Show Similar"/>
+                        <ToggleButton text="Show Suspected"/>
+                        <ToggleButton text="Show Unique"/>
+                        <ToggleButton text="Files &amp; Directories" selected="true"/>
+                        <ToggleButton text="Directories Only"/>
+                        <ToggleButton text="Files Only"/>
+                    </ToolBar>
+                    <TreeView fx:id="treeViewDirectory1"/>
+                </VBox>
+                <VBox fx:id="paneDirectory2">
+                    <ToolBar>
+                        <ComboBox fx:id="comboBoxDirectory2" promptText="Select Directory 2"/>
+                        <ToggleButton text="Show All" selected="true"/>
+                        <ToggleButton text="Show Full Match"/>
+                        <ToggleButton text="Show Similar"/>
+                        <ToggleButton text="Show Suspected"/>
+                        <ToggleButton text="Show Unique"/>
+                        <ToggleButton text="Files &amp; Directories" selected="true"/>
+                        <ToggleButton text="Directories Only"/>
+                        <ToggleButton text="Files Only"/>
+                    </ToolBar>
+                    <TreeView fx:id="treeViewDirectory2"/>
+                </VBox>
+            </SplitPane>
+        </VBox>
+        <TextArea fx:id="textAreaSelectedItemProperties" visible="false"/>
+        <TextArea fx:id="textAreaStatus"/>
+    </SplitPane>
+    <HBox fx:id="hBoxProgress" visible="false">
+        <ProgressBar fx:id="progressBar"/>
+        <Button text="Cancel" fx:id="buttonCancelProcessing" onAction="#onCancelProcessing"/>
+    </HBox>
+	  
+	  
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Label fx:id="welcomeText"/>
+    <Button text="Hello!" onAction="#onHelloButtonClick"/>
+</VBox>
