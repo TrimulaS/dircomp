@@ -1,6 +1,7 @@
 package com.trimula.dircomp
 
 
+import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.filetree.Comparator
 import com.trimula.dircomp.filetree.TreeItemBuilder
 import com.trimula.dircomp.ui.UiTreeView
@@ -17,44 +18,70 @@ import kotlin.concurrent.thread
 
 
 class MainController {
-//    @FXML
-//    private val welcomeText: Label? = null
-//    @FXML
-//    protected fun onHelloButtonClick() {
-//        welcomeText!!.text = "Welcome to JavaFX Application!"
-//    }
 
+    @FXML    lateinit var comboBoxDirectory1: ComboBox<String>
+    @FXML    lateinit var comboBoxDirectory2: ComboBox<String>
+    @FXML    lateinit var treeViewDir1: TreeView<File>
+    @FXML    lateinit var treeViewDir2: TreeView<File>
+    @FXML    lateinit var textAreaSelectedItemProperties: TextArea
+    @FXML    lateinit var textAreaStatus: TextArea
+    @FXML    lateinit var progressBar: ProgressBar
+    @FXML    lateinit var hBoxProgress: HBox
+    @FXML    lateinit var checkBoxShowSame: CheckBox
+    @FXML    lateinit var buttonCancelProcessing: Button
+    //@FXML    lateinit var filter1: ComboBox<String>
 
+    @FXML    lateinit var filter1All:       ToggleButton
+    @FXML    lateinit var filter1FullMatch: ToggleButton
+    @FXML    lateinit var filter1Similar:   ToggleButton
+    @FXML    lateinit var filter1Suspected: ToggleButton
+    @FXML    lateinit var filter1Unique :   ToggleButton
 
-    @FXML
-    lateinit var comboBoxDirectory1: ComboBox<String>
-    @FXML
-    lateinit var comboBoxDirectory2: ComboBox<String>
-    @FXML
-    lateinit var treeViewDir1: TreeView<File>
-    @FXML
-    lateinit var treeViewDir2: TreeView<File>
-    @FXML
-    lateinit var textAreaSelectedItemProperties: TextArea
-    @FXML
-    lateinit var textAreaStatus: TextArea
-    @FXML
-    lateinit var progressBar: ProgressBar
-    @FXML
-    lateinit var hBoxProgress: HBox
-    @FXML
-    lateinit var checkBoxShowSame: CheckBox
-    @FXML
-    lateinit var buttonCancelProcessing: Button
+    @FXML    lateinit var filter2MatchTo1:  ToggleButton
+    @FXML    lateinit var filter2All:       ToggleButton
+    @FXML    lateinit var filter2FullMatch: ToggleButton
+    @FXML    lateinit var filter2Similar:   ToggleButton
+    @FXML    lateinit var filter2Suspected: ToggleButton
+    @FXML    lateinit var filter2Unique :   ToggleButton
+
 
     private var directory1: File? = null
     private var directory2: File? = null
     private lateinit var comparator: Comparator
+    private lateinit var tg1Filter: ToggleGroup
+    private lateinit var tg2Filter: ToggleGroup
 
     private val isProcessing = AtomicBoolean(false)
 
     @FXML
     private fun initialize() {
+        hBoxProgress.isVisible = false
+        progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+
+        // Инициализация группы
+        tg1Filter = ToggleGroup()
+        tg2Filter = ToggleGroup()
+
+        // Добавление кнопок в группу
+        filter1All.toggleGroup =        tg1Filter
+        filter1FullMatch.toggleGroup =  tg1Filter
+        filter1Similar.toggleGroup =    tg1Filter
+        filter1Suspected.toggleGroup =  tg1Filter
+        filter1Unique.toggleGroup =     tg1Filter
+
+        filter2MatchTo1.toggleGroup =   tg2Filter
+        filter2All.toggleGroup =        tg2Filter
+        filter2FullMatch.toggleGroup =  tg2Filter
+        filter2Similar.toggleGroup =    tg2Filter
+        filter2Suspected.toggleGroup =  tg2Filter
+        filter2Unique.toggleGroup =     tg2Filter
+
+        // Установим начально выбранную кнопку (например, filter2All)
+        filter1All.isSelected = true
+        filter2All.isSelected = true
+
+
+
         // Выбор директории для Directory1
         comboBoxDirectory1.setOnMouseClicked {
             val directoryChooser = DirectoryChooser()
@@ -70,9 +97,9 @@ class MainController {
         }
 
         //Setup for testing
-        directory1 = File("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //("c:\\Inst")
+        directory1 = File("c:\\Inst")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
         comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        directory2 = File("c:\\Inst")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
 
 
@@ -158,6 +185,17 @@ class MainController {
             if (event.button == MouseButton.SECONDARY) {
                 val contextMenu = ContextMenu()
 
+                val openInExplorer = MenuItem("Open in Explorer")
+                openInExplorer.setOnAction {
+                    val selectedFile = treeView.selectionModel.selectedItem?.value
+                    selectedFile?.let {
+                        OsUtil.openInExplorer(it)
+                        // Полное удаление файла
+                        //it.delete()
+                        //Log.appendTextTimed("Deleted permanently: ${it.name}\n")
+                    }
+                }
+
                 val deleteRecycleBin = MenuItem("Delete to Recycle Bin")
                 deleteRecycleBin.setOnAction {
                     val selectedFile = treeView.selectionModel.selectedItem?.value
@@ -177,7 +215,9 @@ class MainController {
                     }
                 }
 
-                contextMenu.items.addAll(deleteRecycleBin, deletePermanent)
+
+
+                contextMenu.items.addAll(openInExplorer, deleteRecycleBin, deletePermanent)
                 contextMenu.show(treeView, event.screenX, event.screenY)
             }
         }

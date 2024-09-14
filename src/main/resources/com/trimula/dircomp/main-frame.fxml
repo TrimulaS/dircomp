@@ -16,10 +16,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<!--<VBox alignment="CENTER" prefHeight="625.0" prefWidth="913.0" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="com.trimula.dircomp.MainController">-->
-<!--</VBox>	  -->
 
-<GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.trimula.dircomp.MainController">
+
+<GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.trimula.dircomp.MainController">
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
      </columnConstraints>
@@ -27,7 +26,7 @@
        <RowConstraints vgrow="SOMETIMES" />
      </rowConstraints>
    <VBox prefHeight="200.0" prefWidth="100.0">
-      <children>
+
       
             	  
           <SplitPane dividerPositions="0.8040446304044628, 0.9051603905160389" orientation="VERTICAL" prefHeight="606.0" prefWidth="899.0" VBox.vgrow="ALWAYS">
@@ -40,20 +39,24 @@
                     <VBox fx:id="paneDirectory1">
                    <HBox>
                        <ComboBox fx:id="comboBoxDirectory1" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
-                <Button onAction="#tv1CollapseAll" text="⋘" />
-                <Button onAction="#tv1ExpandAll" text="⋙" />
-                <Button onAction="#tv1CollapseLast" text="《" />
-                <Button onAction="#tv1ExpandLast" text="》" />
-                <Button onAction="#tv1CollapseSelected" text="〈" />
-                <Button onAction="#tv1ExpandSelected" text="〉" />
+
+                       <ToggleButton fx:id="filter1All" selected="true" text="All" />
+                       <ToggleButton fx:id="filter1FullMatch" text="≡" />
+                       <ToggleButton fx:id="filter1Similar" text="≈" />
+                       <ToggleButton fx:id="filter1Suspected" text="∅" />
+                       <ToggleButton fx:id="filter1Unique" text="≠" />
+
+
 
                    </HBox>
                         <ToolBar>
-                            <ToggleButton selected="true" text="All" />
-                            <ToggleButton text="≡" />
-                            <ToggleButton text="≈" />
-                            <ToggleButton text="∅" />
-                            <ToggleButton text="≠" />
+                            <Button onAction="#tv1CollapseAll" text="⋘" />
+                            <Button onAction="#tv1ExpandAll" text="⋙" />
+                            <Button onAction="#tv1CollapseLast" text="《" />
+                            <Button onAction="#tv1ExpandLast" text="》" />
+                            <Button onAction="#tv1CollapseSelected" text="〈" />
+                            <Button onAction="#tv1ExpandSelected" text="〉" />
+
                             <Pane prefWidth="5.0" />
                             <ToggleButton selected="true" text="📁 &amp; 🗎" />
                             <ToggleButton text="📁" />
@@ -64,19 +67,22 @@
                     <VBox fx:id="paneDirectory2">
                         <HBox>
                             <ComboBox fx:id="comboBoxDirectory2" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
+                            <ToggleButton fx:id="filter2MatchTo1" layoutX="128.0" layoutY="10.0" text="⯮" />
+                            <ToggleButton fx:id="filter2All" selected="true" text="All" />
+                            <ToggleButton fx:id="filter2FullMatch" text="≡" />
+                            <ToggleButton fx:id="filter2Similar" text="≈" />
+                            <ToggleButton fx:id="filter2Suspected" text="∅" />
+                            <ToggleButton fx:id="filter2Unique" text="≠" />
+                        </HBox>
+                        <ToolBar>
+
                             <Button onAction="#tv2CollapseAll" text="⋘" />
                             <Button onAction="#tv2ExpandAll" text="⋙" />
                             <Button onAction="#tv2CollapseLast" text="《" />
                             <Button onAction="#tv2ExpandLast" text="》" />
                             <Button onAction="#tv2CollapseSelected" text="〈" />
                             <Button onAction="#tv2ExpandSelected" text="〉" />
-                        </HBox>
-                        <ToolBar>
-                            <ToggleButton selected="true" text="All" />
-                            <ToggleButton text="≡" />
-                            <ToggleButton text="≈" />
-                            <ToggleButton text="∅" />
-                            <ToggleButton text="≠" />
+
                             <Pane prefWidth="5.0" />
                             <ToggleButton selected="true" text="📁 &amp; 🗎" />
                             <ToggleButton text="📁" />
@@ -89,10 +95,10 @@
             <TextArea fx:id="textAreaSelectedItemProperties" visible="false" />
             <TextArea fx:id="textAreaStatus" />
         </SplitPane>
-        <HBox fx:id="hBoxProgress" prefHeight="26.0" prefWidth="874.0" visible="false">
-            <ProgressBar fx:id="progressBar" prefHeight="18.0" prefWidth="779.0" />
-            <Button fx:id="buttonCancelProcessing" onAction="#onCancelProcessing" text="Cancel" />
+        <HBox fx:id="hBoxProgress">
+            <ProgressBar fx:id="progressBar" progress="0.0" HBox.hgrow="ALWAYS" />
+            <Button fx:id="buttonCancelProcessing" onAction="#onCancelProcessing" text="Cancel" HBox.hgrow="NEVER" />
         </HBox>
-      </children>
+
    </VBox>
    </GridPane>
