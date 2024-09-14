@@ -15,14 +15,13 @@ import javafx.stage.DirectoryChooser
 import java.io.File
 import kotlin.concurrent.thread
 
-class HelloController {
-    @FXML
-    private val welcomeText: Label? = null
-
-    @FXML
-    protected fun onHelloButtonClick() {
-        welcomeText!!.text = "Welcome to JavaFX Application!"
-    }
+class MainController {
+//    @FXML
+//    private val welcomeText: Label? = null
+//    @FXML
+//    protected fun onHelloButtonClick() {
+//        welcomeText!!.text = "Welcome to JavaFX Application!"
+//    }
 
 
 
@@ -83,6 +82,7 @@ class HelloController {
             }
         }
     }
+
 
     @FXML
     fun onCancelProcessing(/*actionEvent: ActionEvent*/) {

@@ -1,0 +1,8 @@
+/* Пример кастомных стилей для интерфейса */
+.progress-bar {
+    -fx-accent: #00bfff;
+}
+
+.text-area {
+    -fx-text-fill: #333;
+}
