@@ -16,8 +16,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="625.0" prefWidth="913.0" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="com.trimula.dircomp.MainController">
-   <GridPane prefHeight="566.0" prefWidth="874.0">
+
+   <GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx" fx:controller="com.trimula.dircomp.MainController">
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
      </columnConstraints>
@@ -25,7 +25,7 @@
        <RowConstraints maxHeight="479.4" minHeight="10.0" prefHeight="479.4" vgrow="SOMETIMES" />
        <RowConstraints maxHeight="278.6000122070312" minHeight="10.0" prefHeight="87.39999999999998" vgrow="SOMETIMES" />
      </rowConstraints>
-      <children>
+
       	  
       	  <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="606.0" prefWidth="899.0">
               <VBox>
@@ -36,19 +36,19 @@
                   <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
                       <VBox fx:id="paneDirectory1">
                      <HBox prefHeight="100.0" prefWidth="200.0">
-                        <children>
+
                                  <ComboBox fx:id="comboBoxDirectory1" prefHeight="26.0" prefWidth="224.0" promptText="Select Directory 1" />
                            <Button mnemonicParsing="false" text="《" />
                            <Button mnemonicParsing="false" text="》" />
                            <Button mnemonicParsing="false" text="〈" />
                            <Button mnemonicParsing="false" text="〉" />
-                        </children>
+
                      </HBox>
                           <ToolBar>
                               <ToggleButton selected="true" text="All" />
                               <ToggleButton text="≡" />
                               <ToggleButton text="≈" />
-                              <ToggleButton text="Suspected" />
+                              <ToggleButton text="∅" />
                               <ToggleButton text="≠" />
                               <ToggleButton selected="true" text="📁 &amp; 🗎" />
                               <ToggleButton text="📁" />
@@ -62,7 +62,7 @@
                               <ToggleButton selected="true" text="All" />
                               <ToggleButton text="≡" />
                               <ToggleButton text="≈" />
-                              <ToggleButton text="Suspected" />
+                              <ToggleButton text="∅" />
                               <ToggleButton text="≠" />
                               <ToggleButton selected="true" text="📁 &amp; 🗎" />
                               <ToggleButton text="📁" />
@@ -79,11 +79,8 @@
               <ProgressBar fx:id="progressBar" prefHeight="18.0" prefWidth="779.0" />
               <Button fx:id="buttonCancelProcessing" onAction="#onCancelProcessing" text="Cancel" />
           </HBox>
-      </children>
    </GridPane>
 	  
 	  
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-</VBox>
+
+
