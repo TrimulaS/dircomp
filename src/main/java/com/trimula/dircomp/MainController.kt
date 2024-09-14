@@ -3,6 +3,7 @@ package com.trimula.dircomp
 
 import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.filetree.Comparator
+import com.trimula.dircomp.filetree.FileItem
 import com.trimula.dircomp.filetree.TreeItemBuilder
 import com.trimula.dircomp.ui.UiTreeView
 import javafx.application.Platform
@@ -21,8 +22,8 @@ class MainController {
 
     @FXML    lateinit var comboBoxDirectory1: ComboBox<String>
     @FXML    lateinit var comboBoxDirectory2: ComboBox<String>
-    @FXML    lateinit var treeViewDir1: TreeView<File>
-    @FXML    lateinit var treeViewDir2: TreeView<File>
+    @FXML    lateinit var treeViewDir1: TreeView<FileItem>
+    @FXML    lateinit var treeViewDir2: TreeView<FileItem>
     @FXML    lateinit var textAreaSelectedItemProperties: TextArea
     @FXML    lateinit var textAreaStatus: TextArea
     @FXML    lateinit var progressBar: ProgressBar
@@ -97,9 +98,9 @@ class MainController {
         }
 
         //Setup for testing
-        directory1 = File("c:\\Inst")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
+        directory1 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
         comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("c:\\Inst")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        directory2 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
 
 
@@ -156,19 +157,37 @@ class MainController {
 
 
     //
-    private fun setupListener(treeView: TreeView<File>) {
+    private fun setupListener(treeView: TreeView<FileItem>) {
+        treeView.selectionModel.selectionMode = SelectionMode.MULTIPLE
+
         treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
             selectedItem?.let {
                 textAreaSelectedItemProperties.isVisible = true
                 // Здесь можно отобразить дополнительные данные о выбранном элементе
                 textAreaSelectedItemProperties.text = selectedItem.value.toString()
+
+                if(treeView!=treeViewDir2){
+                    // Очищаем предыдущее выделение в treeViewDir2
+                    treeViewDir2.selectionModel.clearSelection()
+
+                    // Выбираем элементы из списка `same` в treeViewDir2
+                    for (fi: FileItem in selectedItem.value.same) {
+                        // Найдем элемент в treeViewDir2, соответствующий FileItem
+                        val treeItemToSelect = findTreeItem(treeViewDir2.root, fi)
+                        treeItemToSelect?.let {
+                            treeViewDir2.selectionModel.select(treeItemToSelect)
+                        }
+                    }
+                }
 //                    "Selected item: ${selectedItem.value.name}\n" +
 //                        "Size: ${selectedItem.value.length()} bytes\n" +
 //                        "Path: ${selectedItem.value.absolutePath}"
             }
         }
 
-        // Addin Logs
+
+
+        // Adding Logs
             Log.addListener (object : Log.LogListener {
             override fun onChange(logText: String) {
 //                println("Log has changed: $logText")
@@ -237,6 +256,19 @@ class MainController {
 //            //return false
 //        }
         Log.appendTextTimed("Deleted to Recycle Bin: ${file.name}\n")
+    }
+
+    // Рекурсивная функция для поиска TreeItem по значению FileItem
+    private fun findTreeItem(treeItem: TreeItem<FileItem>, fi: FileItem): TreeItem<FileItem>? {
+        if (treeItem.value == fi) return treeItem
+
+        for (child in treeItem.children) {
+            val result = findTreeItem(child, fi)
+            if (result != null) {
+                return result
+            }
+        }
+        return null
     }
 
 

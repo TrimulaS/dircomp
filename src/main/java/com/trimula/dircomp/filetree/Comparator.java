@@ -10,8 +10,8 @@ import java.io.File;
 public class Comparator {
     TreeView treeView1;
     TreeView treeView2;
-    public TreeItem<File> root1;
-    public TreeItem<File> root2;
+    public TreeItem<FileItem> root1;
+    public TreeItem<FileItem> root2;
     private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
 
     public Comparator(TreeView treeView1, TreeView treeView2){
@@ -30,21 +30,25 @@ public class Comparator {
 
 
         //Compare
-//        TreeItemTraverse.each(root1,item1 -> {
-//            TreeItemTraverse.each(root2,item2 -> {
-//                //For directories
-//                if(item1.getValue().isDirectory() && item2.getValue().isDirectory()){
-//
-//
-//                }
-//                //For files
-//                if(item1.getValue().isFile() && item2.getValue().isFile()){
-//                    if(item1.getValue().length()==item1.getValue().length()){
-//                        Log.appendText("sameFiles:" + item1.getValue().getPath() + "   -    "  + item2.getValue().getPath() );
-//                    }
-//                }
-//            });
-//        });
+        TreeItemTraverse.each(root1,item1 -> {
+            TreeItemTraverse.each(root2,item2 -> {
+                FileItem fi1 = item1.getValue();
+                FileItem fi2 = item2.getValue();
+                //For directories
+                if(fi1.isDirectory() && fi2.isDirectory()){
+                    //Log.appendText("same Directories:" + fi1.getPath() + "   -    "  + fi2.getPath() );
+
+                }
+                //For files
+                if(fi1.isFile() && fi2.isFile()){
+                    if(fi1.length()==fi2.length()){
+                        fi1.same.add(fi2);
+                        fi2.same.add(fi1);
+                        //Log.appendText("sameFiles:" + item1.getValue().getPath() + "   -    "  + item2.getValue().getPath() );
+                    }
+                }
+            });
+        });
 
         //Set style for treeview
 

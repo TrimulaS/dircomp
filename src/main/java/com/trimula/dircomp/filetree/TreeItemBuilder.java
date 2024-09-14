@@ -10,9 +10,9 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 
 public class TreeItemBuilder {
-    public static TreeItem<File> getFull(File dir){
+    public static TreeItem<FileItem> getFull(File dir){
         // Создаем корневой элемент TreeItem для текущей директории
-        TreeItem<File> root = new TreeItem<>(dir);
+        TreeItem<FileItem> root = new TreeItem<FileItem>(new FileItem(dir));
 
         // Получаем список файлов и директорий внутри текущей директории
         File[] files = dir.listFiles();
@@ -21,11 +21,11 @@ public class TreeItemBuilder {
             for (File file : files) {
                 if (file.isDirectory()) {
                     // Если это директория, рекурсивно создаем поддерево
-                    TreeItem<File> directoryItem = getFull(file);
+                    TreeItem<FileItem> directoryItem = getFull(file);
                     root.getChildren().add(directoryItem);
                 } else {
                     // Если это файл, просто добавляем его в корневой элемент как листовой узел
-                    TreeItem<File> fileItem = new TreeItem<>(file);
+                    TreeItem<FileItem> fileItem = new TreeItem<>(new FileItem(file));
 
                     root.getChildren().add(fileItem);
                 }
@@ -36,10 +36,10 @@ public class TreeItemBuilder {
 
 
 
-    public static void configureTreeItemStyle(TreeView<File> treeView){
+    public static void configureTreeItemStyle(TreeView<FileItem> treeView){
 
         // Настраиваем отображение имени файла и иконки
-        treeView.setCellFactory(tv -> new TreeCell<File>() {
+        treeView.setCellFactory(tv -> new TreeCell<FileItem>() {
 
 //            //Icons
 //            private final ImageView fileIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_32x32.png")));
@@ -65,8 +65,8 @@ public class TreeItemBuilder {
 
 
 
-            @Override
-            protected void updateItem(File item, boolean empty) {
+            /*@Override*/
+            protected void updateItem(FileItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
