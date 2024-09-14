@@ -58,6 +58,12 @@ class MainController {
             directory2 = directoryChooser.showDialog(null)
             comboBoxDirectory2.value = directory2?.absolutePath
         }
+
+        //Setup for testing
+        directory1 = File("c:\\Inst")
+        comboBoxDirectory1.value = directory1?.absolutePath
+        directory2 = File("c:\\Inst")
+        comboBoxDirectory2.value = directory2?.absolutePath
     }
 
     @FXML
