@@ -1,7 +1,8 @@
 package com.trimula.dircomp
 
 
-import com.trimula.dircomp.filetree.TreeItemBuider
+import com.trimula.dircomp.filetree.Comparator
+import com.trimula.dircomp.filetree.TreeItemBuilder
 import com.trimula.dircomp.ui.UiTreeView
 import javafx.application.Platform
 import javafx.fxml.FXML
@@ -9,6 +10,7 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.stage.DirectoryChooser
+import log.Log
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
@@ -29,9 +31,9 @@ class MainController {
     @FXML
     lateinit var comboBoxDirectory2: ComboBox<String>
     @FXML
-    lateinit var treeViewDirectory1: TreeView<File>
+    lateinit var treeViewDir1: TreeView<File>
     @FXML
-    lateinit var treeViewDirectory2: TreeView<File>
+    lateinit var treeViewDir2: TreeView<File>
     @FXML
     lateinit var textAreaSelectedItemProperties: TextArea
     @FXML
@@ -47,6 +49,8 @@ class MainController {
 
     private var directory1: File? = null
     private var directory2: File? = null
+    private lateinit var comparator: Comparator
+
     private val isProcessing = AtomicBoolean(false)
 
     @FXML
@@ -66,13 +70,19 @@ class MainController {
         }
 
         //Setup for testing
-        directory1 = File("c:\\Inst")
+        directory1 = File("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //("c:\\Inst")
         comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("c:\\Inst")
+        directory2 = File("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
 
-        setupTreeViewSelection(treeViewDirectory1)
-        setupTreeViewSelection(treeViewDirectory2)
+
+
+        setupListener(treeViewDir1)
+        setupListener(treeViewDir2)
+
+        comparator = Comparator(treeViewDir1, treeViewDir2)
+        Log.appendText("Comparator initialized")
+
     }
 
     @FXML
@@ -87,18 +97,16 @@ class MainController {
 
         // Запуск потоков для анализа директорий
         thread {
-            val result1 = TreeItemBuider.getFull(directory1!!)
-            val result2 = TreeItemBuider.getFull(directory2!!)
+
+            comparator.processDirectories(directory1,directory2)
 
             // После завершения анализа – заполнение TreeView
             if (isProcessing.get()) {
                 Platform.runLater {
-                    treeViewDirectory1.root = result1
-                    TreeItemBuider.configureTreeItemStyle(treeViewDirectory1)
-                    treeViewDirectory2.root = result2
-                    TreeItemBuider.configureTreeItemStyle(treeViewDirectory2)
+
 //                    fillTreeView(treeViewDirectory1, result1)
 //                    fillTreeView(treeViewDirectory2, result2)
+                    comparator.fillUpTreeView()     //Only in JavaFX UI Thread
                     hBoxProgress.isVisible = false
                 }
             }
@@ -111,7 +119,8 @@ class MainController {
         // Прерывание обработки
         isProcessing.set(false)
         hBoxProgress.isVisible = false
-        textAreaStatus.appendText("Processing cancelled by user.\n")
+        Log.appendTextTimed("Processing cancelled by user.\n")
+
     }
     private fun analyzeDirectory(directory: File): List<File> {
         // Пример анализа – рекурсивный сбор файлов и директорий
@@ -120,7 +129,7 @@ class MainController {
 
 
     //
-    private fun setupTreeViewSelection(treeView: TreeView<File>) {
+    private fun setupListener(treeView: TreeView<File>) {
         treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
             selectedItem?.let {
                 textAreaSelectedItemProperties.isVisible = true
@@ -131,6 +140,18 @@ class MainController {
 //                        "Path: ${selectedItem.value.absolutePath}"
             }
         }
+
+        // Addin Logs
+            Log.addListener (object : Log.LogListener {
+            override fun onChange(logText: String) {
+//                println("Log has changed: $logText")
+                textAreaStatus.text = Log.get()
+            }
+
+            override fun onBeforeClear(logText: String) {
+                println("Log is about to be cleared: $logText")
+            }
+        } )
 
         // Добавление всплывающего меню
         treeView.setOnMouseClicked { event ->
@@ -151,8 +172,8 @@ class MainController {
                     val selectedFile = treeView.selectionModel.selectedItem?.value
                     selectedFile?.let {
                         // Полное удаление файла
-                        it.delete()
-                        textAreaStatus.appendText("Deleted permanently: ${it.name}\n")
+                        //it.delete()
+                        Log.appendTextTimed("Deleted permanently: ${it.name}\n")
                     }
                 }
 
@@ -175,27 +196,27 @@ class MainController {
 //            println("No Trash")
 //            //return false
 //        }
-        textAreaStatus.appendText("Deleted to Recycle Bin: ${file.name}\n")
+        Log.appendTextTimed("Deleted to Recycle Bin: ${file.name}\n")
     }
 
 
-    @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDirectory1)
-    @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDirectory1)
+    @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDir1)
+    @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDir1)
 
-    @FXML fun tv1CollapseLast() =  UiTreeView.collapseLast(treeViewDirectory1)
-    @FXML fun tv1ExpandLast() =  UiTreeView.expandLast(treeViewDirectory1)
+    @FXML fun tv1CollapseLast() =  UiTreeView.collapseLast(treeViewDir1)
+    @FXML fun tv1ExpandLast() =  UiTreeView.expandLast(treeViewDir1)
 
-    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDirectory1)
-    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDirectory1)
+    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir1)
+    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDir1)
 
-    @FXML fun tv2CollapseAll() =  UiTreeView.collapseAll(treeViewDirectory2)
-    @FXML fun tv2ExpandAll() =  UiTreeView.expandAll(treeViewDirectory2)
+    @FXML fun tv2CollapseAll() =  UiTreeView.collapseAll(treeViewDir2)
+    @FXML fun tv2ExpandAll() =  UiTreeView.expandAll(treeViewDir2)
 
-    @FXML fun tv2CollapseLast() =  UiTreeView.collapseLast(treeViewDirectory2)
-    @FXML fun tv2ExpandLast() =  UiTreeView.expandLast(treeViewDirectory2)
+    @FXML fun tv2CollapseLast() =  UiTreeView.collapseLast(treeViewDir2)
+    @FXML fun tv2ExpandLast() =  UiTreeView.expandLast(treeViewDir2)
 
-    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDirectory2)
-    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDirectory2)
+    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir2)
+    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
 }
 
 

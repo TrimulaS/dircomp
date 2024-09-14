@@ -59,7 +59,7 @@
                             <ToggleButton text="📁" />
                             <ToggleButton text="🗎" />
                         </ToolBar>
-                        <TreeView fx:id="treeViewDirectory1" />
+                        <TreeView fx:id="treeViewDir1" />
                     </VBox>
                     <VBox fx:id="paneDirectory2">
                         <HBox>
@@ -82,7 +82,7 @@
                             <ToggleButton text="📁" />
                             <ToggleButton text="🗎" />
                         </ToolBar>
-                        <TreeView fx:id="treeViewDirectory2" />
+                        <TreeView fx:id="treeViewDir2" />
                     </VBox>
                 </SplitPane>
             </VBox>
