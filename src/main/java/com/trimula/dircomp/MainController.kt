@@ -2,7 +2,6 @@ package com.trimula.dircomp
 
 import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
-import javafx.scene.control.Label
 import javafx.scene.control.TreeView
 
 
@@ -10,9 +9,11 @@ import javafx.application.Platform
 
 import javafx.scene.control.*
 import javafx.scene.control.TreeItem
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.stage.DirectoryChooser
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 
 class MainController {
@@ -34,14 +35,21 @@ class MainController {
     @FXML
     lateinit var treeViewDirectory2: TreeView<File>
     @FXML
+    lateinit var textAreaSelectedItemProperties: TextArea
+    @FXML
     lateinit var textAreaStatus: TextArea
     @FXML
     lateinit var progressBar: ProgressBar
     @FXML
     lateinit var hBoxProgress: HBox
+    @FXML
+    lateinit var checkBoxShowSame: CheckBox
+    @FXML
+    lateinit var buttonCancelProcessing: Button
 
     private var directory1: File? = null
     private var directory2: File? = null
+    private val isProcessing = AtomicBoolean(false)
 
     @FXML
     private fun initialize() {
@@ -64,6 +72,9 @@ class MainController {
         comboBoxDirectory1.value = directory1?.absolutePath
         directory2 = File("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
+
+        setupTreeViewSelection(treeViewDirectory1)
+        setupTreeViewSelection(treeViewDirectory2)
     }
 
     @FXML
@@ -74,6 +85,7 @@ class MainController {
         }
 
         hBoxProgress.isVisible = true
+        isProcessing.set(true)
 
         // Запуск потоков для анализа директорий
         thread {
@@ -81,10 +93,12 @@ class MainController {
             val result2 = analyzeDirectory(directory2!!)
 
             // После завершения анализа – заполнение TreeView
-            Platform.runLater {
-                fillTreeView(treeViewDirectory1, result1)
-                fillTreeView(treeViewDirectory2, result2)
-                hBoxProgress.isVisible = false
+            if (isProcessing.get()) {
+                Platform.runLater {
+                    fillTreeView(treeViewDirectory1, result1)
+                    fillTreeView(treeViewDirectory2, result2)
+                    hBoxProgress.isVisible = false
+                }
             }
         }
     }
@@ -92,7 +106,10 @@ class MainController {
 
     @FXML
     fun onCancelProcessing(/*actionEvent: ActionEvent*/) {
-
+        // Прерывание обработки
+        isProcessing.set(false)
+        hBoxProgress.isVisible = false
+        textAreaStatus.appendText("Processing cancelled by user.\n")
     }
     private fun analyzeDirectory(directory: File): List<File> {
         // Пример анализа – рекурсивный сбор файлов и директорий
@@ -107,7 +124,54 @@ class MainController {
         treeView.root = root
     }
 
+    //
+    private fun setupTreeViewSelection(treeView: TreeView<File>) {
+        treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            selectedItem?.let {
+                textAreaSelectedItemProperties.isVisible = true
+                // Здесь можно отобразить дополнительные данные о выбранном элементе
+                textAreaSelectedItemProperties.text = "Selected item: ${selectedItem.value.name}\n" +
+                        "Size: ${selectedItem.value.length()} bytes\n" +
+                        "Path: ${selectedItem.value.absolutePath}"
+            }
+        }
 
+        // Добавление всплывающего меню
+        treeView.setOnMouseClicked { event ->
+            if (event.button == MouseButton.SECONDARY) {
+                val contextMenu = ContextMenu()
 
+                val deleteRecycleBin = MenuItem("Delete to Recycle Bin")
+                deleteRecycleBin.setOnAction {
+                    val selectedFile = treeView.selectionModel.selectedItem?.value
+                    selectedFile?.let {
+                        // Удаление в корзину
+                        deleteToRecycleBin(it)
+                    }
+                }
 
+                val deletePermanent = MenuItem("Delete Permanently")
+                deletePermanent.setOnAction {
+                    val selectedFile = treeView.selectionModel.selectedItem?.value
+                    selectedFile?.let {
+                        // Полное удаление файла
+                        it.delete()
+                        textAreaStatus.appendText("Deleted permanently: ${it.name}\n")
+                    }
+                }
+
+                contextMenu.items.addAll(deleteRecycleBin, deletePermanent)
+                contextMenu.show(treeView, event.screenX, event.screenY)
+            }
+        }
+    }
+
+    private fun deleteToRecycleBin(file: File) {
+        // Реализация удаления файла в корзину (на разных платформах может отличаться)
+        textAreaStatus.appendText("Deleted to Recycle Bin: ${file.name}\n")
+    }
 }
+
+
+
+
