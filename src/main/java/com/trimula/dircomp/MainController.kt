@@ -1,20 +1,18 @@
 package com.trimula.dircomp
 
-import javafx.fxml.FXML
-import javafx.scene.control.ComboBox
-import javafx.scene.control.TreeView
 
-
+import com.trimula.dircomp.filetree.TreeItemBuider
+import com.trimula.dircomp.ui.UiTreeView
 import javafx.application.Platform
-
+import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.scene.control.TreeItem
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.stage.DirectoryChooser
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
+
 
 class MainController {
 //    @FXML
@@ -89,14 +87,18 @@ class MainController {
 
         // Запуск потоков для анализа директорий
         thread {
-            val result1 = analyzeDirectory(directory1!!)
-            val result2 = analyzeDirectory(directory2!!)
+            val result1 = TreeItemBuider.getFull(directory1!!)
+            val result2 = TreeItemBuider.getFull(directory2!!)
 
             // После завершения анализа – заполнение TreeView
             if (isProcessing.get()) {
                 Platform.runLater {
-                    fillTreeView(treeViewDirectory1, result1)
-                    fillTreeView(treeViewDirectory2, result2)
+                    treeViewDirectory1.root = result1
+                    TreeItemBuider.configureTreeItemStyle(treeViewDirectory1)
+                    treeViewDirectory2.root = result2
+                    TreeItemBuider.configureTreeItemStyle(treeViewDirectory2)
+//                    fillTreeView(treeViewDirectory1, result1)
+//                    fillTreeView(treeViewDirectory2, result2)
                     hBoxProgress.isVisible = false
                 }
             }
@@ -117,11 +119,11 @@ class MainController {
     }
 
     private fun fillTreeView(treeView: TreeView<File>, files: List<File>) {
-        val root = TreeItem(files.first())
-        files.drop(1).forEach {
-            root.children.add(TreeItem(it))
-        }
-        treeView.root = root
+//        val root = TreeItem(files.first())
+//        files.drop(1).forEach {
+//            root.children.add(TreeItem(it))
+//        }
+//        treeView.root = root
     }
 
     //
@@ -167,10 +169,42 @@ class MainController {
     }
 
     private fun deleteToRecycleBin(file: File) {
-        // Реализация удаления файла в корзину (на разных платформах может отличаться)
+
+//        if (Desktop.isDesktopSupported(Desktop.Action.MOVE_TO_TRASH)) {
+//            try {
+//                java.awt.Desktop.moveToTrash(file)
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//                //return false
+//            }
+//        } else {
+//            println("No Trash")
+//            //return false
+//        }
         textAreaStatus.appendText("Deleted to Recycle Bin: ${file.name}\n")
     }
+
+
+    @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDirectory1)
+    @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDirectory1)
+
+    @FXML fun tv1CollapseLast() =  UiTreeView.collapseLast(treeViewDirectory1)
+    @FXML fun tv1ExpandLast() =  UiTreeView.expandLast(treeViewDirectory1)
+
+    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDirectory1)
+    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDirectory1)
+
+    @FXML fun tv2CollapseAll() =  UiTreeView.collapseAll(treeViewDirectory2)
+    @FXML fun tv2ExpandAll() =  UiTreeView.expandAll(treeViewDirectory2)
+
+    @FXML fun tv2CollapseLast() =  UiTreeView.collapseLast(treeViewDirectory2)
+    @FXML fun tv2ExpandLast() =  UiTreeView.expandLast(treeViewDirectory2)
+
+    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDirectory2)
+    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDirectory2)
 }
+
+
 
 
 
