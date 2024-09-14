@@ -118,13 +118,6 @@ class MainController {
         return directory.walk().toList()
     }
 
-    private fun fillTreeView(treeView: TreeView<File>, files: List<File>) {
-//        val root = TreeItem(files.first())
-//        files.drop(1).forEach {
-//            root.children.add(TreeItem(it))
-//        }
-//        treeView.root = root
-    }
 
     //
     private fun setupTreeViewSelection(treeView: TreeView<File>) {
@@ -132,9 +125,10 @@ class MainController {
             selectedItem?.let {
                 textAreaSelectedItemProperties.isVisible = true
                 // Здесь можно отобразить дополнительные данные о выбранном элементе
-                textAreaSelectedItemProperties.text = "Selected item: ${selectedItem.value.name}\n" +
-                        "Size: ${selectedItem.value.length()} bytes\n" +
-                        "Path: ${selectedItem.value.absolutePath}"
+                textAreaSelectedItemProperties.text = selectedItem.value.toString()
+//                    "Selected item: ${selectedItem.value.name}\n" +
+//                        "Size: ${selectedItem.value.length()} bytes\n" +
+//                        "Path: ${selectedItem.value.absolutePath}"
             }
         }
 

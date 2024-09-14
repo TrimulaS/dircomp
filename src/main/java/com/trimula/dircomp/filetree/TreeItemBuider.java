@@ -6,6 +6,10 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class TreeItemBuider {
@@ -62,6 +66,33 @@ public class TreeItemBuider {
 
 
 
+    }
+
+
+    // Метод для получения системной иконки
+    private ImageView getSystemIcon(File file) {
+        // Используем FileSystemView для получения системной иконки
+        Icon icon = FileSystemView.getFileSystemView().getSystemIcon(file);
+
+        // Преобразуем Icon в Image
+        Image image = convertToFxImage(icon);
+        return new ImageView(image);
+    }
+
+    // Метод для конвертации системной иконки в формат JavaFX
+    private Image convertToFxImage(Icon icon) {
+        if (icon instanceof ImageIcon) {
+            java.awt.Image awtImage = ((ImageIcon) icon).getImage();
+            return SwingFXUtils.toFXImage((BufferedImage) awtImage, null);
+        } else {
+            int w = icon.getIconWidth();
+            int h = icon.getIconHeight();
+            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = image.createGraphics();
+            icon.paintIcon(null, g, 0, 0);
+            g.dispose();
+            return SwingFXUtils.toFXImage(image, null);
+        }
     }
 
 
