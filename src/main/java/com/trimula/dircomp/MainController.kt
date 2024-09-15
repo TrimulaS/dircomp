@@ -4,13 +4,13 @@ package com.trimula.dircomp
 import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.filetree.Comparator
 import com.trimula.dircomp.filetree.FileItem
-import com.trimula.dircomp.filetree.TreeItemBuilder
 import com.trimula.dircomp.ui.UiTreeView
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
 import log.Log
 import java.io.File
@@ -22,35 +22,61 @@ class MainController {
 
     @FXML    lateinit var comboBoxDirectory1: ComboBox<String>
     @FXML    lateinit var comboBoxDirectory2: ComboBox<String>
-    @FXML    lateinit var treeViewDir1: TreeView<FileItem>
-    @FXML    lateinit var treeViewDir2: TreeView<FileItem>
+
+    @FXML    lateinit var treeViewDir1:     TreeView<FileItem>
+    @FXML    lateinit var treeViewDir2:     TreeView<FileItem>
+    @FXML    lateinit var tableViewDir1:    TableView<FileItem>
+    @FXML    lateinit var tableViewDir2:    TableView<FileItem>
+
+    @FXML    lateinit var vbTableView1:VBox
+    @FXML    lateinit var vbTableView2:VBox
+    @FXML    lateinit var vbTreeView1:VBox
+    @FXML    lateinit var vbTreeView2:VBox
+
+
     @FXML    lateinit var textAreaSelectedItemProperties: TextArea
     @FXML    lateinit var textAreaStatus: TextArea
     @FXML    lateinit var progressBar: ProgressBar
     @FXML    lateinit var hBoxProgress: HBox
     @FXML    lateinit var checkBoxShowSame: CheckBox
     @FXML    lateinit var buttonCancelProcessing: Button
+
+    @FXML    lateinit var tbDir1ViewType: ToggleButton
+    @FXML    lateinit var tbDir2ViewType: ToggleButton
     //@FXML    lateinit var filter1: ComboBox<String>
 
     @FXML    lateinit var filter1All:       ToggleButton
     @FXML    lateinit var filter1FullMatch: ToggleButton
     @FXML    lateinit var filter1Similar:   ToggleButton
     @FXML    lateinit var filter1Suspected: ToggleButton
-    @FXML    lateinit var filter1Unique :   ToggleButton
+    @FXML    lateinit var filter1Unique:    ToggleButton
+
+    @FXML    lateinit var tb1ViewAll:       ToggleButton
+    @FXML    lateinit var tb1ViewDirOnly:   ToggleButton
+    @FXML    lateinit var tb1ViewFileOnly:  ToggleButton
+    @FXML    lateinit var tb2ViewAll:       ToggleButton
+    @FXML    lateinit var tb2ViewDirOnly:   ToggleButton
+    @FXML    lateinit var tb2ViewFileOnly:  ToggleButton
+
 
     @FXML    lateinit var filter2MatchTo1:  ToggleButton
     @FXML    lateinit var filter2All:       ToggleButton
     @FXML    lateinit var filter2FullMatch: ToggleButton
     @FXML    lateinit var filter2Similar:   ToggleButton
     @FXML    lateinit var filter2Suspected: ToggleButton
-    @FXML    lateinit var filter2Unique :   ToggleButton
+    @FXML    lateinit var filter2Unique:    ToggleButton
 
+    val  DIR_VIEW_TREE = "☷"
+    val  DIR_VIEW_TABLE = "\uD83C\uDF33"
 
     private var directory1: File? = null
     private var directory2: File? = null
     private lateinit var comparator: Comparator
+
     private lateinit var tg1Filter: ToggleGroup
     private lateinit var tg2Filter: ToggleGroup
+    private lateinit var tg1View: ToggleGroup
+    private lateinit var tg2View: ToggleGroup
 
     private val isProcessing = AtomicBoolean(false)
 
@@ -62,40 +88,35 @@ class MainController {
         // Инициализация группы
         tg1Filter = ToggleGroup()
         tg2Filter = ToggleGroup()
+        tg1View = ToggleGroup()
+        tg2View = ToggleGroup()
 
         // Добавление кнопок в группу
-        filter1All.toggleGroup =        tg1Filter
-        filter1FullMatch.toggleGroup =  tg1Filter
-        filter1Similar.toggleGroup =    tg1Filter
-        filter1Suspected.toggleGroup =  tg1Filter
-        filter1Unique.toggleGroup =     tg1Filter
+        filter1All.toggleGroup = tg1Filter
+        filter1FullMatch.toggleGroup = tg1Filter
+        filter1Similar.toggleGroup = tg1Filter
+        filter1Suspected.toggleGroup = tg1Filter
+        filter1Unique.toggleGroup = tg1Filter
 
-        filter2MatchTo1.toggleGroup =   tg2Filter
-        filter2All.toggleGroup =        tg2Filter
-        filter2FullMatch.toggleGroup =  tg2Filter
-        filter2Similar.toggleGroup =    tg2Filter
-        filter2Suspected.toggleGroup =  tg2Filter
-        filter2Unique.toggleGroup =     tg2Filter
+        filter2MatchTo1.toggleGroup = tg2Filter
+        filter2All.toggleGroup = tg2Filter
+        filter2FullMatch.toggleGroup = tg2Filter
+        filter2Similar.toggleGroup = tg2Filter
+        filter2Suspected.toggleGroup = tg2Filter
+        filter2Unique.toggleGroup = tg2Filter
+
+        tb1ViewAll.toggleGroup      = tg1View
+        tb1ViewDirOnly.toggleGroup  = tg1View
+        tb1ViewFileOnly.toggleGroup = tg1View
+
+        tb1ViewAll.toggleGroup      = tg2View
+        tb1ViewDirOnly.toggleGroup  = tg2View
+        tb1ViewFileOnly.toggleGroup = tg2View
 
         // Установим начально выбранную кнопку (например, filter2All)
         filter1All.isSelected = true
         filter2All.isSelected = true
 
-
-
-        // Выбор директории для Directory1
-        comboBoxDirectory1.setOnMouseClicked {
-            val directoryChooser = DirectoryChooser()
-            directory1 = directoryChooser.showDialog(null)
-            comboBoxDirectory1.value = directory1?.absolutePath
-        }
-
-        // Выбор директории для Directory2
-        comboBoxDirectory2.setOnMouseClicked {
-            val directoryChooser = DirectoryChooser()
-            directory2 = directoryChooser.showDialog(null)
-            comboBoxDirectory2.value = directory2?.absolutePath
-        }
 
         //Setup for testing
         directory1 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
@@ -111,6 +132,59 @@ class MainController {
         comparator = Comparator(treeViewDir1, treeViewDir2)
         Log.appendText("Comparator initialized")
 
+    }
+    @FXML
+    fun dir1ViewTypeClick() {
+        if (vbTreeView1.isVisible)
+        {
+            // Скрываем TreeView и показываем TabView
+            vbTreeView1.isVisible = false
+            vbTreeView1.isManaged = false
+            vbTableView1.isVisible = true
+            vbTableView1.isManaged = true
+            tbDir1ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
+        } else
+        {
+            // Скрываем TabView и показываем TreeView
+            vbTableView1.isVisible = false
+            vbTableView1.isManaged = false
+            vbTreeView1.isVisible = true
+            vbTreeView1.isManaged = true
+            tbDir1ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
+        }
+    }
+    @FXML
+    fun dir2ViewTypeClick() {
+        if (vbTreeView2.isVisible)
+        {
+            // Скрываем TreeView и показываем TabView
+            vbTreeView2.isVisible = false
+            vbTreeView2.isManaged = false
+            vbTableView2.isVisible = true
+            vbTableView2.isManaged = true
+            tbDir2ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
+        } else
+        {
+            // Скрываем TabView и показываем TreeView
+            vbTableView2.isVisible = false
+            vbTableView2.isManaged = false
+            vbTreeView2.isVisible = true
+            vbTreeView2.isManaged = true
+            tbDir2ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
+        }
+    }
+
+    @FXML
+    fun selectDirectory1() {
+        val directoryChooser = DirectoryChooser()
+        directory1 = directoryChooser.showDialog(null)
+        comboBoxDirectory1.value = directory1?.absolutePath
+    }
+    @FXML
+    fun selectDirectory2() {
+        val directoryChooser = DirectoryChooser()
+        directory2 = directoryChooser.showDialog(null)
+        comboBoxDirectory2.value = directory2?.absolutePath
     }
 
     @FXML
