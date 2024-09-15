@@ -87,6 +87,25 @@ public class TreeItemBuilder {
 
     }
 
+    // Метод для вычисления размера директории и записи этого значения в поле directorySize для каждой директории
+    public static long calculateDirectorySize(TreeItem<FileItem> treeItem) {
+        FileItem fileItem = treeItem.getValue();
+        long totalSize = 0;
+
+        // Если это директория, обрабатываем дочерние элементы рекурсивно
+        if (fileItem.isDirectory()) {
+            for (TreeItem<FileItem> child : treeItem.getChildren()) {
+                totalSize += calculateDirectorySize(child);  // Рекурсивный вызов для всех дочерних элементов
+            }
+            fileItem.directorySize = totalSize;  // Записываем размер в поле directorySize
+        } else {
+            // Если это файл, просто получаем его размер
+            totalSize = fileItem.length();
+        }
+
+        return totalSize;  // Возвращаем общий размер для текущего элемента
+    }
+
 
 //    // Метод для получения системной иконки
 //    private ImageView getSystemIcon(File file) {

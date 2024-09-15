@@ -10,8 +10,6 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -55,7 +53,7 @@
                            <ToggleButton fx:id="tb1ViewDirOnly" text="📁" />
                            <ToggleButton fx:id="tb1ViewFileOnly" text="🗎" />
                         </HBox>
-                        <VBox fx:id="vbTreeView1">
+                        <VBox fx:id="vbTreeView1" style="-fx-background-color: red;">
                             <ToolBar>
                                 <Button onAction="#tv1CollapseAll" text="⋘" />
                                 <Button onAction="#tv1ExpandAll" text="⋙" />
@@ -64,11 +62,11 @@
                                 <Button onAction="#tv1CollapseSelected" text="〈" />
                                 <Button onAction="#tv1ExpandSelected" text="〉" />
                             </ToolBar>
-                            <TreeView fx:id="treeViewDir1" />
+                            <TreeView fx:id="treeViewDir1" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
                         </VBox>
-                        <VBox fx:id="vbTableView1">
+                        <VBox fx:id="vbTableView1" style="-fx-background-color: green;">
 
-                            <TableView fx:id="tableViewDir1" prefHeight="200.0" prefWidth="200.0">
+                            <TableView fx:id="tableViewDir1" maxHeight="Infinity" VBox.vgrow="ALWAYS">
                                 <columns>
                                     <TableColumn prefWidth="75.0" text="C1" />
                                     <TableColumn prefWidth="75.0" text="C2" />
@@ -98,7 +96,7 @@
                                 <ToggleButton fx:id="tb2ViewFileOnly" text="🗎" />
                             </HBox>
 
-                            <VBox fx:id="vbTreeView2">
+                            <VBox fx:id="vbTreeView2" style="-fx-background-color: yellow;">
                                 <ToolBar>
                                     <Button onAction="#tv2CollapseAll" text="⋘" />
                                     <Button onAction="#tv2ExpandAll" text="⋙" />
@@ -107,11 +105,11 @@
                                     <Button onAction="#tv2CollapseSelected" text="〈" />
                                     <Button onAction="#tv2ExpandSelected" text="〉" />
                                 </ToolBar>
-                                <TreeView fx:id="treeViewDir2" />
+                                <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
                             </VBox>
-                            <VBox fx:id="vbTableView2">
+                            <VBox fx:id="vbTableView2" style="-fx-background-color: blue;">
 
-                                <TableView fx:id="tableViewDir2" prefHeight="200.0" prefWidth="200.0">
+                                <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn prefWidth="75.0" text="C1" />
                                         <TableColumn prefWidth="75.0" text="C2" />
@@ -121,11 +119,11 @@
                         </VBox>
                 </SplitPane>
             </VBox>
-            <TextArea fx:id="textAreaSelectedItemProperties" visible="false" />
-            <TextArea fx:id="textAreaStatus" />
+            <TextArea fx:id="taSelectedItemProperties" visible="false" />
+            <TextArea fx:id="taStatus" />
         </SplitPane>
-        <HBox fx:id="hBoxProgress">
-            <ProgressBar fx:id="progressBar" progress="0.0" HBox.hgrow="ALWAYS" />
+        <HBox fx:id="hBoxProgress" alignment="CENTER">
+            <ProgressBar fx:id="progressBar" maxHeight="Infinity" maxWidth="Infinity" progress="0.0" HBox.hgrow="ALWAYS" />
             <Button fx:id="buttonCancelProcessing" onAction="#onCancelProcessing" text="Cancel" HBox.hgrow="NEVER" />
         </HBox>
     </VBox>

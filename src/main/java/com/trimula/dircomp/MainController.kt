@@ -34,8 +34,8 @@ class MainController {
     @FXML    lateinit var vbTreeView2:VBox
 
 
-    @FXML    lateinit var textAreaSelectedItemProperties: TextArea
-    @FXML    lateinit var textAreaStatus: TextArea
+    @FXML    lateinit var taSelectedItemProperties: TextArea
+    @FXML    lateinit var taStatus: TextArea
     @FXML    lateinit var progressBar: ProgressBar
     @FXML    lateinit var hBoxProgress: HBox
     @FXML    lateinit var checkBoxShowSame: CheckBox
@@ -117,6 +117,12 @@ class MainController {
         filter1All.isSelected = true
         filter2All.isSelected = true
 
+        // Switch to TreeView
+        dir1ViewTypeClick()
+        if(!vbTreeView1.isVisible) dir1ViewTypeClick()
+        dir2ViewTypeClick()
+        if(!vbTreeView2.isVisible) dir2ViewTypeClick()
+
 
         //Setup for testing
         directory1 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
@@ -133,23 +139,34 @@ class MainController {
         Log.appendText("Comparator initialized")
 
     }
+
+    fun initClear(){
+        Log.clear()
+        taStatus.text = ""
+        taSelectedItemProperties.text = ""
+    }
+
     @FXML
     fun dir1ViewTypeClick() {
         if (vbTreeView1.isVisible)
         {
             // Скрываем TreeView и показываем TabView
             vbTreeView1.isVisible = false
-            vbTreeView1.isManaged = false
+            vbTreeView1.maxHeight = 0.0
+//            vbTreeView1.isManaged = false
             vbTableView1.isVisible = true
-            vbTableView1.isManaged = true
+            vbTableView1.maxHeight = Double.MAX_VALUE
+//            vbTableView1.isManaged = true
             tbDir1ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
         } else
         {
             // Скрываем TabView и показываем TreeView
             vbTableView1.isVisible = false
-            vbTableView1.isManaged = false
+            vbTableView1.maxHeight = 0.0
+//            vbTableView1.isManaged = false
             vbTreeView1.isVisible = true
-            vbTreeView1.isManaged = true
+            vbTreeView1.maxHeight = Double.MAX_VALUE
+//            vbTreeView1.isManaged = true
             tbDir1ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
         }
     }
@@ -159,17 +176,21 @@ class MainController {
         {
             // Скрываем TreeView и показываем TabView
             vbTreeView2.isVisible = false
-            vbTreeView2.isManaged = false
+            vbTreeView2.maxHeight = 0.0
+//            vbTreeView2.isManaged = false
             vbTableView2.isVisible = true
-            vbTableView2.isManaged = true
+            vbTableView2.maxHeight = Double.MAX_VALUE
+//            vbTableView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
         } else
         {
             // Скрываем TabView и показываем TreeView
             vbTableView2.isVisible = false
-            vbTableView2.isManaged = false
+            vbTableView2.maxHeight = 0.0
+//            vbTableView2.isManaged = false
             vbTreeView2.isVisible = true
-            vbTreeView2.isManaged = true
+            vbTreeView2.maxHeight = Double.MAX_VALUE
+//            vbTreeView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
         }
     }
@@ -189,8 +210,9 @@ class MainController {
 
     @FXML
     fun onCompareClicked() {
+        initClear()
         if (directory1 == null || directory2 == null) {
-            textAreaStatus.appendText("Both directories need to be selected!\n")
+            taStatus.appendText("Both directories need to be selected!\n")
             return
         }
 
@@ -206,8 +228,6 @@ class MainController {
             if (isProcessing.get()) {
                 Platform.runLater {
 
-//                    fillTreeView(treeViewDirectory1, result1)
-//                    fillTreeView(treeViewDirectory2, result2)
                     comparator.fillUpTreeView()     //Only in JavaFX UI Thread
                     hBoxProgress.isVisible = false
                 }
@@ -236,9 +256,9 @@ class MainController {
 
         treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
             selectedItem?.let {
-                textAreaSelectedItemProperties.isVisible = true
+                taSelectedItemProperties.isVisible = true
                 // Здесь можно отобразить дополнительные данные о выбранном элементе
-                textAreaSelectedItemProperties.text = selectedItem.value.toString()
+                taSelectedItemProperties.text = selectedItem.value.toString()
 
                 if(treeView!=treeViewDir2){
                     // Очищаем предыдущее выделение в treeViewDir2
@@ -264,14 +284,25 @@ class MainController {
         // Adding Logs
             Log.addListener (object : Log.LogListener {
             override fun onChange(logText: String) {
-//                println("Log has changed: $logText")
-                textAreaStatus.text = Log.get()
+                taStatus.text = Log.get()
+
+
+
+
+                taStatus.positionCaret(taStatus.text.length);
+                taStatus.scrollTop = Double.MAX_VALUE;
+
             }
 
             override fun onBeforeClear(logText: String) {
-                println("Log is about to be cleared: $logText")
+//                println("Log is about to be cleared: $logText")
             }
         } )
+
+
+
+
+
 
         // Добавление всплывающего меню
         treeView.setOnMouseClicked { event ->
@@ -294,7 +325,8 @@ class MainController {
                     val selectedFile = treeView.selectionModel.selectedItem?.value
                     selectedFile?.let {
                         // Удаление в корзину
-                        deleteToRecycleBin(it)
+                        //OsUtil.deleteToRecycleBin(it)
+
                     }
                 }
 
@@ -303,7 +335,7 @@ class MainController {
                     val selectedFile = treeView.selectionModel.selectedItem?.value
                     selectedFile?.let {
                         // Полное удаление файла
-                        //it.delete()
+                        if(OsUtil.confirmDelete(it)) it.delete()
                         Log.appendTextTimed("Deleted permanently: ${it.name}\n")
                     }
                 }
@@ -316,21 +348,6 @@ class MainController {
         }
     }
 
-    private fun deleteToRecycleBin(file: File) {
-
-//        if (Desktop.isDesktopSupported(Desktop.Action.MOVE_TO_TRASH)) {
-//            try {
-//                java.awt.Desktop.moveToTrash(file)
-//            } catch (e: IOException) {
-//                e.printStackTrace()
-//                //return false
-//            }
-//        } else {
-//            println("No Trash")
-//            //return false
-//        }
-        Log.appendTextTimed("Deleted to Recycle Bin: ${file.name}\n")
-    }
 
     // Рекурсивная функция для поиска TreeItem по значению FileItem
     private fun findTreeItem(treeItem: TreeItem<FileItem>, fi: FileItem): TreeItem<FileItem>? {

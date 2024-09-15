@@ -1,18 +1,31 @@
 package com.trimula.dircomp.filetree;
 
+import com.trimula.dircomp.dataprocessing.OsUtil;
+
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
 public class FileItem extends File {
-    //File file;
+    public long directorySize = 0;
 
     public List<FileItem> same;
     public List<FileItem> similar;
 
-    public FileItem(File file){
-        super(file.getAbsolutePath());
-        //this.file = file;
+
+    // Конструктор FileItem, используя путь к файлу
+    public FileItem(String pathname) {
+        super(pathname);
+        init();
+    }
+
+    // Конструктор FileItem с File
+    public FileItem(File file) {
+        super(file.getPath());
+        init();
+    }
+
+    private  void init(){
         same = new LinkedList<>();
         similar =  new LinkedList<>();
     }
@@ -23,8 +36,8 @@ public class FileItem extends File {
                 "Name: " + getName() + "\n" +
                 "Path: " + getPath() + "\n" +
                 (isFile() ?
-                        "is file, size: " + FileSizeAdoptFormat.apply( length() ) + "\n" :
-                        "is directory\n") +
+                        "is file,      size: " + OsUtil.sizeAdopt( length() ) + "\n" :
+                        "is directory, size: " + OsUtil.sizeAdopt( directorySize) +"\n") +
                 "Number of same items: " + same.size() + "\n" +
                 "Number of similar items: " + similar.size() + "\n" +
                 (same.size()>0 ?
