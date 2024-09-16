@@ -1,4 +1,4 @@
-package com.trimula.dircomp.filetree;
+package com.trimula.dircomp.model;
 
 import com.trimula.dircomp.dataprocessing.OsUtil;
 

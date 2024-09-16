@@ -2,10 +2,11 @@ package com.trimula.dircomp
 
 
 import com.trimula.dircomp.dataprocessing.OsUtil
-import com.trimula.dircomp.filetree.Comparator
-import com.trimula.dircomp.filetree.FileItem
-import com.trimula.dircomp.ui.UiTreeView
-import com.trimula.dircomp.view.DataTableView
+import com.trimula.dircomp.model.Comparator
+import com.trimula.dircomp.model.DataTableView
+import com.trimula.dircomp.model.FileItem
+import com.trimula.dircomp.view.ContentMenu
+import com.trimula.dircomp.view.UiTreeView
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -116,19 +117,22 @@ class MainController {
 
         // Установим начально выбранную кнопку (например, filter2All)
         filter1All.isSelected = true
-        filter2All.isSelected = true
+        filter2MatchTo1.isSelected = true
         //filter2MatchTo1.isSelected = true
 
         //TableView Configuration
         DataTableView.setupTableView(tableViewDir1)
         DataTableView.setupTableView(tableViewDir2)
 
+        ContentMenu.addToTreeView(treeViewDir1)
+        ContentMenu.addToTreeView(treeViewDir2)
+
 
         // Switch to TreeView
         dir1ViewTypeClick()
         if(!vbTreeView1.isVisible) dir1ViewTypeClick()
         dir2ViewTypeClick()
-        if(vbTreeView2.isVisible) dir2ViewTypeClick()
+        if(vbTreeView2.isVisible) dir2ViewTypeClick()       //Switch to table view
 
 
 
@@ -160,21 +164,18 @@ class MainController {
         {
             // Скрываем TreeView и показываем TabView
             vbTreeView1.isVisible = false
-            vbTreeView1.maxHeight = 0.0
-//            vbTreeView1.isManaged = false
+            vbTreeView1.isManaged = false
             vbTableView1.isVisible = true
-            vbTableView1.maxHeight = Double.MAX_VALUE
-//            vbTableView1.isManaged = true
+            vbTableView1.isManaged = true
             tbDir1ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
         } else
         {
             // Скрываем TabView и показываем TreeView
             vbTableView1.isVisible = false
-            vbTableView1.maxHeight = 0.0
-//            vbTableView1.isManaged = false
+            vbTableView1.isManaged = false
             vbTreeView1.isVisible = true
-            vbTreeView1.maxHeight = Double.MAX_VALUE
-//            vbTreeView1.isManaged = true
+//            vbTreeView1.maxHeight = Double.MAX_VALUE
+            vbTreeView1.isManaged = true
             tbDir1ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
         }
     }
@@ -184,21 +185,21 @@ class MainController {
         {
             // Скрываем TreeView и показываем TabView
             vbTreeView2.isVisible = false
-            vbTreeView2.maxHeight = 0.0
-//            vbTreeView2.isManaged = false
+//            vbTreeView2.maxHeight = 0.0
+            vbTreeView2.isManaged = false
             vbTableView2.isVisible = true
-            vbTableView2.maxHeight = Double.MAX_VALUE
-//            vbTableView2.isManaged = true
+//            vbTableView2.maxHeight = Double.MAX_VALUE
+            vbTableView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
         } else
         {
             // Скрываем TabView и показываем TreeView
             vbTableView2.isVisible = false
-            vbTableView2.maxHeight = 0.0
-//            vbTableView2.isManaged = false
+//            vbTableView2.maxHeight = 0.0
+            vbTableView2.isManaged = false
             vbTreeView2.isVisible = true
-            vbTreeView2.maxHeight = Double.MAX_VALUE
-//            vbTreeView2.isManaged = true
+//            vbTreeView2.maxHeight = Double.MAX_VALUE
+            vbTreeView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
         }
     }
@@ -282,6 +283,7 @@ class MainController {
                         }
                     }
                     // Properties MODE:  Second Tableview - Show properties of the first
+
                     if (filter2MatchTo1.isSelected) {
                         DataTableView.fillTableViewWithSameFiles(comparator.root2,selectedItem.value,tableViewDir2)
                         //Log.appendText("Tried to find properties")
@@ -345,7 +347,7 @@ class MainController {
                     val selectedFile = treeView.selectionModel.selectedItem?.value
                     selectedFile?.let {
                         // Полное удаление файла
-                        if(OsUtil.confirmDelete(it)) it.delete()
+                        if(OsUtil.confirmDelete(it.name)) OsUtil.deleteToTmp(it)    //it.delete()
                         Log.appendTextTimed("Deleted permanently: ${it.name}\n")
                     }
                 }

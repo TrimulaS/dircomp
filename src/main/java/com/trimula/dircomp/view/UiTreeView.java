@@ -1,6 +1,5 @@
-package com.trimula.dircomp.ui;
+package com.trimula.dircomp.view;
 
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -13,6 +12,7 @@ public class UiTreeView {
         if (root != null) {
             collapseRecursive(root);
         }
+        tv.getRoot().setExpanded(true);
     }
 
     // Expand all nodes in the TreeView

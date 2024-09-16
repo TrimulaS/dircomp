@@ -4,7 +4,12 @@ import log.Log;
 import javafx.scene.control.Alert;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.Random;
 
 public class OsUtil {
 
@@ -56,11 +61,12 @@ public class OsUtil {
         }
     }
 
-    public static boolean confirmDelete(File file) {
+
+    public static boolean confirmDelete(String text) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Confirmation");
         alert.setHeaderText("Are you sure you want to delete?");
-        alert.setContentText("This will permanently delete the file or folder: " + file.getName());
+        alert.setContentText("This will permanently delete the file or folder: " + text);
 
         // Опции "Yes" и "No"
         ButtonType yesButton = ButtonType.YES;
@@ -100,7 +106,67 @@ public class OsUtil {
             System.out.println("File does not exist.");
         }
     }
+    // Function to test (move to tmp instead of delete)
+    public static boolean deleteToTmp(File file) {
+        // Определяем целевую директорию
+        String targetDirectory = "C:/tmp/tmp";
 
+        // Проверяем, существует ли целевая директория, если нет, создаем её
+        File directory = new File(targetDirectory);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Создаем директорию, если её нет
+        }
 
+        // Генерируем новое имя файла
+        File targetFile = new File(targetDirectory + "/" + file.getName());
+
+        // Если файл уже существует, генерируем новое уникальное имя
+        if (targetFile.exists()) {
+            String fileName = file.getName();
+            String fileExtension = "";
+
+            // Если у файла есть расширение, разделяем имя и расширение
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                fileExtension = fileName.substring(dotIndex);
+                fileName = fileName.substring(0, dotIndex);
+            }
+
+            // Генерируем случайную последовательность
+            String randomSequence = generateRandomHash();
+
+            // Создаем новое имя файла
+            targetFile = new File(targetDirectory + "/" + fileName + "_" + randomSequence + fileExtension);
+        }
+
+        // Перемещаем файл
+        try {
+            Files.move(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Файл перемещён в: " + targetFile.getAbsolutePath());
+            return true;
+        } catch (IOException e) {
+            System.out.println("Ошибка перемещения файла: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Метод для генерации случайной последовательности (например, хэш)
+    private static String generateRandomHash() {
+        try {
+            Random random = new Random();
+            String randomString = String.valueOf(random.nextInt(999999));
+
+            // Хэшируем строку с помощью SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(randomString.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString().substring(0, 8); // Возвращаем только первые 8 символов хэша
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Ошибка создания хэша: " + e.getMessage());
+        }
+    }
 
 }

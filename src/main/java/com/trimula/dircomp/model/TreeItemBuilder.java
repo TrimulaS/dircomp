@@ -1,6 +1,5 @@
-package com.trimula.dircomp.filetree;
+package com.trimula.dircomp.model;
 
-import javafx.event.Event;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
