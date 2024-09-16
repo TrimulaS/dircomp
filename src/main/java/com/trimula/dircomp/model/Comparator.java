@@ -2,10 +2,11 @@ package com.trimula.dircomp.model;
 
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import log.Log;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 import java.io.File;
@@ -16,22 +17,11 @@ public class Comparator {
 
     //FileItem largestFile, largestDirectory;
     //FileItem largestFile = new File();
-    private int numOfSameFolders = 0,numOfSameFiles = 0, numOfSameIntersection = 0 ;
+    private ProgressListener progressListener;
+    public DirectoryAnalysis da1;
+    public DirectoryAnalysis da2;
 
-    public TreeItem<FileItem> root1;
-    public TreeItem<FileItem> root2;
-    public ObservableList<FileItem> ol1;
-    public ObservableList<FileItem> ol2;
-
-    //used in case of chosen by user
-    private TreeItem<FileItem> rootFullMatch1 = null;
-    private TreeItem<FileItem> rootFullMatch2 = null;
-    private TreeItem<FileItem> rootDirOnly1 = null;
-    private TreeItem<FileItem> rootDirOnly2 = null;
-
-
-    private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
-    private int numOfItemsInDir1 = 0, numOfItemsInDir2 = 0;
+    int numOfSameFolders = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
 
     public Comparator(){
 //        this.treeView1 = treeView1;
@@ -39,30 +29,36 @@ public class Comparator {
 
     }
     public void processDirectories(File dir1, File dir2){
-        root1 = TreeItemBuilder.getFull(dir1);
-        Log.appendText("root 1 finished " + root1.getChildren().size());
 
+        da1 = new DirectoryAnalysis(dir1);
+        Log.appendText("Directory 1:  Size: " + OsUtil.sizeAdopt(da1.root.getValue().directorySize)+ "\n" + dir1 +
+                "\nProcessed:  \n\tDirectories: " + da1.getNumOfDirectories() + "\n\tFiles: " +  da1.getNumOfFiles());
 
-        root2 = TreeItemBuilder.getFull(dir2);
-        Log.appendText("root 2 finished " + root2.getChildren().size());
-
-
-
-//        // Calculating Directories Sizes:
-        Log.appendText("Calculating Directories Sizes for folder 1:");
-        Log.appendText("Total size before: " + OsUtil.sizeAdopt(root1.getValue().directorySize) + "  ( " + root1.getValue().directorySize + " )");
-        TreeItemBuilder.calculateDirectorySize(root1);
-        Log.appendText("Total size calculated: " + OsUtil.sizeAdopt(root1.getValue().directorySize) + "  ( " + root1.getValue().directorySize + " )");
-//
-        Log.appendText("Calculating Directories Sizes for folder 2:");
-        TreeItemBuilder.calculateDirectorySize(root2);
-        Log.appendText("Total size calculated: " + OsUtil.sizeAdopt(root2.getValue().directorySize) + "  ( " + root2.getValue().directorySize + " )");
+        da2 = new DirectoryAnalysis(dir2);
+        Log.appendText("\nDirectory 2:  Size: " + OsUtil.sizeAdopt(da2.root.getValue().directorySize)+ "\n" + dir2 +
+                "\nProcessed:  \n\tDirectories: " + da2.getNumOfDirectories() + "\n\tFiles: " +  da2.getNumOfFiles());
 
 
         //Compare
-        Log.appendText("Starting to compare..." + root2.getChildren().size());
-        TreeItemTraverse.each(root1,item1 -> {
-            TreeItemTraverse.each(root2,item2 -> {
+        Log.appendText("Starting to compare..." );
+
+        AtomicInteger counter1 = new AtomicInteger(0);
+        double  maxIterations = da1.getNumOfItems();
+        TreeItemTraverse.each(da1.root,item1 -> {
+
+            counter1.addAndGet(1);
+
+            // Логика для обновления прогресса каждые 1% прогресса
+            if (counter1.get() % (maxIterations / 100) == 0) {
+                double progress = (double) counter1.get() / maxIterations;
+
+                // Обновляем прогресс в UI потоке, если слушатель установлен
+                if (progressListener != null) {
+                    Platform.runLater(() -> progressListener.onProgressUpdate(progress));
+                }
+            }
+
+            TreeItemTraverse.each(da2.root,item2 -> {
                 FileItem fi1 = item1.getValue();
                 FileItem fi2 = item2.getValue();
 
@@ -92,57 +88,90 @@ public class Comparator {
             });
         });
 
-        Log.appendText("Compre complete:");
-        if(numOfSameIntersection>0) Log.appendText("(!) Selected directories have intersection: Same file or folder: " + numOfSameIntersection);
+        //
+
+
+        Log.appendText("Compare complete:");
+        if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: Same file or folder: " + numOfSameIntersection);
         Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
 
         //Set style for treeview
 
     }
-    //This Should be run in JavaFX UI thre
+
+
+
+
+    //This Should be run in JavaFX UI --------------------------------------RunLater
     public void fillAllDir1(TreeView treeView){
-        treeView.setRoot(root1);
-        TreeItemBuilder.configureTreeItemStyle(treeView);
+        treeView.setRoot(da1.root);
+        da1.configureTreeItemStyle(treeView);
     }
     public void fillAllDir2(TreeView treeView){
-        treeView.setRoot(root2);
-        TreeItemBuilder.configureTreeItemStyle(treeView);
+        treeView.setRoot(da2.root);
+        da2.configureTreeItemStyle(treeView);
     }
 
     //Filters:-------------------------------------------------------------------------------------------
-    // Full Match
-    public void fillFullMatch1(TreeView treeView){
-        if(rootFullMatch1==null){
-            rootFullMatch1 = TreeItemTraverse.filterTree(root1,fileItem -> fileItem.same.size() > 0);
-        }else{
-            treeView.setRoot(rootFullMatch1);
-            TreeItemBuilder.configureTreeItemStyle(treeView);
-        }
+//    // Full Match
+//    public void fillFullMatch1(TreeView treeView){
+//        if(rootFullMatch1==null){
+//            rootFullMatch1 = TreeItemTraverse.filterTree(root1,fileItem -> fileItem.same.size() > 0);
+//        }else{
+//            treeView.setRoot(rootFullMatch1);
+//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
+//        }
+//    }
+//    public void fillFullMatch2(TreeView treeView){
+//        if(rootFullMatch2==null){
+//            rootFullMatch2 = TreeItemTraverse.filterTree(root2,fileItem -> fileItem.same.size() > 0);
+//        }else{
+//            treeView.setRoot(rootFullMatch2);
+//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
+//        }
+//    }
+//    // Directory Only
+//    public void fillDirOnly1(TreeView treeView){
+//        if(rootDirOnly1==null)
+//            rootDirOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isDirectory);
+//        else{
+//            treeView.setRoot(rootDirOnly1);
+//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
+//        }
+//    }
+//    public void fillDirOnly2(TreeView treeView){
+//        if(rootDirOnly2==null)
+//            rootDirOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isDirectory);
+//        else{
+//            treeView.setRoot(rootDirOnly2);
+//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
+//        }
+//    }
+//    // Directory Only
+//    public void fillFileOnly1(TreeView treeView){
+//        if(rootFileOnly1==null)
+//            rootFileOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isFile);
+//        else{
+//            treeView.setRoot(rootFileOnly1);
+//            //TreeItemBuilder.configureTreeItemStyle(treeView);
+//        }
+//    }
+//    public void fillFileOnly2(TreeView treeView){
+//        if(rootFileOnly2==null)
+//            rootFileOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isFile);
+//        else{
+//            treeView.setRoot(rootFileOnly2);
+//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
+//        }
+//    }
+
+    // Interface to register Progress update to UI
+    public interface ProgressListener {
+        void onProgressUpdate(double progress);
     }
-    public void fillFullMatch2(TreeView treeView){
-        if(rootFullMatch2==null){
-            rootFullMatch2 = TreeItemTraverse.filterTree(root2,fileItem -> fileItem.same.size() > 0);
-        }else{
-            treeView.setRoot(rootFullMatch2);
-            TreeItemBuilder.configureTreeItemStyle(treeView);
-        }
-    }
-    // Full Match
-    public void fillDirOnly1(TreeView treeView){
-        if(rootDirOnly1==null)
-            rootDirOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isDirectory);
-        else{
-            treeView.setRoot(rootDirOnly1);
-            TreeItemBuilder.configureTreeItemStyle(treeView);
-        }
-    }
-    public void fillDirOnly2(TreeView treeView){
-        if(rootDirOnly2==null)
-            rootDirOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isDirectory);
-        else{
-            treeView.setRoot(rootDirOnly2);
-            TreeItemBuilder.configureTreeItemStyle(treeView);
-        }
+    // Метод для установки слушателя прогресса
+    public void setProgressListener(ProgressListener listener) {
+        this.progressListener = listener;
     }
 
 

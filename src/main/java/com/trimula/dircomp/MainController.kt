@@ -116,6 +116,8 @@ class MainController {
         tb1ViewDirOnly.toggleGroup  = tg2View
         tb1ViewFileOnly.toggleGroup = tg2View
 
+        comparator = Comparator()
+
         // Установим начально выбранную кнопку (например, filter2All)
         filter1All.isSelected = true
         filter2MatchTo1.isSelected = true
@@ -149,6 +151,15 @@ class MainController {
         setupListener(treeViewDir2)
 
         comparator = Comparator()
+
+        // Установка слушателя для обновления прогресса
+        comparator.setProgressListener { progress: Double ->
+            // Обновляем ProgressBar в JavaFX потоке
+            Platform.runLater {
+                progressBar.setProgress(progress)
+            }
+        }
+
         Log.appendText("Comparator initialized")
 
     }
@@ -169,6 +180,10 @@ class MainController {
             vbTableView1.isVisible = true
             vbTableView1.isManaged = true
             tbDir1ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
+
+            tableViewDir1.items = comparator?.da1?.observableList
+            tableViewDir2.items = comparator?.da2?.observableList
+
         } else
         {
             // Скрываем TabView и показываем TreeView
@@ -283,7 +298,7 @@ class MainController {
                     // Properties MODE:  Second Tableview - Show properties of the first
 
                     if (filter2MatchTo1.isSelected) {
-                        DataTableView.fillTableViewWithSameFiles(comparator.root2,selectedItem.value,tableViewDir2)
+                        DataTableView.fillTableViewWithSameFiles(comparator.da2.root,selectedItem.value,tableViewDir2)
                         //Log.appendText("Tried to find properties")
                     }
                 }
@@ -393,14 +408,18 @@ class MainController {
 
 
     // Filters
-    @FXML fun filter1AllClick() = comparator.fillAllDir1(treeViewDir1)
-    @FXML fun filter2AllClick() = comparator.fillAllDir2(treeViewDir2)
+    @FXML fun filter1AllClick() { treeViewDir1.root = comparator.da1.root }   //comparator.da1.getfillAllDir1(treeViewDir1)}
+    @FXML fun filter2AllClick() { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
 
-    @FXML fun filter1FullMatchClick() = comparator.fillFullMatch1(treeViewDir1)
-    @FXML fun filter2FullMatchClick() = comparator.fillFullMatch2(treeViewDir2)
+    @FXML fun filter1FullMatchClick() { treeViewDir1.root = comparator.da1.rootFullMatch }    // = comparator.fillFullMatch1(treeViewDir1)
+    @FXML fun filter2FullMatchClick() { treeViewDir2.root = comparator.da2.rootFullMatch }    // = comparator.fillFullMatch2(treeViewDir2)
 
-    @FXML fun tb1ViewDirOnlyClick() = comparator.fillDirOnly1(treeViewDir1)
-    @FXML fun tb2ViewDirOnlyClick() = comparator.fillDirOnly2(treeViewDir2)
+    @FXML fun tb1ViewDirOnlyClick(){ treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
+    @FXML fun tb2ViewDirOnlyClick(){ treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
+
+    @FXML fun tb1ViewFileOnlyClick(){ treeViewDir1.root = comparator.da1.rootFileOnly }  // = comparator.fillFileOnly1(treeViewDir1)
+    @FXML fun tb2ViewFileOnlyClick(){ treeViewDir2.root = comparator.da2.rootFileOnly }  // = comparator.fillFileOnly2(treeViewDir2)
+
 
 }
 

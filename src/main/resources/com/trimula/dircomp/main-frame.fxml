@@ -50,9 +50,9 @@
                            <ToggleButton fx:id="filter1Suspected" text="∅" />
                            <ToggleButton fx:id="filter1Unique" text="≠" />
                            <Pane prefWidth="5.0" />
-                           <ToggleButton fx:id="tb1ViewAll" selected="true" text="📁 &amp; 🗎" />
+                           <ToggleButton fx:id="tb1ViewAll" onAction="#filter1AllClick" selected="true" text="📁 &amp; 🗎" />
                            <ToggleButton fx:id="tb1ViewDirOnly" onAction="#tb1ViewDirOnlyClick" text="📁" />
-                           <ToggleButton fx:id="tb1ViewFileOnly" text="🗎" />
+                           <ToggleButton fx:id="tb1ViewFileOnly" onAction="#tb1ViewFileOnlyClick" text="🗎" />
                         </HBox>
                   <StackPane>
                      <children>
@@ -67,7 +67,7 @@
                                      </TableView>
                            </children>
                               </VBox>
-                              <VBox fx:id="vbTreeView1" >
+                              <VBox fx:id="vbTreeView1">
                                   <ToolBar>
                                       <Button onAction="#tv1CollapseAll" text="⋘" />
                                       <Button onAction="#tv1ExpandAll" text="⋙" />
@@ -93,20 +93,20 @@
                                 <Pane prefWidth="5.0" />
                                 <ToggleButton fx:id="filter2MatchTo1" layoutX="128.0" layoutY="10.0" text="⯮" />
                                 <ToggleButton fx:id="filter2All" onAction="#filter2AllClick" selected="true" text="All" />
-                                <ToggleButton fx:id="filter2FullMatch" text="≡" />
+                                <ToggleButton fx:id="filter2FullMatch" onAction="#filter2FullMatchClick" text="≡" />
                                 <ToggleButton fx:id="filter2Similar" text="≈" />
                                 <ToggleButton fx:id="filter2Suspected" text="∅" />
                                 <ToggleButton fx:id="filter2Unique" text="≠" />
                                 <Pane prefWidth="5.0" />
-                                <ToggleButton fx:id="tb2ViewAll" selected="true" text="📁 &amp; 🗎" />
+                                <ToggleButton fx:id="tb2ViewAll" onAction="#filter2AllClick" selected="true" text="📁 &amp; 🗎" />
                                 <ToggleButton fx:id="tb2ViewDirOnly" onAction="#tb2ViewDirOnlyClick" text="📁" />
-                                <ToggleButton fx:id="tb2ViewFileOnly" text="🗎" />
+                                <ToggleButton fx:id="tb2ViewFileOnly" onAction="#tb2ViewFileOnlyClick" text="🗎" />
                             </HBox>
                   <StackPane>
                      <children>
       
-                                  <VBox fx:id="vbTreeView2" >
-                                      <ToolBar >
+                                  <VBox fx:id="vbTreeView2">
+                                      <ToolBar>
                                           <Button onAction="#tv2CollapseAll" text="⋘" />
                                           <Button onAction="#tv2ExpandAll" text="⋙" />
                                           <Button onAction="#tv2CollapseLast" text="《" />

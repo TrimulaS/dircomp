@@ -12,5 +12,10 @@ add modal window to ask beforepe peramnent deltetion
 switcing table view treeView
 ProgressBar Comparision tracking x100
 delete to recycle bin
+- add tahs #delete every where file delete operation
+- configure Icons with x2 x3 xN (Showing number of duplicates)
+- Adding TableView decoration to highlight outstanding items
+- remade content mennu for TreeView
+- whe files - the first directory ignored
 
 

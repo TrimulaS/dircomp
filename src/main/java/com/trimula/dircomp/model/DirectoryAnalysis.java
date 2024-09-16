@@ -1,15 +1,73 @@
 package com.trimula.dircomp.model;
 
+import com.trimula.dircomp.dataprocessing.OsUtil;
+import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import log.Log;
 
 import java.io.File;
 
-public class TreeItemBuilder {
-    public static TreeItem<FileItem> getFull(File dir){
+/**
+ *      This Class comprise all the information related to Single analyzed Directory
+*/
+
+public class DirectoryAnalysis {
+    private int  numOfItems= 0, numOfDirectories=0, numOfFiles = 0;
+
+
+//private int numOfSameFolders = 0,numOfSameFiles = 0, numOfSameIntersection = 0 ;
+
+    public TreeItem<FileItem> root;
+    private ObservableList<FileItem> observableList = null;
+
+
+
+    //used in case of chosen by user
+    private TreeItem<FileItem> rootFullMatch = null;
+    private TreeItem<FileItem> rootDirOnly = null;
+    private TreeItem<FileItem> rootFileOnly = null;
+
+
+//private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
+    //private int numOfItemsInDir1 = 0, numOfItemsInDir2 = 0;
+
+
+    public DirectoryAnalysis (File dir){
+        // Создаем корневой элемент TreeItem для текущей директории
+        root = new TreeItem<>(new FileItem(dir));
+
+        // Получаем список файлов и директорий внутри текущей директории
+        File[] files = dir.listFiles();
+        if (files != null) {
+            // Проходим по каждому файлу и директории
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    // Если это директория, рекурсивно создаем поддерево
+                    TreeItem<FileItem> directoryItem = parseDirectoryToTreeItem(file);
+                    root.getChildren().add(directoryItem);
+                    numOfDirectories++;
+                } else {
+                    // Если это файл, просто добавляем его в корневой элемент как листовой узел
+                    TreeItem<FileItem> fileItem = new TreeItem<>(new FileItem(file));
+                    root.getChildren().add(fileItem);
+                    numOfFiles++;
+                }
+            }
+        }
+        numOfItems = numOfDirectories + numOfFiles;
+        // Log.appendText("Calculating Directories Sizes:");
+        calculateDirectorySize(root);
+       // Log.appendText("Total size calculated: " + OsUtil.sizeAdopt(root.getValue().directorySize) + "  ( " + root.getValue().directorySize + " )");
+    }
+
+
+    public TreeItem<FileItem> parseDirectoryToTreeItem(File dir){
         // Создаем корневой элемент TreeItem для текущей директории
         TreeItem<FileItem> root = new TreeItem<FileItem>(new FileItem(dir));
 
@@ -20,7 +78,7 @@ public class TreeItemBuilder {
             for (File file : files) {
                 if (file.isDirectory()) {
                     // Если это директория, рекурсивно создаем поддерево
-                    TreeItem<FileItem> directoryItem = getFull(file);
+                    TreeItem<FileItem> directoryItem = parseDirectoryToTreeItem(file);
                     root.getChildren().add(directoryItem);
                 } else {
                     // Если это файл, просто добавляем его в корневой элемент как листовой узел
@@ -33,9 +91,28 @@ public class TreeItemBuilder {
         return root;
     }
 
+    // Метод для вычисления размера директории и записи этого значения в поле directorySize для каждой директории
+    private long calculateDirectorySize(TreeItem<FileItem> treeItem) {
+        FileItem fileItem = treeItem.getValue();
+        long totalSize = 0;
+
+        // Если это директория, обрабатываем дочерние элементы рекурсивно
+        if (fileItem.isDirectory()) {
+            for (TreeItem<FileItem> child : treeItem.getChildren()) {
+                totalSize += calculateDirectorySize(child);  // Рекурсивный вызов для всех дочерних элементов
+            }
+            fileItem.directorySize = totalSize;  // Записываем размер в поле directorySize
+        } else {
+            // Если это файл, просто получаем его размер
+            totalSize = fileItem.length();
+        }
+
+        return totalSize;  // Возвращаем общий размер для текущего элемента
+    }
 
 
-    public static void configureTreeItemStyle(TreeView<FileItem> treeView){
+
+    public void configureTreeItemStyle(TreeView<FileItem> treeView){
 
         // Настраиваем отображение имени файла и иконки
         treeView.setCellFactory(tv -> new TreeCell<FileItem>() {
@@ -86,24 +163,7 @@ public class TreeItemBuilder {
 
     }
 
-    // Метод для вычисления размера директории и записи этого значения в поле directorySize для каждой директории
-    public static long calculateDirectorySize(TreeItem<FileItem> treeItem) {
-        FileItem fileItem = treeItem.getValue();
-        long totalSize = 0;
 
-        // Если это директория, обрабатываем дочерние элементы рекурсивно
-        if (fileItem.isDirectory()) {
-            for (TreeItem<FileItem> child : treeItem.getChildren()) {
-                totalSize += calculateDirectorySize(child);  // Рекурсивный вызов для всех дочерних элементов
-            }
-            fileItem.directorySize = totalSize;  // Записываем размер в поле directorySize
-        } else {
-            // Если это файл, просто получаем его размер
-            totalSize = fileItem.length();
-        }
-
-        return totalSize;  // Возвращаем общий размер для текущего элемента
-    }
 
 
 //    // Метод для получения системной иконки
@@ -132,5 +192,44 @@ public class TreeItemBuilder {
 //        }
 //    }
 
+    // Filtered TreeItems root
+    public TreeItem<FileItem> getRootFullMatch() {
+        if(rootFullMatch == null) rootFullMatch = TreeItemTraverse.filterTree(root, fileItem -> fileItem.same.size() > 0);
+        return rootFullMatch;
+    }
+
+
+    public TreeItem<FileItem> getRootDirOnly() {
+        if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
+        return rootDirOnly;
+    }
+
+    public TreeItem<FileItem> getRootFileOnly() {
+        if(rootFileOnly == null) rootFileOnly = TreeItemTraverse.filterTree(root,FileItem :: isFile);
+        return rootFileOnly;
+    }
+
+    public ObservableList<FileItem> getObservableList() {
+        if(observableList == null){
+            observableList = FXCollections.observableArrayList();;
+
+            TreeItemTraverse.each(root, item->{
+                observableList.add( item.getValue() );
+            });
+        }
+        return observableList;
+    }
+
+    public int getNumOfItems() {
+    return numOfItems;
+    }
+
+    public int getNumOfDirectories() {
+        return numOfDirectories;
+    }
+
+    public int getNumOfFiles() {
+        return numOfFiles;
+    }
 
 }

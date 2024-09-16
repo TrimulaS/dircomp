@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 public class TreeItemTraverse<T> {
     //-----------------------------------------------------------------------------------------------------------------
-    // Method to parse all of the tree items reqursivelly and perform some actions on each i
+    // Method to parse all the tree items reqursivelly and perform some actions on each i
     public static <T> void each(TreeItem<T> root, Processing<T> pr) {
         // Обработка текущего элемента
         pr.apply(root);
