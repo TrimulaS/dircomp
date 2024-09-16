@@ -2,6 +2,7 @@ package com.trimula.dircomp
 
 
 import com.trimula.dircomp.dataprocessing.OsUtil
+import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
 import com.trimula.dircomp.model.DataTableView
 import com.trimula.dircomp.model.FileItem
@@ -147,7 +148,7 @@ class MainController {
         setupListener(treeViewDir1)
         setupListener(treeViewDir2)
 
-        comparator = Comparator(treeViewDir1, treeViewDir2)
+        comparator = Comparator()
         Log.appendText("Comparator initialized")
 
     }
@@ -185,20 +186,16 @@ class MainController {
         {
             // Скрываем TreeView и показываем TabView
             vbTreeView2.isVisible = false
-//            vbTreeView2.maxHeight = 0.0
             vbTreeView2.isManaged = false
             vbTableView2.isVisible = true
-//            vbTableView2.maxHeight = Double.MAX_VALUE
             vbTableView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
         } else
         {
             // Скрываем TabView и показываем TreeView
             vbTableView2.isVisible = false
-//            vbTableView2.maxHeight = 0.0
             vbTableView2.isManaged = false
             vbTreeView2.isVisible = true
-//            vbTreeView2.maxHeight = Double.MAX_VALUE
             vbTreeView2.isManaged = true
             tbDir2ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
         }
@@ -237,7 +234,8 @@ class MainController {
             if (isProcessing.get()) {
                 Platform.runLater {
 
-                    comparator.fillUpTreeView()     //Only in JavaFX UI Thread
+                    comparator.fillAllDir1(treeViewDir1)     //Only in JavaFX UI Thread
+                    comparator.fillAllDir2(treeViewDir2)
                     hBoxProgress.isVisible = false
                 }
             }
@@ -277,7 +275,7 @@ class MainController {
                     // Выбираем элементы из списка `same` в treeViewDir2
                     for (fi: FileItem in selectedItem.value.same) {
                         // Найдем элемент в treeViewDir2, соответствующий FileItem
-                        val treeItemToSelect = findTreeItem(treeViewDir2.root, fi)
+                        val treeItemToSelect = TreeItemTraverse.findByValue(treeViewDir2.root, fi)
                         treeItemToSelect?.let {
                             treeViewDir2.selectionModel.select(treeItemToSelect)
                         }
@@ -360,19 +358,19 @@ class MainController {
         }
     }
 
-
-    // Рекурсивная функция для поиска TreeItem по значению FileItem
-    private fun findTreeItem(treeItem: TreeItem<FileItem>, fi: FileItem): TreeItem<FileItem>? {
-        if (treeItem.value == fi) return treeItem
-
-        for (child in treeItem.children) {
-            val result = findTreeItem(child, fi)
-            if (result != null) {
-                return result
-            }
-        }
-        return null
-    }
+        //Changed to FindBy Value
+//    // Рекурсивная функция для поиска TreeItem по значению FileItem
+//    private fun findTreeItem(treeItem: TreeItem<FileItem>, fi: FileItem): TreeItem<FileItem>? {
+//        if (treeItem.value == fi) return treeItem
+//
+//        for (child in treeItem.children) {
+//            val result = findTreeItem(child, fi)
+//            if (result != null) {
+//                return result
+//            }
+//        }
+//        return null
+//    }
 
 
     @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDir1)
@@ -392,6 +390,18 @@ class MainController {
 
     @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir2)
     @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
+
+
+    // Filters
+    @FXML fun filter1AllClick() = comparator.fillAllDir1(treeViewDir1)
+    @FXML fun filter2AllClick() = comparator.fillAllDir2(treeViewDir2)
+
+    @FXML fun filter1FullMatchClick() = comparator.fillFullMatch1(treeViewDir1)
+    @FXML fun filter2FullMatchClick() = comparator.fillFullMatch2(treeViewDir2)
+
+    @FXML fun tb1ViewDirOnlyClick() = comparator.fillDirOnly1(treeViewDir1)
+    @FXML fun tb2ViewDirOnlyClick() = comparator.fillDirOnly2(treeViewDir2)
+
 }
 
 

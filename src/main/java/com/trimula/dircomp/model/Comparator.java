@@ -2,6 +2,7 @@ package com.trimula.dircomp.model;
 
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import log.Log;
@@ -10,8 +11,8 @@ import log.Log;
 import java.io.File;
 
 public class Comparator {
-    TreeView treeView1;
-    TreeView treeView2;
+//    TreeView treeView1;
+//    TreeView treeView2;
 
     //FileItem largestFile, largestDirectory;
     //FileItem largestFile = new File();
@@ -19,11 +20,22 @@ public class Comparator {
 
     public TreeItem<FileItem> root1;
     public TreeItem<FileItem> root2;
-    private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
+    public ObservableList<FileItem> ol1;
+    public ObservableList<FileItem> ol2;
 
-    public Comparator(TreeView treeView1, TreeView treeView2){
-        this.treeView1 = treeView1;
-        this.treeView2 = treeView2;
+    //used in case of chosen by user
+    private TreeItem<FileItem> rootFullMatch1 = null;
+    private TreeItem<FileItem> rootFullMatch2 = null;
+    private TreeItem<FileItem> rootDirOnly1 = null;
+    private TreeItem<FileItem> rootDirOnly2 = null;
+
+
+    private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
+    private int numOfItemsInDir1 = 0, numOfItemsInDir2 = 0;
+
+    public Comparator(){
+//        this.treeView1 = treeView1;
+//        this.treeView2 = treeView2;
 
     }
     public void processDirectories(File dir1, File dir2){
@@ -88,15 +100,49 @@ public class Comparator {
 
     }
     //This Should be run in JavaFX UI thre
-    public void fillUpTreeView(){
-        treeView1.setRoot(root1);
-        treeView2.setRoot(root2);
-
-        TreeItemBuilder.configureTreeItemStyle(treeView1);
-        TreeItemBuilder.configureTreeItemStyle(treeView2);
+    public void fillAllDir1(TreeView treeView){
+        treeView.setRoot(root1);
+        TreeItemBuilder.configureTreeItemStyle(treeView);
     }
-    void conclusionFilesAreSame(){
+    public void fillAllDir2(TreeView treeView){
+        treeView.setRoot(root2);
+        TreeItemBuilder.configureTreeItemStyle(treeView);
+    }
 
+    //Filters:-------------------------------------------------------------------------------------------
+    // Full Match
+    public void fillFullMatch1(TreeView treeView){
+        if(rootFullMatch1==null){
+            rootFullMatch1 = TreeItemTraverse.filterTree(root1,fileItem -> fileItem.same.size() > 0);
+        }else{
+            treeView.setRoot(rootFullMatch1);
+            TreeItemBuilder.configureTreeItemStyle(treeView);
+        }
+    }
+    public void fillFullMatch2(TreeView treeView){
+        if(rootFullMatch2==null){
+            rootFullMatch2 = TreeItemTraverse.filterTree(root2,fileItem -> fileItem.same.size() > 0);
+        }else{
+            treeView.setRoot(rootFullMatch2);
+            TreeItemBuilder.configureTreeItemStyle(treeView);
+        }
+    }
+    // Full Match
+    public void fillDirOnly1(TreeView treeView){
+        if(rootDirOnly1==null)
+            rootDirOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isDirectory);
+        else{
+            treeView.setRoot(rootDirOnly1);
+            TreeItemBuilder.configureTreeItemStyle(treeView);
+        }
+    }
+    public void fillDirOnly2(TreeView treeView){
+        if(rootDirOnly2==null)
+            rootDirOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isDirectory);
+        else{
+            treeView.setRoot(rootDirOnly2);
+            TreeItemBuilder.configureTreeItemStyle(treeView);
+        }
     }
 
 

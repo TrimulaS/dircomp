@@ -44,19 +44,19 @@
                         <HBox>
                            <ToggleButton fx:id="tbDir1ViewType" onAction="#dir1ViewTypeClick" text="/" />
                            <Pane prefWidth="5.0" />
-                           <ToggleButton fx:id="filter1All" selected="true" text="All" />
-                           <ToggleButton fx:id="filter1FullMatch" text="≡" />
+                           <ToggleButton fx:id="filter1All" onAction="#filter1AllClick" selected="true" text="All" />
+                           <ToggleButton fx:id="filter1FullMatch" onAction="#filter1FullMatchClick" text="≡" />
                            <ToggleButton fx:id="filter1Similar" text="≈" />
                            <ToggleButton fx:id="filter1Suspected" text="∅" />
                            <ToggleButton fx:id="filter1Unique" text="≠" />
                            <Pane prefWidth="5.0" />
                            <ToggleButton fx:id="tb1ViewAll" selected="true" text="📁 &amp; 🗎" />
-                           <ToggleButton fx:id="tb1ViewDirOnly" text="📁" />
+                           <ToggleButton fx:id="tb1ViewDirOnly" onAction="#tb1ViewDirOnlyClick" text="📁" />
                            <ToggleButton fx:id="tb1ViewFileOnly" text="🗎" />
                         </HBox>
                   <StackPane>
                      <children>
-                              <VBox fx:id="vbTableView1" style="-fx-background-color: green;">
+                              <VBox fx:id="vbTableView1">
                            <children>
          
                                         <TableView fx:id="tableViewDir1" maxHeight="Infinity">
@@ -67,8 +67,8 @@
                                      </TableView>
                            </children>
                               </VBox>
-                              <VBox fx:id="vbTreeView1" style="-fx-background-color: red;">
-                                  <ToolBar style="-fx-background-color: orange;">
+                              <VBox fx:id="vbTreeView1" >
+                                  <ToolBar>
                                       <Button onAction="#tv1CollapseAll" text="⋘" />
                                       <Button onAction="#tv1ExpandAll" text="⋙" />
                                       <Button onAction="#tv1CollapseLast" text="《" />
@@ -92,21 +92,21 @@
                                 <ToggleButton fx:id="tbDir2ViewType" onAction="#dir2ViewTypeClick" text="/" />
                                 <Pane prefWidth="5.0" />
                                 <ToggleButton fx:id="filter2MatchTo1" layoutX="128.0" layoutY="10.0" text="⯮" />
-                                <ToggleButton fx:id="filter2All" selected="true" text="All" />
+                                <ToggleButton fx:id="filter2All" onAction="#filter2AllClick" selected="true" text="All" />
                                 <ToggleButton fx:id="filter2FullMatch" text="≡" />
                                 <ToggleButton fx:id="filter2Similar" text="≈" />
                                 <ToggleButton fx:id="filter2Suspected" text="∅" />
                                 <ToggleButton fx:id="filter2Unique" text="≠" />
                                 <Pane prefWidth="5.0" />
                                 <ToggleButton fx:id="tb2ViewAll" selected="true" text="📁 &amp; 🗎" />
-                                <ToggleButton fx:id="tb2ViewDirOnly" text="📁" />
+                                <ToggleButton fx:id="tb2ViewDirOnly" onAction="#tb2ViewDirOnlyClick" text="📁" />
                                 <ToggleButton fx:id="tb2ViewFileOnly" text="🗎" />
                             </HBox>
                   <StackPane>
                      <children>
       
-                                  <VBox fx:id="vbTreeView2" style="-fx-background-color: yellow;">
-                                      <ToolBar style="-fx-background-color: orange;">
+                                  <VBox fx:id="vbTreeView2" >
+                                      <ToolBar >
                                           <Button onAction="#tv2CollapseAll" text="⋘" />
                                           <Button onAction="#tv2ExpandAll" text="⋙" />
                                           <Button onAction="#tv2CollapseLast" text="《" />
@@ -116,7 +116,7 @@
                                       </ToolBar>
                                       <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
                                   </VBox>
-                                  <VBox fx:id="vbTableView2" style="-fx-background-color: blue;">
+                                  <VBox fx:id="vbTableView2">
       
                                       <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
                                           <columns>
