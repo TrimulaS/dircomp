@@ -54,7 +54,7 @@
                            <ToggleButton fx:id="tb1ViewFileOnly" text="🗎" />
                         </HBox>
                         <VBox fx:id="vbTreeView1" style="-fx-background-color: red;">
-                            <ToolBar>
+                            <ToolBar style="-fx-background-color: orange;">
                                 <Button onAction="#tv1CollapseAll" text="⋘" />
                                 <Button onAction="#tv1ExpandAll" text="⋙" />
                                 <Button onAction="#tv1CollapseLast" text="《" />
@@ -97,7 +97,7 @@
                             </HBox>
 
                             <VBox fx:id="vbTreeView2" style="-fx-background-color: yellow;">
-                                <ToolBar>
+                                <ToolBar style="-fx-background-color: orange;">
                                     <Button onAction="#tv2CollapseAll" text="⋘" />
                                     <Button onAction="#tv2ExpandAll" text="⋙" />
                                     <Button onAction="#tv2CollapseLast" text="《" />

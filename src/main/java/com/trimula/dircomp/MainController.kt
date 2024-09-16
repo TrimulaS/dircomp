@@ -5,6 +5,7 @@ import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.filetree.Comparator
 import com.trimula.dircomp.filetree.FileItem
 import com.trimula.dircomp.ui.UiTreeView
+import com.trimula.dircomp.view.DataTableView
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -116,12 +117,19 @@ class MainController {
         // Установим начально выбранную кнопку (например, filter2All)
         filter1All.isSelected = true
         filter2All.isSelected = true
+        //filter2MatchTo1.isSelected = true
+
+        //TableView Configuration
+        DataTableView.setupTableView(tableViewDir1)
+        DataTableView.setupTableView(tableViewDir2)
+
 
         // Switch to TreeView
         dir1ViewTypeClick()
         if(!vbTreeView1.isVisible) dir1ViewTypeClick()
         dir2ViewTypeClick()
-        if(!vbTreeView2.isVisible) dir2ViewTypeClick()
+        if(vbTreeView2.isVisible) dir2ViewTypeClick()
+
 
 
         //Setup for testing
@@ -140,7 +148,7 @@ class MainController {
 
     }
 
-    fun initClear(){
+    private fun initClear(){
         Log.clear()
         taStatus.text = ""
         taSelectedItemProperties.text = ""
@@ -260,6 +268,7 @@ class MainController {
                 // Здесь можно отобразить дополнительные данные о выбранном элементе
                 taSelectedItemProperties.text = selectedItem.value.toString()
 
+                //Only for first
                 if(treeView!=treeViewDir2){
                     // Очищаем предыдущее выделение в treeViewDir2
                     treeViewDir2.selectionModel.clearSelection()
@@ -271,6 +280,11 @@ class MainController {
                         treeItemToSelect?.let {
                             treeViewDir2.selectionModel.select(treeItemToSelect)
                         }
+                    }
+                    // Properties MODE:  Second Tableview - Show properties of the first
+                    if (filter2MatchTo1.isSelected) {
+                        DataTableView.fillTableViewWithSameFiles(comparator.root2,selectedItem.value,tableViewDir2)
+                        //Log.appendText("Tried to find properties")
                     }
                 }
 //                    "Selected item: ${selectedItem.value.name}\n" +
@@ -286,12 +300,8 @@ class MainController {
             override fun onChange(logText: String) {
                 taStatus.text = Log.get()
 
-
-
-
                 taStatus.positionCaret(taStatus.text.length);
                 taStatus.scrollTop = Double.MAX_VALUE;
-
             }
 
             override fun onBeforeClear(logText: String) {
