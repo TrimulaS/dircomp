@@ -1,6 +1,7 @@
 package com.trimula.dircomp
 
 
+import com.trimula.dircomp.dataprocessing.Log
 import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
@@ -15,7 +16,6 @@ import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
-import log.Log
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
@@ -39,8 +39,10 @@ class MainController {
 
     @FXML    lateinit var taSelectedItemProperties: TextArea
     @FXML    lateinit var taStatus: TextArea
+    @FXML    lateinit var lProgress: Label
     @FXML    lateinit var progressBar: ProgressBar
     @FXML    lateinit var hBoxProgress: HBox
+
     @FXML    lateinit var checkBoxShowSame: CheckBox
     @FXML    lateinit var buttonCancelProcessing: Button
 
@@ -70,6 +72,7 @@ class MainController {
     @FXML    lateinit var filter2Unique:    ToggleButton
 
     val  DIR_VIEW_TREE = "☷"
+    val progressBarTextDuringCompare = "Compare in progress: "
     val  DIR_VIEW_TABLE = "\uD83C\uDF33"
 
     private var directory1: File? = null
@@ -85,7 +88,9 @@ class MainController {
 
     @FXML
     private fun initialize() {
-        hBoxProgress.isVisible = false
+        Log.enableJavaFX()
+        //hBoxProgress.isVisible = false
+        progressBarShow(false)
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
 
         // Инициализация группы
@@ -150,14 +155,20 @@ class MainController {
         setupListener(treeViewDir1)
         setupListener(treeViewDir2)
 
-        comparator = Comparator()
 
-        // Установка слушателя для обновления прогресса
-        comparator.setProgressListener { progress: Double ->
-            // Обновляем ProgressBar в JavaFX потоке
-            Platform.runLater {
-                progressBar.setProgress(progress)
-            }
+        comparator = Comparator()
+        // Listeners:
+        comparator.setBeforeDirectoryParseListener {
+            lProgress.text = "Starting parsing directories..  "
+            progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+        }
+        comparator.setBeforeCompareListener {
+            lProgress.text = "Compare start..  "
+
+        }
+        comparator.setCompareProgressListener { progress, txt ->
+            progressBar.progress = progress
+            lProgress.text = "$progressBarTextDuringCompare:  $txt  "
         }
 
         Log.appendText("Comparator initialized")
@@ -168,6 +179,7 @@ class MainController {
         Log.clear()
         taStatus.text = ""
         taSelectedItemProperties.text = ""
+        progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS;
     }
 
     @FXML
@@ -237,7 +249,8 @@ class MainController {
             return
         }
 
-        hBoxProgress.isVisible = true
+        //hBoxProgress.isVisible = true
+        progressBarShow(true)
         isProcessing.set(true)
 
         // Запуск потоков для анализа директорий
@@ -251,7 +264,8 @@ class MainController {
 
                     comparator.fillAllDir1(treeViewDir1)     //Only in JavaFX UI Thread
                     comparator.fillAllDir2(treeViewDir2)
-                    hBoxProgress.isVisible = false
+                    //hBoxProgress.isVisible = false
+                    progressBarShow(false)
                 }
             }
         }
@@ -262,7 +276,8 @@ class MainController {
     fun onCancelProcessing(/*actionEvent: ActionEvent*/) {
         // Прерывание обработки
         isProcessing.set(false)
-        hBoxProgress.isVisible = false
+        //hBoxProgress.isVisible = false
+        progressBarShow(false)
         Log.appendTextTimed("Processing cancelled by user.\n")
 
     }
@@ -386,7 +401,14 @@ class MainController {
 //        }
 //        return null
 //    }
+    private fun progressBarShow(isVisible: Boolean){
+            hBoxProgress.isVisible = isVisible
 
+            hBoxProgress.isManaged = isVisible
+
+//        if(isVisible) hBoxProgress.maxHeight = HBox.USE_COMPUTED_SIZE
+//        else hBoxProgress.maxHeight = 0.0
+    }
 
     @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDir1)
     @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDir1)

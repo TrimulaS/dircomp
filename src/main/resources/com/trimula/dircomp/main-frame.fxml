@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -29,7 +30,7 @@
     </rowConstraints>
 
     <VBox prefHeight="200.0" prefWidth="100.0">
-        <SplitPane dividerPositions="0.8040446304044628, 0.9051603905160389" orientation="VERTICAL" prefHeight="606.0" prefWidth="899.0" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.8040446304044628, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox>
                 <ToolBar>
                     <CheckBox fx:id="checkBoxShowSame" selected="true" text="Show Same" />
@@ -134,7 +135,8 @@
             <TextArea fx:id="taStatus" />
         </SplitPane>
         <HBox fx:id="hBoxProgress" alignment="CENTER">
-            <ProgressBar fx:id="progressBar" maxHeight="Infinity" maxWidth="Infinity" progress="0.0" HBox.hgrow="ALWAYS" />
+         <Label fx:id="lProgress" text="?" />
+            <ProgressBar fx:id="progressBar" maxHeight="Infinity" maxWidth="Infinity" progress="1.0" HBox.hgrow="ALWAYS" />
             <Button fx:id="buttonCancelProcessing" onAction="#onCancelProcessing" text="Cancel" HBox.hgrow="NEVER" />
         </HBox>
     </VBox>

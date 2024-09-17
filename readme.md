@@ -17,5 +17,8 @@ delete to recycle bin
 - Adding TableView decoration to highlight outstanding items
 - remade content mennu for TreeView
 - whe files - the first directory ignored
+- During compaision save Obseved List of links to same and similar Objects
+- add settings tab setup path to move items instead of delete during testnig
+- Add Union intersect subtract 
 
 

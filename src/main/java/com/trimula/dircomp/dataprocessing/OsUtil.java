@@ -1,6 +1,5 @@
 package com.trimula.dircomp.dataprocessing;
 import javafx.scene.control.ButtonType;
-import log.Log;
 import javafx.scene.control.Alert;
 import java.io.File;
 import java.io.IOException;

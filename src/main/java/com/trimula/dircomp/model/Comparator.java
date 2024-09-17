@@ -3,13 +3,13 @@ package com.trimula.dircomp.model;
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
 import javafx.application.Platform;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import log.Log;
+import com.trimula.dircomp.dataprocessing.Log;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Comparator {
 //    TreeView treeView1;
@@ -17,7 +17,12 @@ public class Comparator {
 
     //FileItem largestFile, largestDirectory;
     //FileItem largestFile = new File();
-    private ProgressListener progressListener;
+    private BeforeDirectoryParseListener beforeDirectoryParseListener;
+    private BeforeCompareListener beforeCompareListener;
+    private CompareProgressListener compareProgressListener;
+
+
+
     public DirectoryAnalysis da1;
     public DirectoryAnalysis da2;
 
@@ -29,34 +34,60 @@ public class Comparator {
 
     }
     public void processDirectories(File dir1, File dir2){
+        // Implement Listener
+        if (beforeCompareListener != null) {
+            Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
+        }
 
         da1 = new DirectoryAnalysis(dir1);
         Log.appendText("Directory 1:  Size: " + OsUtil.sizeAdopt(da1.root.getValue().directorySize)+ "\n" + dir1 +
-                "\nProcessed:  \n\tDirectories: " + da1.getNumOfDirectories() + "\n\tFiles: " +  da1.getNumOfFiles());
+                "\nProcessed:  \n\tDirectories: " + da1.getNumDirectories() + "\n\tFiles: " +  da1.getNumFiles());
 
         da2 = new DirectoryAnalysis(dir2);
         Log.appendText("\nDirectory 2:  Size: " + OsUtil.sizeAdopt(da2.root.getValue().directorySize)+ "\n" + dir2 +
-                "\nProcessed:  \n\tDirectories: " + da2.getNumOfDirectories() + "\n\tFiles: " +  da2.getNumOfFiles());
+                "\nProcessed:  \n\tDirectories: " + da2.getNumDirectories() + "\n\tFiles: " +  da2.getNumFiles());
+
 
 
         //Compare
         Log.appendText("Starting to compare..." );
+        // Implement Listener
+        if (beforeCompareListener != null) {
+            Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
+        }
 
         AtomicInteger counter1 = new AtomicInteger(0);
-        double  maxIterations = da1.getNumOfItems();
+        double  maxIterations = da1.getNumTotal();
+        AtomicReference<Double> lastProgress = new AtomicReference<>(-1.0);
+
         TreeItemTraverse.each(da1.root,item1 -> {
 
-            counter1.addAndGet(1);
+            counter1.incrementAndGet();
 
-            // Логика для обновления прогресса каждые 1% прогресса
-            if (counter1.get() % (maxIterations / 100) == 0) {
-                double progress = (double) counter1.get() / maxIterations;
+            double progress = (double) counter1.get() / maxIterations;
 
-                // Обновляем прогресс в UI потоке, если слушатель установлен
-                if (progressListener != null) {
-                    Platform.runLater(() -> progressListener.onProgressUpdate(progress));
-                }
+            // Проверяем, изменился ли прогресс на 5%
+            if (compareProgressListener != null && (int)(progress * 100) >= (int)(lastProgress.get() * 100 + 0.1)) { // <----- +1 Delta whe to send
+                lastProgress.set(progress);  // обновляем последний прогресс через AtomicReference
+                Platform.runLater(() -> compareProgressListener.onProgressUpdate(progress, (int) (progress * 100) + "%"));
             }
+//            if (compareProgressListener != null) {
+//                Platform.runLater(() -> compareProgressListener.onProgressUpdate(counter1.get()/maxIterations, counter1.get()+" "+maxIterations+"  " + da2.getNumTotal()));
+//            }
+
+//            // Логика для обновления прогресса каждые 1% прогресса
+//            if (counter1.get() % (maxIterations / 100) == 0) {
+//                double progress = (double) counter1.get() / maxIterations;
+//
+//                // Обновляем прогресс в UI потоке, если слушатель установлен
+//                if (compareProgressListener != null) {
+//                    Platform.runLater(() -> compareProgressListener.onProgressUpdate(progress, ""));
+//                }
+//            }
+
+
+
+
 
             TreeItemTraverse.each(da2.root,item2 -> {
                 FileItem fi1 = item1.getValue();
@@ -94,7 +125,7 @@ public class Comparator {
         Log.appendText("Compare complete:");
         if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: Same file or folder: " + numOfSameIntersection);
         Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
-
+        Log.appendText("--For debug: Items in Path1: " + counter1.get());
         //Set style for treeview
 
     }
@@ -165,14 +196,33 @@ public class Comparator {
 //        }
 //    }
 
-    // Interface to register Progress update to UI
-    public interface ProgressListener {
-        void onProgressUpdate(double progress);
+    //-------------------------------------------------------------Block Of Listeners to Update UI
+
+    // Beginning - before offered directories parse
+    public interface BeforeDirectoryParseListener{
+        void onBeforeDirectoryParse();
     }
-    // Метод для установки слушателя прогресса
-    public void setProgressListener(ProgressListener listener) {
-        this.progressListener = listener;
+    public void setBeforeDirectoryParseListener(BeforeDirectoryParseListener listener) {
+        this.beforeDirectoryParseListener = listener;
     }
+
+    // After directories parsed but before comparison started
+    public interface BeforeCompareListener {
+        void onBeforeCompare();
+    }
+    public void setBeforeCompareListener(BeforeCompareListener listener) {
+        this.beforeCompareListener = listener;
+    }
+
+
+    // Compare ongoing - update the progress
+    public interface CompareProgressListener {
+        void onProgressUpdate(double progress,String text);
+    }
+    public void setCompareProgressListener(CompareProgressListener listener) {
+        this.compareProgressListener = listener;
+    }
+
 
 
 }

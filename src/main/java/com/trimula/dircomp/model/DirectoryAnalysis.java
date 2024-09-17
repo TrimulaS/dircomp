@@ -1,5 +1,6 @@
 package com.trimula.dircomp.model;
 
+import com.trimula.dircomp.dataprocessing.Log;
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
 import javafx.collections.FXCollections;
@@ -9,7 +10,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import log.Log;
 
 import java.io.File;
 
@@ -18,7 +18,7 @@ import java.io.File;
 */
 
 public class DirectoryAnalysis {
-    private int  numOfItems= 0, numOfDirectories=0, numOfFiles = 0;
+    private int numTotal = 0, numDirectories =0, numFiles = 0;
 
 
 //private int numOfSameFolders = 0,numOfSameFiles = 0, numOfSameIntersection = 0 ;
@@ -51,19 +51,23 @@ public class DirectoryAnalysis {
                     // Если это директория, рекурсивно создаем поддерево
                     TreeItem<FileItem> directoryItem = parseDirectoryToTreeItem(file);
                     root.getChildren().add(directoryItem);
-                    numOfDirectories++;
+                    numDirectories++;
                 } else {
                     // Если это файл, просто добавляем его в корневой элемент как листовой узел
                     TreeItem<FileItem> fileItem = new TreeItem<>(new FileItem(file));
                     root.getChildren().add(fileItem);
-                    numOfFiles++;
+                    numFiles++;
                 }
             }
         }
-        numOfItems = numOfDirectories + numOfFiles;
+        numTotal = numDirectories + numFiles;
         // Log.appendText("Calculating Directories Sizes:");
         calculateDirectorySize(root);
-       // Log.appendText("Total size calculated: " + OsUtil.sizeAdopt(root.getValue().directorySize) + "  ( " + root.getValue().directorySize + " )");
+        Log.appendText("\n---------------------------------Processed Folder: " + root.getValue().getName() + "\n" +
+                "Path: " + root.getValue().getAbsolutePath() + "\n" +
+                "Total size calculated: " + OsUtil.sizeAdopt(root.getValue().directorySize) + //"  ( " + root.getValue().directorySize + " )\n" +
+                "Directories: " + numDirectories + "\tFiles: " + numFiles + "\n" +
+                "Total: " + numTotal);
     }
 
 
@@ -80,10 +84,11 @@ public class DirectoryAnalysis {
                     // Если это директория, рекурсивно создаем поддерево
                     TreeItem<FileItem> directoryItem = parseDirectoryToTreeItem(file);
                     root.getChildren().add(directoryItem);
+                    numDirectories++;
                 } else {
                     // Если это файл, просто добавляем его в корневой элемент как листовой узел
                     TreeItem<FileItem> fileItem = new TreeItem<>(new FileItem(file));
-
+                    numFiles++;
                     root.getChildren().add(fileItem);
                 }
             }
@@ -220,16 +225,16 @@ public class DirectoryAnalysis {
         return observableList;
     }
 
-    public int getNumOfItems() {
-    return numOfItems;
+    public int getNumTotal() {
+    return numTotal;
     }
 
-    public int getNumOfDirectories() {
-        return numOfDirectories;
+    public int getNumDirectories() {
+        return numDirectories;
     }
 
-    public int getNumOfFiles() {
-        return numOfFiles;
+    public int getNumFiles() {
+        return numFiles;
     }
 
 }
