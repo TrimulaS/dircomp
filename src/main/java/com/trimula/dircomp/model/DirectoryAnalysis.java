@@ -5,6 +5,7 @@ import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -25,6 +26,10 @@ public class DirectoryAnalysis {
 
     public TreeItem<FileItem> root;
     private ObservableList<FileItem> observableList = null;
+
+
+
+    private FilteredList<FileItem> filteredList = null;
 
 
 
@@ -223,6 +228,12 @@ public class DirectoryAnalysis {
             });
         }
         return observableList;
+    }
+    public FilteredList<FileItem> getFilteredList() {
+        if (filteredList == null) {
+            filteredList = new FilteredList<>(getObservableList(), fileItem -> true); // Используем лямбда для предиката
+        }
+        return filteredList;
     }
 
     public int getNumTotal() {

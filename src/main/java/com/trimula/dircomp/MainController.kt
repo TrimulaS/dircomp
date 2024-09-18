@@ -2,7 +2,6 @@ package com.trimula.dircomp
 
 
 import com.trimula.dircomp.dataprocessing.Log
-import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
 import com.trimula.dircomp.model.DataTableView
@@ -12,7 +11,6 @@ import com.trimula.dircomp.view.UiTreeView
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.scene.input.MouseButton
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
@@ -50,30 +48,31 @@ class MainController {
     @FXML    lateinit var tbDir2ViewType: ToggleButton
     //@FXML    lateinit var filter1: ComboBox<String>
 
-    @FXML    lateinit var filter1All:       ToggleButton
-    @FXML    lateinit var filter1FullMatch: ToggleButton
-    @FXML    lateinit var filter1Similar:   ToggleButton
-    @FXML    lateinit var filter1Suspected: ToggleButton
-    @FXML    lateinit var filter1Unique:    ToggleButton
+    @FXML    lateinit var tb1All:       ToggleButton
+    @FXML    lateinit var tb1FullMatch: ToggleButton
+    @FXML    lateinit var tb1Similar:   ToggleButton
+    @FXML    lateinit var tb1Suspected: ToggleButton
+    @FXML    lateinit var tb1Unique:    ToggleButton
 
-    @FXML    lateinit var tb1ViewAll:       ToggleButton
-    @FXML    lateinit var tb1ViewDirOnly:   ToggleButton
-    @FXML    lateinit var tb1ViewFileOnly:  ToggleButton
-    @FXML    lateinit var tb2ViewAll:       ToggleButton
-    @FXML    lateinit var tb2ViewDirOnly:   ToggleButton
-    @FXML    lateinit var tb2ViewFileOnly:  ToggleButton
+    @FXML    lateinit var tb1DirAndFile:    ToggleButton
+    @FXML    lateinit var tb1DirOnly:       ToggleButton
+    @FXML    lateinit var tb1FileOnly:      ToggleButton
+
+    @FXML    lateinit var tb2DirAndFile:ToggleButton
+    @FXML    lateinit var tb2DirOnly:   ToggleButton
+    @FXML    lateinit var tb2FileOnly:  ToggleButton
 
 
-    @FXML    lateinit var filter2MatchTo1:  ToggleButton
-    @FXML    lateinit var filter2All:       ToggleButton
-    @FXML    lateinit var filter2FullMatch: ToggleButton
-    @FXML    lateinit var filter2Similar:   ToggleButton
-    @FXML    lateinit var filter2Suspected: ToggleButton
-    @FXML    lateinit var filter2Unique:    ToggleButton
+    @FXML    lateinit var tb2MatchTo1:  ToggleButton
+    @FXML    lateinit var tb2All:       ToggleButton
+    @FXML    lateinit var tb2FullMatch: ToggleButton
+    @FXML    lateinit var tb2Similar:   ToggleButton
+    @FXML    lateinit var tb2Suspected: ToggleButton
+    @FXML    lateinit var tb2Unique:    ToggleButton
 
-    val  DIR_VIEW_TREE = "☷"
+    val  DIR_VIEW_TREE = "\uD83C\uDF33"
     val progressBarTextDuringCompare = "Compare in progress: "
-    val  DIR_VIEW_TABLE = "\uD83C\uDF33"
+    val  DIR_VIEW_TABLE =  "☷"
 
     private var directory1: File? = null
     private var directory2: File? = null
@@ -100,43 +99,47 @@ class MainController {
         tg2View = ToggleGroup()
 
         // Добавление кнопок в группу
-        filter1All.toggleGroup = tg1Filter
-        filter1FullMatch.toggleGroup = tg1Filter
-        filter1Similar.toggleGroup = tg1Filter
-        filter1Suspected.toggleGroup = tg1Filter
-        filter1Unique.toggleGroup = tg1Filter
+        tb1All.toggleGroup = tg1Filter
+        tb1FullMatch.toggleGroup = tg1Filter
+        tb1Similar.toggleGroup = tg1Filter
+        tb1Suspected.toggleGroup = tg1Filter
+        tb1Unique.toggleGroup = tg1Filter
 
-        filter2MatchTo1.toggleGroup = tg2Filter
-        filter2All.toggleGroup = tg2Filter
-        filter2FullMatch.toggleGroup = tg2Filter
-        filter2Similar.toggleGroup = tg2Filter
-        filter2Suspected.toggleGroup = tg2Filter
-        filter2Unique.toggleGroup = tg2Filter
+        tb2MatchTo1.toggleGroup = tg2Filter
+        tb2All.toggleGroup = tg2Filter
+        tb2FullMatch.toggleGroup = tg2Filter
+        tb2Similar.toggleGroup = tg2Filter
+        tb2Suspected.toggleGroup = tg2Filter
+        tb2Unique.toggleGroup = tg2Filter
 
-        tb1ViewAll.toggleGroup      = tg1View
-        tb1ViewDirOnly.toggleGroup  = tg1View
-        tb1ViewFileOnly.toggleGroup = tg1View
+        tb1DirAndFile.toggleGroup      = tg1View
+        tb1DirOnly.toggleGroup  = tg1View
+        tb1FileOnly.toggleGroup = tg1View
 
-        tb1ViewAll.toggleGroup      = tg2View
-        tb1ViewDirOnly.toggleGroup  = tg2View
-        tb1ViewFileOnly.toggleGroup = tg2View
+        tb2DirAndFile.toggleGroup      = tg2View
+        tb2DirOnly.toggleGroup  = tg2View
+        tb2FileOnly.toggleGroup = tg2View
 
         comparator = Comparator()
 
         // Установим начально выбранную кнопку (например, filter2All)
-        filter1All.isSelected = true
-        filter2MatchTo1.isSelected = true
+        tb1All.isSelected = true
+        tb2MatchTo1.isSelected = true
         //filter2MatchTo1.isSelected = true
 
         //TableView Configuration
         DataTableView.setupTableView(tableViewDir1)
         DataTableView.setupTableView(tableViewDir2)
 
+        //TreeView  setup
+        treeViewDir1.selectionModel.selectionMode = SelectionMode.MULTIPLE
+        treeViewDir2.selectionModel.selectionMode = SelectionMode.MULTIPLE
         ContentMenu.addToTreeView(treeViewDir1)
         ContentMenu.addToTreeView(treeViewDir2)
 
 
         // Switch to TreeView
+
         dir1ViewTypeClick()
         if(!vbTreeView1.isVisible) dir1ViewTypeClick()
         dir2ViewTypeClick()
@@ -145,9 +148,9 @@ class MainController {
 
 
         //Setup for testing
-        directory1 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
+        directory1 = File("C:\\tmp\\Dir1")  //"c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
         comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        directory2 = File("C:\\tmp\\Dir2")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
 
 
@@ -289,18 +292,17 @@ class MainController {
 
     //
     private fun setupListener(treeView: TreeView<FileItem>) {
-        treeView.selectionModel.selectionMode = SelectionMode.MULTIPLE
+
 
         treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
             selectedItem?.let {
-                taSelectedItemProperties.isVisible = true
-                // Здесь можно отобразить дополнительные данные о выбранном элементе
                 taSelectedItemProperties.text = selectedItem.value.toString()
 
-                //Only for first
+                //     <<--   Only for first
                 if(treeView!=treeViewDir2){
                     // Очищаем предыдущее выделение в treeViewDir2
                     treeViewDir2.selectionModel.clearSelection()
+                    var isFirstSelect = true
 
                     // Выбираем элементы из списка `same` в treeViewDir2
                     for (fi: FileItem in selectedItem.value.same) {
@@ -312,14 +314,14 @@ class MainController {
                     }
                     // Properties MODE:  Second Tableview - Show properties of the first
 
-                    if (filter2MatchTo1.isSelected) {
-                        DataTableView.fillTableViewWithSameFiles(comparator.da2.root,selectedItem.value,tableViewDir2)
+                    if (tb2MatchTo1.isSelected) {
+                        tableViewDir2.items = selectedItem.value.same
+                        if (isFirstSelect){
+                            // Scroll to this selected Item
+                        }
                         //Log.appendText("Tried to find properties")
                     }
                 }
-//                    "Selected item: ${selectedItem.value.name}\n" +
-//                        "Size: ${selectedItem.value.length()} bytes\n" +
-//                        "Path: ${selectedItem.value.absolutePath}"
             }
         }
 
@@ -344,48 +346,48 @@ class MainController {
 
 
 
-        // Добавление всплывающего меню
-        treeView.setOnMouseClicked { event ->
-            if (event.button == MouseButton.SECONDARY) {
-                val contextMenu = ContextMenu()
-
-                val openInExplorer = MenuItem("Open in Explorer")
-                openInExplorer.setOnAction {
-                    val selectedFile = treeView.selectionModel.selectedItem?.value
-                    selectedFile?.let {
-                        OsUtil.openInExplorer(it)
-                        // Полное удаление файла
-                        //it.delete()
-                        //Log.appendTextTimed("Deleted permanently: ${it.name}\n")
-                    }
-                }
-
-                val deleteRecycleBin = MenuItem("Delete to Recycle Bin")
-                deleteRecycleBin.setOnAction {
-                    val selectedFile = treeView.selectionModel.selectedItem?.value
-                    selectedFile?.let {
-                        // Удаление в корзину
-                        //OsUtil.deleteToRecycleBin(it)
-
-                    }
-                }
-
-                val deletePermanent = MenuItem("Delete Permanently")
-                deletePermanent.setOnAction {
-                    val selectedFile = treeView.selectionModel.selectedItem?.value
-                    selectedFile?.let {
-                        // Полное удаление файла
-                        if(OsUtil.confirmDelete(it.name)) OsUtil.deleteToTmp(it)    //it.delete()
-                        Log.appendTextTimed("Deleted permanently: ${it.name}\n")
-                    }
-                }
-
-
-
-                contextMenu.items.addAll(openInExplorer, deleteRecycleBin, deletePermanent)
-                contextMenu.show(treeView, event.screenX, event.screenY)
-            }
-        }
+//        // Добавление всплывающего меню
+//        treeView.setOnMouseClicked { event ->
+//            if (event.button == MouseButton.SECONDARY) {
+//                val contextMenu = ContextMenu()
+//
+//                val openInExplorer = MenuItem("Open in Explorer")
+//                openInExplorer.setOnAction {
+//                    val selectedFile = treeView.selectionModel.selectedItem?.value
+//                    selectedFile?.let {
+//                        OsUtil.openInExplorer(it)
+//                        // Полное удаление файла
+//                        //it.delete()
+//                        //Log.appendTextTimed("Deleted permanently: ${it.name}\n")
+//                    }
+//                }
+//
+//                val deleteRecycleBin = MenuItem("Delete to Recycle Bin")
+//                deleteRecycleBin.setOnAction {
+//                    val selectedFile = treeView.selectionModel.selectedItem?.value
+//                    selectedFile?.let {
+//                        // Удаление в корзину
+//                        //OsUtil.deleteToRecycleBin(it)
+//
+//                    }
+//                }
+//
+//                val deletePermanent = MenuItem("Delete Permanently")
+//                deletePermanent.setOnAction {
+//                    val selectedFile = treeView.selectionModel.selectedItem?.value
+//                    selectedFile?.let {
+//                        // Полное удаление файла
+//                        if(OsUtil.confirmDelete(it.name)) OsUtil.deleteToTmp(it)    //it.delete()
+//                        Log.appendTextTimed("Deleted permanently: ${it.name}\n")
+//                    }
+//                }
+//
+//
+//
+//                contextMenu.items.addAll(openInExplorer, deleteRecycleBin, deletePermanent)
+//                contextMenu.show(treeView, event.screenX, event.screenY)
+//            }
+//        }
     }
 
         //Changed to FindBy Value
@@ -442,6 +444,83 @@ class MainController {
     @FXML fun tb1ViewFileOnlyClick(){ treeViewDir1.root = comparator.da1.rootFileOnly }  // = comparator.fillFileOnly1(treeViewDir1)
     @FXML fun tb2ViewFileOnlyClick(){ treeViewDir2.root = comparator.da2.rootFileOnly }  // = comparator.fillFileOnly2(treeViewDir2)
 
+
+    @FXML fun filterDir1(){
+
+
+
+        if(tbDir1ViewType.isSelected){           //TableView
+
+            if(tb1All.isSelected) {
+                tableViewDir1.items = comparator.da1?.observableList
+                Log.appendText("All to Table 1")
+                return
+            }
+
+            // Apply filtering based on toggle group selections
+
+            val filterMatch = when {
+//                    tb1All.isSelected       -> { _: FileItem -> true }
+                tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
+                tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
+                tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
+                else -> { _: FileItem -> true }
+            }
+
+            val filterType = when {
+                tb1DirAndFile.isSelected    -> { _: FileItem -> true }
+                tb1DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
+                tb1FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
+                else -> { _: FileItem -> true }
+            }
+
+            // Apply the combined filter
+            comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
+            tableViewDir1.items = comparator.da1.filteredList
+            Log.appendText("filteredList to Table 1")
+
+
+
+        }
+        else{ //------------------------------------------------------------TreeView
+
+            if(tb1All.isSelected){
+                treeViewDir1.root = comparator.da1?.root
+                Log.appendText("Applied filter All to Tree 1")
+                return
+            }
+            Log.appendText("Filtering Tree 1-----")
+
+        }
+    }
+    @FXML fun filterDir2(){
+
+    }
+
+
+//
+//    // Function to update filter
+//    fun updateFilter() {
+//        filteredList.predicate = { fileItem ->
+//            var matchesType = true
+//            var matchesFileType = true
+//
+//            // Apply filter for Match Type
+//            when {
+//                matchesToggle.isSelected -> matchesType = fileItem.same.size > 1
+//                similarToggle.isSelected -> matchesType = fileItem.similar.size > 1
+//                uniqueToggle.isSelected -> matchesType = fileItem.same.isEmpty()
+//            }
+//
+//            // Apply filter for File Type
+//            when {
+//                directoriesOnlyToggle.isSelected -> matchesFileType = fileItem.isDirectory
+//                filesOnlyToggle.isSelected -> matchesFileType = !fileItem.isDirectory
+//            }
+//
+//            matchesType && matchesFileType
+//        }
+//    }
 
 }
 

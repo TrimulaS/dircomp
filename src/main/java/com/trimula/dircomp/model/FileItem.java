@@ -1,6 +1,8 @@
 package com.trimula.dircomp.model;
 
 import com.trimula.dircomp.dataprocessing.OsUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -9,8 +11,8 @@ import java.util.List;
 public class FileItem extends File {
     public long directorySize = 0;
 
-    public List<FileItem> same;
-    public List<FileItem> similar;
+    public ObservableList<FileItem> same;
+    public ObservableList<FileItem> similar;
 
 
     // Конструктор FileItem, используя путь к файлу
@@ -26,8 +28,8 @@ public class FileItem extends File {
     }
 
     private  void init(){
-        same = new LinkedList<>();
-        similar =  new LinkedList<>();
+        same = FXCollections.observableArrayList();
+        similar =  FXCollections.observableArrayList();
     }
 
     @Override

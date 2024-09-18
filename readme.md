@@ -20,5 +20,10 @@ delete to recycle bin
 - During compaision save Obseved List of links to same and similar Objects
 - add settings tab setup path to move items instead of delete during testnig
 - Add Union intersect subtract 
+- DoubleConten Meniu
+- When find same in other set and selected it - scroll to it 
+
+Bugs:
+- Check why ProgressBar shows incorrect values after "Cancel"
 
 
