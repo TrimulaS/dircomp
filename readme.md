@@ -1,3 +1,7 @@
+
+![img_1.png](img_1.png)
+- 
+- 
 - add tableView
 - Open Path in explorer
 - Button cancel size
@@ -23,11 +27,11 @@ delete to recycle bin
 - DoubleConten Meniu
 - When find same in other set and selected it - scroll to it 
 - sync Tree <-> Table
-
+- add notifiacation about found same copies when selected e.g. label
 Bugs:
 - Check why ProgressBar shows incorrect values after "Cancel"
 - Double click on Toggle button cacel highliting as selected
-- 
+- - add notifiacation about found same copies when selected e.g. label
 
         toggleButton1.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && group.getSelectedToggle() == toggleButton1) {
@@ -36,4 +40,3 @@ Bugs:
         });
 
 
-D:\Photo\2022-10-07 zoo\20221007_125308.jpg

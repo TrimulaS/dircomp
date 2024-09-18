@@ -74,7 +74,16 @@
 
 
                             <Separator/>
-                            <ToggleButton fx:id="tb1All"         onAction="#filterDir1" selected="true" text="All" />
+                        <ToggleButton fx:id="tb1All"         onAction="#filterDir1"
+                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../../icons/setA.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
 
                             <ToggleButton fx:id="tb1FullMatch"  onAction="#filterDir1"
                                           prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
