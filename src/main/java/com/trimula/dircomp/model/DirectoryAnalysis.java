@@ -36,7 +36,7 @@ public class DirectoryAnalysis {
     //used in case of chosen by user
     private TreeItem<FileItem> rootFullMatch = null;
     private TreeItem<FileItem> rootDirOnly = null;
-    private TreeItem<FileItem> rootFileOnly = null;
+
 
 
 //private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
@@ -214,10 +214,6 @@ public class DirectoryAnalysis {
         return rootDirOnly;
     }
 
-    public TreeItem<FileItem> getRootFileOnly() {
-        if(rootFileOnly == null) rootFileOnly = TreeItemTraverse.filterTree(root,FileItem :: isFile);
-        return rootFileOnly;
-    }
 
     public ObservableList<FileItem> getObservableList() {
         if(observableList == null){

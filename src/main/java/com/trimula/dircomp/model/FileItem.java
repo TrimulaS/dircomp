@@ -54,4 +54,8 @@ public class FileItem extends File {
         return result.toString();
     }
 
+//    public static getIco(){
+//
+//    }
+
 }

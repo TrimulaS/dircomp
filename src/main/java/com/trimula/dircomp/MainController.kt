@@ -41,12 +41,15 @@ class MainController {
     @FXML    lateinit var progressBar: ProgressBar
     @FXML    lateinit var hBoxProgress: HBox
 
-    @FXML    lateinit var checkBoxShowSame: CheckBox
+    @FXML    lateinit var cbSyncSame: CheckBox
     @FXML    lateinit var buttonCancelProcessing: Button
 
-    @FXML    lateinit var tbDir1ViewType: ToggleButton
-    @FXML    lateinit var tbDir2ViewType: ToggleButton
-    //@FXML    lateinit var filter1: ComboBox<String>
+
+    @FXML    lateinit var tbDir1ViewTree: ToggleButton
+    @FXML    lateinit var tbDir1ViewTable: ToggleButton
+    @FXML    lateinit var tbDir2ViewTree: ToggleButton
+    @FXML    lateinit var tbDir2ViewTable: ToggleButton
+    @FXML    lateinit var tbDir2ViewMatchToSelectedIn1:  ToggleButton
 
     @FXML    lateinit var tb1All:       ToggleButton
     @FXML    lateinit var tb1FullMatch: ToggleButton
@@ -58,30 +61,33 @@ class MainController {
     @FXML    lateinit var tb1DirOnly:       ToggleButton
     @FXML    lateinit var tb1FileOnly:      ToggleButton
 
-    @FXML    lateinit var tb2DirAndFile:ToggleButton
-    @FXML    lateinit var tb2DirOnly:   ToggleButton
-    @FXML    lateinit var tb2FileOnly:  ToggleButton
 
 
-    @FXML    lateinit var tb2MatchTo1:  ToggleButton
+
+    @FXML    lateinit var hbDir2MatchTypeButtonGroup: HBox
     @FXML    lateinit var tb2All:       ToggleButton
     @FXML    lateinit var tb2FullMatch: ToggleButton
     @FXML    lateinit var tb2Similar:   ToggleButton
     @FXML    lateinit var tb2Suspected: ToggleButton
     @FXML    lateinit var tb2Unique:    ToggleButton
 
-    val  DIR_VIEW_TREE = "\uD83C\uDF33"
-    val progressBarTextDuringCompare = "Compare in progress: "
-    val  DIR_VIEW_TABLE =  "☷"
+    @FXML    lateinit var tb2DirAndFile:ToggleButton
+    @FXML    lateinit var tb2DirOnly:   ToggleButton
+    @FXML    lateinit var tb2FileOnly:  ToggleButton
+
+    private val progressBarTextDuringCompare = "Compare in progress: "
 
     private var directory1: File? = null
     private var directory2: File? = null
     private lateinit var comparator: Comparator
 
+    private lateinit var tg1DirView: ToggleGroup
+    private lateinit var tg2DirView: ToggleGroup
+    private lateinit var tg1Type: ToggleGroup
+    private lateinit var tg2Type: ToggleGroup
     private lateinit var tg1Filter: ToggleGroup
     private lateinit var tg2Filter: ToggleGroup
-    private lateinit var tg1View: ToggleGroup
-    private lateinit var tg2View: ToggleGroup
+
 
     private val isProcessing = AtomicBoolean(false)
 
@@ -93,39 +99,53 @@ class MainController {
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
 
         // Инициализация группы
+        tg1DirView = ToggleGroup()
+        tg2DirView = ToggleGroup()
         tg1Filter = ToggleGroup()
         tg2Filter = ToggleGroup()
-        tg1View = ToggleGroup()
-        tg2View = ToggleGroup()
+        tg1Type = ToggleGroup()
+        tg2Type = ToggleGroup()
+
+
 
         // Добавление кнопок в группу
+        tbDir1ViewTree.toggleGroup =  tg1DirView
+        tbDir1ViewTable.toggleGroup = tg1DirView
+        tbDir1ViewTree.isSelected
+
+        tbDir2ViewTree.toggleGroup                  = tg2DirView
+        tbDir2ViewTable.toggleGroup                 = tg2DirView
+        tbDir2ViewMatchToSelectedIn1.toggleGroup    = tg2DirView
+        tbDir2ViewTree.isSelected
+
+
         tb1All.toggleGroup = tg1Filter
         tb1FullMatch.toggleGroup = tg1Filter
         tb1Similar.toggleGroup = tg1Filter
         tb1Suspected.toggleGroup = tg1Filter
         tb1Unique.toggleGroup = tg1Filter
+        tb1All.isSelected
 
-        tb2MatchTo1.toggleGroup = tg2Filter
+        //tbDir2ViewMatchToSelectedIn1.toggleGroup = tg2Filter
         tb2All.toggleGroup = tg2Filter
         tb2FullMatch.toggleGroup = tg2Filter
         tb2Similar.toggleGroup = tg2Filter
         tb2Suspected.toggleGroup = tg2Filter
         tb2Unique.toggleGroup = tg2Filter
+        tb2All.isSelected
 
-        tb1DirAndFile.toggleGroup      = tg1View
-        tb1DirOnly.toggleGroup  = tg1View
-        tb1FileOnly.toggleGroup = tg1View
+        tb1DirAndFile.toggleGroup       = tg1Type
+        tb1DirOnly.toggleGroup          = tg1Type
+        tb1FileOnly.toggleGroup         = tg1Type
+        tb1DirAndFile.isSelected
 
-        tb2DirAndFile.toggleGroup      = tg2View
-        tb2DirOnly.toggleGroup  = tg2View
-        tb2FileOnly.toggleGroup = tg2View
+        tb2DirAndFile.toggleGroup       = tg2Type
+        tb2DirOnly.toggleGroup          = tg2Type
+        tb2FileOnly.toggleGroup         = tg2Type
+        tb1DirAndFile.isSelected
 
         comparator = Comparator()
 
-        // Установим начально выбранную кнопку (например, filter2All)
-        tb1All.isSelected = true
-        tb2MatchTo1.isSelected = true
-        //filter2MatchTo1.isSelected = true
 
         //TableView Configuration
         DataTableView.setupTableView(tableViewDir1)
@@ -140,10 +160,10 @@ class MainController {
 
         // Switch to TreeView
 
-        dir1ViewTypeClick()
-        if(!vbTreeView1.isVisible) dir1ViewTypeClick()
-        dir2ViewTypeClick()
-        if(vbTreeView2.isVisible) dir2ViewTypeClick()       //Switch to table view
+        dir1ViewChange()
+        if(!vbTreeView1.isVisible) dir1ViewChange()
+        dir2ViewChange()
+        if(vbTreeView2.isVisible) dir2ViewChange()       //Switch to table view
 
 
 
@@ -185,51 +205,6 @@ class MainController {
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS;
     }
 
-    @FXML
-    fun dir1ViewTypeClick() {
-        if (vbTreeView1.isVisible)
-        {
-            // Скрываем TreeView и показываем TabView
-            vbTreeView1.isVisible = false
-            vbTreeView1.isManaged = false
-            vbTableView1.isVisible = true
-            vbTableView1.isManaged = true
-            tbDir1ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
-
-            tableViewDir1.items = comparator?.da1?.observableList
-            tableViewDir2.items = comparator?.da2?.observableList
-
-        } else
-        {
-            // Скрываем TabView и показываем TreeView
-            vbTableView1.isVisible = false
-            vbTableView1.isManaged = false
-            vbTreeView1.isVisible = true
-//            vbTreeView1.maxHeight = Double.MAX_VALUE
-            vbTreeView1.isManaged = true
-            tbDir1ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
-        }
-    }
-    @FXML
-    fun dir2ViewTypeClick() {
-        if (vbTreeView2.isVisible)
-        {
-            // Скрываем TreeView и показываем TabView
-            vbTreeView2.isVisible = false
-            vbTreeView2.isManaged = false
-            vbTableView2.isVisible = true
-            vbTableView2.isManaged = true
-            tbDir2ViewType.text = DIR_VIEW_TABLE  // Меняем текст на кнопке, если нужно
-        } else
-        {
-            // Скрываем TabView и показываем TreeView
-            vbTableView2.isVisible = false
-            vbTableView2.isManaged = false
-            vbTreeView2.isVisible = true
-            vbTreeView2.isManaged = true
-            tbDir2ViewType.text = DIR_VIEW_TREE  // Меняем текст на кнопке обратно
-        }
-    }
 
     @FXML
     fun selectDirectory1() {
@@ -299,7 +274,7 @@ class MainController {
                 taSelectedItemProperties.text = selectedItem.value.toString()
 
                 //     <<--   Only for first
-                if(treeView!=treeViewDir2){
+                if(cbSyncSame.isSelected && treeView!=treeViewDir2){
                     // Очищаем предыдущее выделение в treeViewDir2
                     treeViewDir2.selectionModel.clearSelection()
                     var isFirstSelect = true
@@ -314,7 +289,7 @@ class MainController {
                     }
                     // Properties MODE:  Second Tableview - Show properties of the first
 
-                    if (tb2MatchTo1.isSelected) {
+                    if (tbDir2ViewMatchToSelectedIn1.isSelected) {
                         tableViewDir2.items = selectedItem.value.same
                         if (isFirstSelect){
                             // Scroll to this selected Item
@@ -441,60 +416,181 @@ class MainController {
     @FXML fun tb1ViewDirOnlyClick(){ treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
     @FXML fun tb2ViewDirOnlyClick(){ treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
 
-    @FXML fun tb1ViewFileOnlyClick(){ treeViewDir1.root = comparator.da1.rootFileOnly }  // = comparator.fillFileOnly1(treeViewDir1)
-    @FXML fun tb2ViewFileOnlyClick(){ treeViewDir2.root = comparator.da2.rootFileOnly }  // = comparator.fillFileOnly2(treeViewDir2)
 
+    //--------------------------------------- Interface Configuration
+    @FXML
+    fun dir1ViewChange() {
+
+        when{
+            tbDir1ViewTree.isSelected -> {
+                // Скрываем TabView и показываем TreeView
+                vbTableView1.isVisible = false
+                vbTableView1.isManaged = false
+                tb1FileOnly.isVisible = false
+                tb1FileOnly.isManaged = false
+
+                vbTreeView1.isVisible = true
+                vbTreeView1.isManaged = true
+
+            }
+            tbDir1ViewTable.isSelected -> {
+                // Скрываем TreeView и показываем TabView and button: fileOnly
+                vbTreeView1.isVisible = false
+                vbTreeView1.isManaged = false
+
+
+                vbTableView1.isVisible = true
+                vbTableView1.isManaged = true
+                tb1FileOnly.isVisible = true
+                tb1FileOnly.isManaged = true
+            }
+        }
+        filterDir1()
+    }
+    @FXML
+    fun dir2ViewChange() {
+
+        when{
+            tbDir2ViewTree.isSelected -> {
+                // Скрываем TabView и показываем TreeView
+                vbTableView2.isVisible = false
+                vbTableView2.isManaged = false
+                tb2FileOnly.isVisible = false
+                tb2FileOnly.isManaged = false
+
+                hbDir2MatchTypeButtonGroup.isVisible = true
+                hbDir2MatchTypeButtonGroup.isManaged = true
+                vbTreeView2.isVisible = true
+                vbTreeView2.isManaged = true
+
+            }
+            tbDir2ViewTable.isSelected -> {
+                // Скрываем TreeView и показываем TabView
+                vbTreeView2.isVisible = false
+                vbTreeView2.isManaged = false
+
+
+                hbDir2MatchTypeButtonGroup.isVisible = true
+                hbDir2MatchTypeButtonGroup.isManaged = true
+                vbTableView2.isVisible = true
+                vbTableView2.isManaged = true
+                tb2FileOnly.isVisible = true
+                tb2FileOnly.isManaged = true
+            }
+            tbDir2ViewMatchToSelectedIn1.isSelected -> {
+                vbTreeView2.isVisible = false
+                vbTreeView2.isManaged = false
+                vbTreeView2.isVisible = false
+                vbTreeView2.isManaged = false
+
+                hbDir2MatchTypeButtonGroup.isVisible = false
+                hbDir2MatchTypeButtonGroup.isManaged = false
+
+                vbTableView2.isVisible = true
+                vbTableView2.isManaged = true
+            }
+        }
+        filterDir2()
+
+    }
 
     @FXML fun filterDir1(){
+        when{
+
+            // Tree
+            tbDir1ViewTree.isSelected -> {
+
+                when{
+                    tb1All.isSelected           -> treeViewDir1.root = comparator.da1?.root
+                    tb1DirAndFile.isSelected    -> treeViewDir1.root = comparator.da1?.root
+                    tb1FullMatch.isSelected     -> treeViewDir1.root = comparator.da1?.rootFullMatch
+                    tb1DirOnly.isSelected       -> treeViewDir1.root = comparator.da1?.rootDirOnly
+                }
 
 
 
-        if(tbDir1ViewType.isSelected){           //TableView
-
-            if(tb1All.isSelected) {
-                tableViewDir1.items = comparator.da1?.observableList
-                Log.appendText("All to Table 1")
-                return
             }
 
-            // Apply filtering based on toggle group selections
+            // Table
+            tbDir1ViewTable.isSelected -> {
 
-            val filterMatch = when {
-//                    tb1All.isSelected       -> { _: FileItem -> true }
-                tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
-                tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
-                tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
-                else -> { _: FileItem -> true }
+//                if(tb1All.isSelected) {
+//                    tableViewDir1.items = comparator.da1?.observableList
+//                    Log.appendText("All to Table 1")
+//                    return
+//                }
+
+                // Apply filtering based on toggle group selections
+
+                val filterMatch = when {
+                    tb1All.isSelected       -> { _: FileItem -> true }
+                    tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
+                    tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
+                    tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
+                    else -> { _: FileItem -> true }
+                }
+
+                val filterType = when {
+                    tb1DirAndFile.isSelected    -> { _: FileItem -> true }
+                    tb1DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
+                    tb1FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
+                    else -> { _: FileItem -> true }
+                }
+
+                // Apply the combined filter
+                comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
+                tableViewDir1.items = comparator.da1.filteredList
+//                Log.appendText("filteredList to Table 1")
+
             }
-
-            val filterType = when {
-                tb1DirAndFile.isSelected    -> { _: FileItem -> true }
-                tb1DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
-                tb1FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
-                else -> { _: FileItem -> true }
-            }
-
-            // Apply the combined filter
-            comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
-            tableViewDir1.items = comparator.da1.filteredList
-            Log.appendText("filteredList to Table 1")
-
-
-
         }
-        else{ //------------------------------------------------------------TreeView
 
-            if(tb1All.isSelected){
-                treeViewDir1.root = comparator.da1?.root
-                Log.appendText("Applied filter All to Tree 1")
-                return
-            }
-            Log.appendText("Filtering Tree 1-----")
 
-        }
     }
     @FXML fun filterDir2(){
+        when{
 
+            // Tree
+            tbDir2ViewTree.isSelected -> {
+
+                when{
+                    tb2All.isSelected           -> treeViewDir2.root = comparator.da2?.root
+                    tb2DirAndFile.isSelected    -> treeViewDir2.root = comparator.da2?.root
+                    tb2FullMatch.isSelected     -> treeViewDir2.root = comparator.da2?.rootFullMatch
+                    tb2DirOnly.isSelected       -> treeViewDir2.root = comparator.da2?.rootDirOnly
+                }
+
+
+
+            }
+
+            // Table
+            tbDir2ViewTable.isSelected -> {
+
+                // Apply filtering based on toggle group selections
+
+                val filterMatch = when {
+                    tb2All.isSelected       -> { _: FileItem -> true }
+                    tb2FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
+                    tb2Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
+                    tb2Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
+                    else -> { _: FileItem -> true }
+                }
+
+                val filterType = when {
+                    tb2DirAndFile.isSelected    -> { _: FileItem -> true }
+                    tb2DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
+                    tb2FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
+                    else -> { _: FileItem -> true }
+                }
+
+                // Apply the combined filter
+                comparator.da2.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
+                tableViewDir2.items = comparator.da2.filteredList
+//                Log.appendText("filteredList to Table 2")
+
+            }
+        }
     }
 
 

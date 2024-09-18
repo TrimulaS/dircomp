@@ -62,8 +62,11 @@ public class DataTableView {
         TableColumn<FileItem, String> nameColumn = new TableColumn<>("File Name");
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
 
-        TableColumn<FileItem, Long> sizeColumn = new TableColumn<>("Size");
-        sizeColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().length()));
+        TableColumn<FileItem, String> sizeColumn = new TableColumn<>("Size");
+        sizeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(OsUtil.sizeAdopt(cellData.getValue().length())));
+
+        TableColumn<FileItem, Long> sizeBColumn = new TableColumn<>("SizeB");
+        sizeBColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().length()));
 
         TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("IsFile");
         isFileColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isFile()));
@@ -77,7 +80,7 @@ public class DataTableView {
             return new SimpleStringProperty(sdf.format(new Date(cellData.getValue().lastModified())));
         });
         tableView.getColumns().clear();
-        tableView.getColumns().addAll(nameColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
+        tableView.getColumns().addAll(nameColumn, sizeBColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
 
     }
 
