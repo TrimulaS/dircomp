@@ -3,7 +3,7 @@ package com.trimula.dircomp.view;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-
+// +++
 public class UiTreeView {
 
     // Collapse all nodes in the TreeView
@@ -26,6 +26,7 @@ public class UiTreeView {
     // Collapse the selected item
     public static <T> void collapseSelected(TreeView<T> tv) {
         TreeItem<T> selectedItem = tv.getSelectionModel().getSelectedItem();
+        if(selectedItem==null) selectedItem = tv.getRoot();
         if (selectedItem != null && selectedItem.isExpanded()) {
             selectedItem.setExpanded(false);
         }
@@ -34,15 +35,17 @@ public class UiTreeView {
     // Expand the selected item
     public static <T> void expandSelected(TreeView<T> tv) {
         TreeItem<T> selectedItem = tv.getSelectionModel().getSelectedItem();
+        if(selectedItem==null) selectedItem = tv.getRoot();
         if (selectedItem != null && !selectedItem.isExpanded()) {
             selectedItem.setExpanded(true);
         }
     }
 
-    // Collapse the first expanded node in every branch from the root-------------------
+    // Collapse the first expanded node in every branch from the root----------------------------
     public static <T> void collapseLast(TreeView<T> tv) {
-        TreeItem<?> treeItem = tv.getSelectionModel().getSelectedItem();
-        if(treeItem.isExpanded())collapseIfNoExpandedChildren(treeItem);
+        TreeItem<?> selectedItem = tv.getSelectionModel().getSelectedItem();
+        if(selectedItem==null) selectedItem = tv.getRoot();
+        if(selectedItem.isExpanded())collapseIfNoExpandedChildren(selectedItem);
     }
 
     // Recursive method to collapse the first expanded node in every branch
@@ -62,25 +65,12 @@ public class UiTreeView {
     }
 
 
-//    // Recursive method to collapse the first expanded node in every branch
-//    private static <T> boolean collapseLastRecursive(TreeItem<T> item) {
-//        if (item.isExpanded()) {
-//            item.setExpanded(false);
-//            return true;
-//        }
-//        for (TreeItem<T> child : item.getChildren()) {
-//            if (collapseLastRecursive(child)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     // Expand the first collapsed node in every branch from the root--------------------
 
     public static void expandFirst(TreeView<?> tv) {
-        TreeItem<?> treeItem = tv.getSelectionModel().getSelectedItem();
-        expandVisibleNodes( treeItem);
+        TreeItem<?> selectedItem = tv.getSelectionModel().getSelectedItem();
+        if(selectedItem==null) selectedItem = tv.getRoot();
+        expandVisibleNodes( selectedItem );
     }
 
     static void expandVisibleNodes(TreeItem<?> treeItem ) {
@@ -94,27 +84,6 @@ public class UiTreeView {
             treeItem.setExpanded(true);
         }
     }
-
-
-//    public static <T> void expandFirst1(TreeView<T> tv) {
-//        TreeItem<T> root = tv.getRoot();
-//        if (root != null) {
-//            expandFirstRecursive(root);
-//        }
-//    }
-//    // Recursive method to expand the first collapsed node in every branch
-//    private static <T> boolean expandFirstRecursive(TreeItem<T> item) {
-//        if (!item.isExpanded()) {
-//            item.setExpanded(true);
-//            return true;
-//        }
-//        for (TreeItem<T> child : item.getChildren()) {
-//            if (expandFirstRecursive(child)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     // Recursive method to collapse all nodes in the TreeItem
     private static <T> void collapseRecursive(TreeItem<T> item) {
@@ -135,8 +104,6 @@ public class UiTreeView {
             expandRecursive(child);
         }
     }
-
-
 
 
 }
