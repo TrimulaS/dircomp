@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -17,14 +18,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleGroup?>
 <GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.trimula.dircomp.MainController">
 
     <columnConstraints>
@@ -35,10 +32,10 @@
     </rowConstraints>
 
     <VBox prefHeight="200.0" prefWidth="100.0">
-        <SplitPane dividerPositions="0.8040446304044628, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox>
                 <ToolBar>
-                    <CheckBox fx:id="cbSyncSame" selected="true" text="Show Same" />
+                    <CheckBox fx:id="cbSyncSelection" selected="true" text="Sync selection" />
                     <Button fx:id="buttonCompare" onAction="#onCompareClicked" text="Compare" />
                 </ToolBar>
                 <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
@@ -50,8 +47,7 @@
                         <ToolBar>
 
 
-                            <ToggleButton fx:id="tbDir1ViewTree" onAction="#dir1ViewChange"
-                                         prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tbDir1ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
                                <graphic>
                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -61,8 +57,7 @@
                                </graphic>
                             </ToggleButton>
 
-                            <ToggleButton fx:id="tbDir1ViewTable" onAction="#dir1ViewChange"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tbDir1ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -73,9 +68,8 @@
                             </ToggleButton>
 
 
-                            <Separator/>
-                        <ToggleButton fx:id="tb1All"         onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <Separator />
+                        <ToggleButton fx:id="tb1All" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                             <graphic>
                                 <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -85,8 +79,7 @@
                             </graphic>
                         </ToggleButton>
 
-                            <ToggleButton fx:id="tb1FullMatch"  onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -96,8 +89,7 @@
                                 </graphic>
                             </ToggleButton>
 
-                            <ToggleButton fx:id="tb1Similar"    onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -107,11 +99,9 @@
                                 </graphic>
                             </ToggleButton>
 
-                            <ToggleButton fx:id="tb1Suspected"  onAction="#filterDir1" text="∅"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1Suspected" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0" text="∅">
                             </ToggleButton>
-                            <ToggleButton fx:id="tb1Unique"     onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -121,11 +111,10 @@
                                 </graphic>
                             </ToggleButton>
 
-                            <Separator/>
-                            <ToggleButton fx:id="tb1DirAndFile" onAction="#filterDir1"
-                                          prefWidth="32.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <Separator />
+                            <ToggleButton fx:id="tb1DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="34.0">
                                 <graphic>
-                                    <ImageView fitHeight="24.0" fitWidth="32.0"   pickOnBounds="true" preserveRatio="true">
+                                    <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
                                             <Image url="@../../../icons/DirAndFile.png" />
                                         </image>
@@ -133,8 +122,7 @@
                                 </graphic>
                             </ToggleButton>
 
-                            <ToggleButton fx:id="tb1DirOnly"    onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -144,8 +132,7 @@
                                 </graphic>
                             </ToggleButton>
 
-                            <ToggleButton fx:id="tb1FileOnly"   onAction="#filterDir1"
-                                          prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                            <ToggleButton fx:id="tb1FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
                                 <graphic>
                                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -193,8 +180,7 @@
 <!--    ................... Toolbar 2 ........................              -->
                             <ToolBar>
 
-                                <ToggleButton fx:id="tbDir2ViewTree"  onAction="#dir2ViewChange"
-                                              prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                <ToggleButton fx:id="tbDir2ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
                                     <graphic>
                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -204,8 +190,7 @@
                                     </graphic>
                                 </ToggleButton>
 
-                                <ToggleButton fx:id="tbDir2ViewTable"  onAction="#dir2ViewChange"
-                                              prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                <ToggleButton fx:id="tbDir2ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
                                     <graphic>
                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -214,12 +199,11 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="tbDir2ViewMatchToSelectedIn1"  onAction="#dir2ViewChange" text="⯮" />
+                                <ToggleButton fx:id="tbDir2ViewAsMatchedTo1" onAction="#dir2ViewChange" text="⯮" />
 
-                                <Separator/>
+                                <Separator />
                                 <HBox fx:id="hbDir2MatchTypeButtonGroup">
-                                    <ToggleButton fx:id="tb2All"  onAction="#filterDir2"
-                                                  prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                    <ToggleButton fx:id="tb2All" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                         <graphic>
                                             <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -229,8 +213,7 @@
                                         </graphic>
                                     </ToggleButton>
 
-                                    <ToggleButton fx:id="tb2FullMatch" onAction="#filterDir2"
-                                                  prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                    <ToggleButton fx:id="tb2FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                         <graphic>
                                             <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -240,8 +223,7 @@
                                         </graphic>
                                     </ToggleButton>
 
-                                    <ToggleButton fx:id="tb2Similar" onAction="#filterDir2"
-                                                  prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                    <ToggleButton fx:id="tb2Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                         <graphic>
                                             <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -253,8 +235,7 @@
 
                                     <ToggleButton fx:id="tb2Suspected" text="∅" />
 
-                                    <ToggleButton fx:id="tb2Unique" onAction="#filterDir2"
-                                                  prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                    <ToggleButton fx:id="tb2Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                         <graphic>
                                             <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -264,10 +245,9 @@
                                         </graphic>
                                     </ToggleButton>
                                 </HBox>
-                                <Separator/>
+                                <Separator />
 
-                                <ToggleButton fx:id="tb2DirAndFile" onAction="#filterDir2"
-                                              prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                <ToggleButton fx:id="tb2DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="34.0">
                                     <graphic>
                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -276,8 +256,7 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="tb2DirOnly" onAction="#filterDir2"
-                                              prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                <ToggleButton fx:id="tb2DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                     <graphic>
                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -286,8 +265,7 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="tb2FileOnly" onAction="#filterDir2"
-                                              prefWidth="24.0" prefHeight="24.0" minWidth="16.0" minHeight="16.0">
+                                <ToggleButton fx:id="tb2FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
                                     <graphic>
                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>

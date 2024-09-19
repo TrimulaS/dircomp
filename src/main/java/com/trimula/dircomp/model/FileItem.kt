@@ -1,61 +1,66 @@
-package com.trimula.dircomp.model;
+package com.trimula.dircomp.model
 
-import com.trimula.dircomp.dataprocessing.OsUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.trimula.dircomp.dataprocessing.OsUtil
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import java.io.File
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
+class FileItem : File {
+    @JvmField
+    var directorySize: Long = 0
 
-public class FileItem extends File {
-    public long directorySize = 0;
-
-    public ObservableList<FileItem> same;
-    public ObservableList<FileItem> similar;
+    @JvmField
+    var same:    ObservableList<FileItem> = FXCollections.observableArrayList()
+    var similar: ObservableList<FileItem> = FXCollections.observableArrayList()
 
 
     // Конструктор FileItem, используя путь к файлу
-    public FileItem(String pathname) {
-        super(pathname);
-        init();
+    constructor(pathname: String) : super(pathname) {
+
     }
 
     // Конструктор FileItem с File
-    public FileItem(File file) {
-        super(file.getPath());
-        init();
+    constructor(file: File) : super(file.path) {
+
     }
 
-    private  void init(){
-        same = FXCollections.observableArrayList();
-        similar =  FXCollections.observableArrayList();
+
+
+    override fun length(): Long {
+        return if (isDirectory) directorySize
+        else super.length()
     }
 
-    @Override
-    public String toString() {
-        return "FileItem{" +
-                "Name: " + getName() + "\n" +
-                "Path: " + getPath() + "\n" +
-                (isFile() ?
-                        "is file,      size: " + OsUtil.sizeAdopt( length() ) + "\n" :
-                        "is directory, size: " + OsUtil.sizeAdopt( directorySize) +"\n") +
-                "Number of same items: " + same.size() + "\n" +
-                "Number of similar items: " + similar.size() + "\n" +
-                (same.size()>0 ?
-                        "Same:" + "\n" +listToString(same):"" );
+
+    override fun toString(): String {
+        return """
+     FileItem{Name: $name
+     Path: $path     size: ${OsUtil.sizeAdopt(length())} 
+     Number of same items: ${same!!.size} Number of similar items: ${similar!!.size}
+     """.trimIndent() +
+                (if (same!!.size > 0) """
+     Same:
+     ${listToString(same!!)}
+     """.trimIndent() else "")
     }
 
-    private String listToString(List<FileItem> ll){
-        StringBuilder result = new StringBuilder();
-        for (FileItem element : ll) {
-            result.append(element.getAbsolutePath()).append("\n");
+    private fun listToString(ll: List<FileItem>): String {
+        val result = StringBuilder()
+        for (element in ll) {
+            result.append("\t" + element.absolutePath).append("\n")
         }
-        return result.toString();
+        return result.toString()
     }
 
-//    public static getIco(){
-//
-//    }
-
+    companion object {
+        fun areSame(fileItem1: FileItem, fileItem2: FileItem): Boolean {
+            return fileItem1.length() == fileItem2.length() && fileItem1.name === fileItem2.name
+        }
+        fun areSimilar(fileItem1: FileItem, fileItem2: FileItem): Boolean {
+            return fileItem1.length() == fileItem2.length()
+        }
+        fun isSuspected(fileItem: FileItem): Boolean {
+            return fileItem.length()<100
+        }
+    }
 }

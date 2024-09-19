@@ -41,15 +41,15 @@ class MainController {
     @FXML    lateinit var progressBar: ProgressBar
     @FXML    lateinit var hBoxProgress: HBox
 
-    @FXML    lateinit var cbSyncSame: CheckBox
+    @FXML    lateinit var cbSyncSelection: CheckBox
     @FXML    lateinit var buttonCancelProcessing: Button
 
-
+    // These button state should use to identify view type: Tree or Table
     @FXML    lateinit var tbDir1ViewTree: ToggleButton
     @FXML    lateinit var tbDir1ViewTable: ToggleButton
     @FXML    lateinit var tbDir2ViewTree: ToggleButton
     @FXML    lateinit var tbDir2ViewTable: ToggleButton
-    @FXML    lateinit var tbDir2ViewMatchToSelectedIn1:  ToggleButton
+    @FXML    lateinit var tbDir2ViewAsMatchedTo1:  ToggleButton
 
     @FXML    lateinit var tb1All:       ToggleButton
     @FXML    lateinit var tb1FullMatch: ToggleButton
@@ -90,6 +90,8 @@ class MainController {
 
 
     private val isProcessing = AtomicBoolean(false)
+    private var isSyncing = false
+
 
     @FXML
     private fun initialize() {
@@ -108,23 +110,23 @@ class MainController {
 
 
 
-        // Добавление кнопок в группу
-        tbDir1ViewTree.toggleGroup =  tg1DirView
-        tbDir1ViewTable.toggleGroup = tg1DirView
-        tbDir1ViewTree.isSelected
+        // Добавление кнопок в группу -
+        tbDir1ViewTree.toggleGroup      = tg1DirView
+        tbDir1ViewTable.toggleGroup     = tg1DirView
+        tbDir1ViewTree.isSelected =true
 
         tbDir2ViewTree.toggleGroup                  = tg2DirView
         tbDir2ViewTable.toggleGroup                 = tg2DirView
-        tbDir2ViewMatchToSelectedIn1.toggleGroup    = tg2DirView
-        tbDir2ViewTree.isSelected
+        tbDir2ViewAsMatchedTo1.toggleGroup          = tg2DirView
+        tbDir2ViewTree.isSelected = true
 
 
-        tb1All.toggleGroup = tg1Filter
-        tb1FullMatch.toggleGroup = tg1Filter
-        tb1Similar.toggleGroup = tg1Filter
-        tb1Suspected.toggleGroup = tg1Filter
-        tb1Unique.toggleGroup = tg1Filter
-        tb1All.isSelected
+        tb1All.toggleGroup          = tg1Filter
+        tb1FullMatch.toggleGroup    = tg1Filter
+        tb1Similar.toggleGroup      = tg1Filter
+        tb1Suspected.toggleGroup    = tg1Filter
+        tb1Unique.toggleGroup       = tg1Filter
+        tb1All.isSelected = true
 
         //tbDir2ViewMatchToSelectedIn1.toggleGroup = tg2Filter
         tb2All.toggleGroup = tg2Filter
@@ -132,22 +134,24 @@ class MainController {
         tb2Similar.toggleGroup = tg2Filter
         tb2Suspected.toggleGroup = tg2Filter
         tb2Unique.toggleGroup = tg2Filter
-        tb2All.isSelected
+        tb2All.isSelected = true
 
         tb1DirAndFile.toggleGroup       = tg1Type
         tb1DirOnly.toggleGroup          = tg1Type
         tb1FileOnly.toggleGroup         = tg1Type
-        tb1DirAndFile.isSelected
+        tb1DirAndFile.isSelected = true
 
         tb2DirAndFile.toggleGroup       = tg2Type
         tb2DirOnly.toggleGroup          = tg2Type
         tb2FileOnly.toggleGroup         = tg2Type
-        tb1DirAndFile.isSelected
+        tb2DirAndFile.isSelected = true
 
         comparator = Comparator()
 
 
         //TableView Configuration
+        tableViewDir1.selectionModel.selectionMode = SelectionMode.MULTIPLE
+        tableViewDir2.selectionModel.selectionMode = SelectionMode.MULTIPLE
         DataTableView.setupTableView(tableViewDir1)
         DataTableView.setupTableView(tableViewDir2)
 
@@ -175,8 +179,54 @@ class MainController {
 
 
 
-        setupListener(treeViewDir1)
-        setupListener(treeViewDir2)
+//        setupListener(treeViewDir1)
+//        setupListener(treeViewDir2)
+
+        setupListeners()
+
+        treeViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
+                        tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
+                        tbDir2ViewAsMatchedTo1.isSelected -> tableViewDir2.items = selectedItem.value.same
+                    }
+
+                }
+            }
+
+        }
+        treeViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir1ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir1)
+                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir1)
+                    }
+                }
+            }
+
+        }
+        tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
+                }
+            }
+
+        }
+        tableViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir1ViewTree.isSelected -> syncSelection(selectedItem, treeViewDir1)
+                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
+                    }
+                }
+            }
+
+        }
 
 
         comparator = Comparator()
@@ -233,7 +283,6 @@ class MainController {
 
         // Запуск потоков для анализа директорий
         thread {
-
             comparator.processDirectories(directory1,directory2)
 
             // После завершения анализа – заполнение TreeView
@@ -265,6 +314,22 @@ class MainController {
     }
 
 
+    private fun setupListeners(){
+        // Adding Logs
+        Log.addListener (object : Log.LogListener {
+            override fun onChange(logText: String) {
+                taStatus.text = Log.get()
+
+                taStatus.positionCaret(taStatus.text.length);
+                taStatus.scrollTop = Double.MAX_VALUE;
+            }
+
+            override fun onBeforeClear(logText: String) {
+//                println("Log is about to be cleared: $logText")
+            }
+        } )
+    }
+
     //
     private fun setupListener(treeView: TreeView<FileItem>) {
 
@@ -273,8 +338,8 @@ class MainController {
             selectedItem?.let {
                 taSelectedItemProperties.text = selectedItem.value.toString()
 
-                //     <<--   Only for first
-                if(cbSyncSame.isSelected && treeView!=treeViewDir2){
+                //     <<--   Only for first (Second shows only equivalent FileItems)
+                if(cbSyncSelection.isSelected && treeView!=treeViewDir2){
                     // Очищаем предыдущее выделение в treeViewDir2
                     treeViewDir2.selectionModel.clearSelection()
                     var isFirstSelect = true
@@ -289,7 +354,7 @@ class MainController {
                     }
                     // Properties MODE:  Second Tableview - Show properties of the first
 
-                    if (tbDir2ViewMatchToSelectedIn1.isSelected) {
+                    if (tbDir2ViewAsMatchedTo1.isSelected) {
                         tableViewDir2.items = selectedItem.value.same
                         if (isFirstSelect){
                             // Scroll to this selected Item
@@ -302,19 +367,8 @@ class MainController {
 
 
 
-        // Adding Logs
-            Log.addListener (object : Log.LogListener {
-            override fun onChange(logText: String) {
-                taStatus.text = Log.get()
 
-                taStatus.positionCaret(taStatus.text.length);
-                taStatus.scrollTop = Double.MAX_VALUE;
-            }
 
-            override fun onBeforeClear(logText: String) {
-//                println("Log is about to be cleared: $logText")
-            }
-        } )
 
 
 
@@ -363,6 +417,73 @@ class MainController {
 //                contextMenu.show(treeView, event.screenX, event.screenY)
 //            }
 //        }
+    }
+
+//    private fun syncSelectionTree(fileItem:FileItem,treeView){
+//        taSelectedItemProperties.text = fileItem.toString()
+//        if(cbSyncSelection.isSelected){
+//            var isFirst = true
+//        }
+//
+//
+//    }
+
+    private fun syncSelection(fileItem:FileItem,view: Any){
+        taSelectedItemProperties.text = fileItem.toString()
+
+        //Select same items in other path
+
+        if(cbSyncSelection.isSelected){
+            var isFirst = true
+            Log.appendText("sync Selection")
+            when (view) {
+                is TreeView<*> -> {
+                    isSyncing = true
+                    Log.appendText("Target is TreeView selected: " + fileItem.name)
+                    val treeView = view as TreeView<FileItem>
+                    treeView.selectionModel.clearSelection()
+
+                    // Select in treeview all the items from List    same
+                    for (fi: FileItem in fileItem.same) {
+
+                        val treeItemToSelect = TreeItemTraverse.findByValue(treeView.root, fi)
+                        treeItemToSelect?.let {
+                            treeView.selectionModel.select(treeItemToSelect)
+
+                            if (isFirst) {
+                                treeView.scrollTo(treeView.getRow(treeItemToSelect)) // Прокрутка к элементу по индексу
+                                isFirst = false
+                            }
+                        }
+                    }
+                }
+
+                is TableView<*> -> {
+                    isSyncing = true
+                    val tableView = view as TableView<FileItem>
+                    Log.appendText("Target is TableView selected: " + fileItem.name)
+                    tableView.selectionModel.clearSelection()
+
+                    for (fi: FileItem in fileItem.same){
+                        tableView.items.forEachIndexed { index, fi ->
+                            if ( fi.length() == fileItem.length() ) {
+                                Log.appendText("----Table Found match" + fi.name + "   "+ index)
+                                tableView.selectionModel.select(index)
+                                if (isFirst) {
+                                    tableView.scrollTo(index)
+                                    isFirst = false
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+            }
+            isSyncing = false
+        }
+
+
     }
 
         //Changed to FindBy Value
@@ -477,7 +598,7 @@ class MainController {
                 tb2FileOnly.isVisible = true
                 tb2FileOnly.isManaged = true
             }
-            tbDir2ViewMatchToSelectedIn1.isSelected -> {
+            tbDir2ViewAsMatchedTo1.isSelected -> {
                 vbTreeView2.isVisible = false
                 vbTreeView2.isManaged = false
                 vbTreeView2.isVisible = false
@@ -554,10 +675,17 @@ class MainController {
             tbDir2ViewTree.isSelected -> {
 
                 when{
-                    tb2All.isSelected           -> treeViewDir2.root = comparator.da2?.root
+                    tb2All.isSelected           -> {
+                        treeViewDir2.root = comparator.da2?.root
+                        Log.appendText("Tree2 - All Filter applied")
+
+                    }
                     tb2DirAndFile.isSelected    -> treeViewDir2.root = comparator.da2?.root
                     tb2FullMatch.isSelected     -> treeViewDir2.root = comparator.da2?.rootFullMatch
-                    tb2DirOnly.isSelected       -> treeViewDir2.root = comparator.da2?.rootDirOnly
+                    tb2DirOnly.isSelected       -> {
+                        treeViewDir2.root = comparator.da2?.rootDirOnly
+                        Log.appendText("Tree2 - dir only Filter applied")
+                    }
                 }
 
 

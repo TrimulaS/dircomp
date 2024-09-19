@@ -1,7 +1,7 @@
 
 ![img_1.png](img_1.png)
 - 
-- 
+
 - add tableView
 - Open Path in explorer
 - Button cancel size
@@ -29,6 +29,7 @@ delete to recycle bin
 - sync Tree <-> Table
 - add notifiacation about found same copies when selected e.g. label
 Bugs:
+- - fix collase/ expand Treeview
 - Check why ProgressBar shows incorrect values after "Cancel"
 - Double click on Toggle button cacel highliting as selected
 - - add notifiacation about found same copies when selected e.g. label
