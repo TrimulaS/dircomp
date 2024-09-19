@@ -93,22 +93,40 @@ public class Comparator {
                 FileItem fi1 = item1.getValue();
                 FileItem fi2 = item2.getValue();
 
-                // Ignore File in same location:
+                // Ignore File in same location:...................................................Comparison Logic
                 if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
-                    //For directories
+
                     if(fi1.isDirectory() && fi2.isDirectory()){
-                        numOfSameFolders ++;
-                        //Log.appendText("same Directories:" + fi1.getPath() + "   -    "  + fi2.getPath() );
+
+                        //For directories
+                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+
+                            numOfSameFolders ++;
+                            fi1.same.add(fi2);
+                            fi2.same.add(fi1);
+                        }
+
 
                     }
-                    //For files
+
                     if(fi1.isFile() && fi2.isFile()){
-                        if(fi1.length()==fi2.length()){
+
+                        //For files
+                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+
                             numOfSameFiles ++;
                             fi1.same.add(fi2);
                             fi2.same.add(fi1);
-                            //Log.appendText("sameFiles:" + item1.getValue().getPath() + "   -    "  + item2.getValue().getPath() );
                         }
+
+//                        //For files
+//                        if(FileItem.Companion.areSame(fi1,fi2)){
+//                            numOfSameFiles ++;
+//                            fi1.same.add(fi2);
+//                            fi2.same.add(fi1);
+//                        }
+
+
                     }
                 }
                 else{
