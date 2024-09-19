@@ -41,7 +41,7 @@
                 <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
                     <VBox fx:id="paneDirectory1">
                         <HBox>
-                            <ComboBox fx:id="comboBoxDirectory1" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
+                            <ComboBox fx:id="comboBoxDirectory1" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
                             <Button onAction="#selectDirectory1" text="Select" HBox.hgrow="NEVER" />
                         </HBox>
                         <ToolBar>
@@ -157,12 +157,10 @@
                     </VBox>
                     <VBox fx:id="vbTreeView1">
                       <ToolBar>
-                          <Button onAction="#tv1CollapseAll" text="⋘" />
-                          <Button onAction="#tv1ExpandAll" text="⋙" />
-                          <Button onAction="#tv1CollapseLast" text="《" />
-                          <Button onAction="#tv1ExpandLast" text="》" />
-                          <Button onAction="#tv1CollapseSelected" text="〈" />
-                          <Button onAction="#tv1ExpandSelected" text="〉" />
+                          <Button onAction="#tv1CollapseAll" text="《" />
+                          <Button onAction="#tv1ExpandAll" text="》" />
+                          <Button onAction="#tv1CollapseLast" text="• 〈" />
+                          <Button onAction="#tv1ExpandLast" text="• 〉" />
                       </ToolBar>
                       <TreeView fx:id="treeViewDir1" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
                     </VBox>
@@ -172,7 +170,7 @@
                     </VBox>
                         <VBox fx:id="paneDirectory2">
                             <HBox>
-                                <ComboBox fx:id="comboBoxDirectory2" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
+                                <ComboBox fx:id="comboBoxDirectory2" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
                                 <Button onAction="#selectDirectory2" text="Select" HBox.hgrow="NEVER" />
                             </HBox>
 
@@ -276,17 +274,6 @@
                                 </ToggleButton>
                             </ToolBar>
                             <StackPane>
-                                  <VBox fx:id="vbTreeView2">
-                                      <ToolBar>
-                                          <Button onAction="#tv2CollapseAll" text="⋘" />
-                                          <Button onAction="#tv2ExpandAll" text="⋙" />
-                                          <Button onAction="#tv2CollapseLast" text="《" />
-                                          <Button onAction="#tv2ExpandLast" text="》" />
-                                          <Button onAction="#tv2CollapseSelected" text="〈" />
-                                          <Button onAction="#tv2ExpandSelected" text="〉" />
-                                      </ToolBar>
-                                      <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
-                                  </VBox>
                                   <VBox fx:id="vbTableView2">
       
                                       <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
@@ -295,6 +282,15 @@
                                               <TableColumn prefWidth="75.0" text="C2" />
                                           </columns>
                                       </TableView>
+                                  </VBox>
+                                  <VBox fx:id="vbTreeView2">
+                                      <ToolBar>
+                                          <Button onAction="#tv2CollapseAll" text="《" />
+                                          <Button onAction="#tv2ExpandAll" text="》" />
+                                          <Button onAction="#tv2CollapseLast" text="• 〈" />
+                                          <Button onAction="#tv2ExpandLast" text="• 〉" />
+                                      </ToolBar>
+                                      <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
                                   </VBox>
 
                             </StackPane>

@@ -3,7 +3,6 @@ package com.trimula.dircomp.view
 import com.trimula.dircomp.model.DataTableView
 import com.trimula.dircomp.model.FileItem
 import javafx.scene.control.*
-import java.io.File
 
 /**     Works in pair with
  *      UiTreeView.kt
@@ -31,7 +30,7 @@ class ContentMenu {
             miCollapseAll.setOnAction   {   UiTreeView.collapseAll(treeView)                }
             miExpandAll.setOnAction     {   UiTreeView.expandAll(treeView)                  }
             miCollapseLast.setOnAction  {   UiTreeView.collapseLast(treeView)               }
-            miExpandLast.setOnAction    {   UiTreeView.expandLast(treeView)                 }
+            miExpandLast.setOnAction    {   UiTreeView.expandFirst(treeView)                 }
             treeView.contextMenu = contextMenu
 
         }

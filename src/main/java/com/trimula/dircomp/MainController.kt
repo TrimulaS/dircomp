@@ -161,83 +161,29 @@ class MainController {
         ContentMenu.addToTreeView(treeViewDir1)
         ContentMenu.addToTreeView(treeViewDir2)
 
-
         // Switch to TreeView
-
         dir1ViewChange()
         if(!vbTreeView1.isVisible) dir1ViewChange()
         dir2ViewChange()
         if(vbTreeView2.isVisible) dir2ViewChange()       //Switch to table view
 
-
-
         //Setup for testing
-        directory1 = File("C:\\tmp\\Dir1")  //"c:\\Literature")   //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
+        directory1 = File("C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
         comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("C:\\tmp\\Dir2")   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        directory2 = File("C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         comboBoxDirectory2.value = directory2?.absolutePath
 
 
-
-//        setupListener(treeViewDir1)
-//        setupListener(treeViewDir2)
-
         setupListeners()
 
-        treeViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
-                        tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
-                        tbDir2ViewAsMatchedTo1.isSelected -> tableViewDir2.items = selectedItem.value.same
-                    }
-
-                }
-            }
-
-        }
-        treeViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir1ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir1)
-                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir1)
-                    }
-                }
-            }
-
-        }
-        tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
-                }
-            }
-
-        }
-        tableViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir1ViewTree.isSelected -> syncSelection(selectedItem, treeViewDir1)
-                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
-                    }
-                }
-            }
-
-        }
-
-
         comparator = Comparator()
-        // Listeners:
+        // Listeners to update progress during comparison:
         comparator.setBeforeDirectoryParseListener {
             lProgress.text = "Starting parsing directories..  "
             progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
         }
         comparator.setBeforeCompareListener {
             lProgress.text = "Compare start..  "
-
         }
         comparator.setCompareProgressListener { progress, txt ->
             progressBar.progress = progress
@@ -258,15 +204,19 @@ class MainController {
 
     @FXML
     fun selectDirectory1() {
-        val directoryChooser = DirectoryChooser()
-        directory1 = directoryChooser.showDialog(null)
-        comboBoxDirectory1.value = directory1?.absolutePath
+        val path = DirectoryChooser().showDialog(null)
+        if(path!=null){
+            directory1 = path
+            comboBoxDirectory1.value = directory1?.absolutePath
+        }
     }
     @FXML
     fun selectDirectory2() {
-        val directoryChooser = DirectoryChooser()
-        directory2 = directoryChooser.showDialog(null)
-        comboBoxDirectory2.value = directory2?.absolutePath
+        val path = DirectoryChooser().showDialog(null)
+        if(path!=null){
+            directory2 = path
+            comboBoxDirectory2.value = directory2?.absolutePath
+        }
     }
 
     @FXML
@@ -277,8 +227,9 @@ class MainController {
             return
         }
 
-        //hBoxProgress.isVisible = true
+
         progressBarShow(true)
+        // Atomic variable to cancel processing
         isProcessing.set(true)
 
         // Запуск потоков для анализа директорий
@@ -328,6 +279,48 @@ class MainController {
 //                println("Log is about to be cleared: $logText")
             }
         } )
+
+        // Synchronize selection Path 1 <-> 2
+        treeViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
+                        tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
+                        tbDir2ViewAsMatchedTo1.isSelected -> tableViewDir2.items = selectedItem.value.same
+                    }
+                }
+            }
+        }
+        treeViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir1ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir1)
+                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir1)
+                    }
+                }
+            }
+        }
+        tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
+                }
+            }
+        }
+        tableViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
+            if(!isSyncing){
+                selectedItem?.let {
+                    when{
+                        tbDir1ViewTree.isSelected -> syncSelection(selectedItem, treeViewDir1)
+                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
+                    }
+                }
+            }
+        }
+
+
     }
 
     //
@@ -435,11 +428,11 @@ class MainController {
 
         if(cbSyncSelection.isSelected){
             var isFirst = true
-            Log.appendText("sync Selection")
+            //Log.appendText("sync Selection")
             when (view) {
                 is TreeView<*> -> {
                     isSyncing = true
-                    Log.appendText("Target is TreeView selected: " + fileItem.name)
+                    //Log.appendText("Target is TreeView selected: " + fileItem.name)
                     val treeView = view as TreeView<FileItem>
                     treeView.selectionModel.clearSelection()
 
@@ -461,13 +454,13 @@ class MainController {
                 is TableView<*> -> {
                     isSyncing = true
                     val tableView = view as TableView<FileItem>
-                    Log.appendText("Target is TableView selected: " + fileItem.name)
+                    //Log.appendText("Target is TableView selected: " + fileItem.name)
                     tableView.selectionModel.clearSelection()
 
                     for (fi: FileItem in fileItem.same){
                         tableView.items.forEachIndexed { index, fi ->
                             if ( fi.length() == fileItem.length() ) {
-                                Log.appendText("----Table Found match" + fi.name + "   "+ index)
+//                                Log.appendText("----Table Found match" + fi.name + "   "+ index)
                                 tableView.selectionModel.select(index)
                                 if (isFirst) {
                                     tableView.scrollTo(index)
@@ -512,31 +505,31 @@ class MainController {
     @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDir1)
 
     @FXML fun tv1CollapseLast() =  UiTreeView.collapseLast(treeViewDir1)
-    @FXML fun tv1ExpandLast() =  UiTreeView.expandLast(treeViewDir1)
+    @FXML fun tv1ExpandLast() =  UiTreeView.expandFirst(treeViewDir1)
 
-    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir1)
-    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDir1)
+//    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir1)
+//    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDir1)
 
     @FXML fun tv2CollapseAll() =  UiTreeView.collapseAll(treeViewDir2)
     @FXML fun tv2ExpandAll() =  UiTreeView.expandAll(treeViewDir2)
 
     @FXML fun tv2CollapseLast() =  UiTreeView.collapseLast(treeViewDir2)
-    @FXML fun tv2ExpandLast() =  UiTreeView.expandLast(treeViewDir2)
+    @FXML fun tv2ExpandLast() =  UiTreeView.expandFirst(treeViewDir2)
 
-    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir2)
-    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
+//    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir2)
+//    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
 
 
-    // Filters
-    @FXML fun filter1AllClick() { treeViewDir1.root = comparator.da1.root }   //comparator.da1.getfillAllDir1(treeViewDir1)}
-    @FXML fun filter2AllClick() { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
-
-    @FXML fun filter1FullMatchClick() { treeViewDir1.root = comparator.da1.rootFullMatch }    // = comparator.fillFullMatch1(treeViewDir1)
-    @FXML fun filter2FullMatchClick() { treeViewDir2.root = comparator.da2.rootFullMatch }    // = comparator.fillFullMatch2(treeViewDir2)
-
-    @FXML fun tb1ViewDirOnlyClick(){ treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
-    @FXML fun tb2ViewDirOnlyClick(){ treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
-
+//    // Filters
+//    @FXML fun filter1AllClick() { treeViewDir1.root = comparator.da1.root }   //comparator.da1.getfillAllDir1(treeViewDir1)}
+//    @FXML fun filter2AllClick() { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
+//
+//    @FXML fun filter1FullMatchClick() { treeViewDir1.root = comparator.da1.rootFullMatch }    // = comparator.fillFullMatch1(treeViewDir1)
+//    @FXML fun filter2FullMatchClick() { treeViewDir2.root = comparator.da2.rootFullMatch }    // = comparator.fillFullMatch2(treeViewDir2)
+//
+//    @FXML fun tb1ViewDirOnlyClick(){ treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
+//    @FXML fun tb2ViewDirOnlyClick(){ treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
+//
 
     //--------------------------------------- Interface Configuration
     @FXML
@@ -627,8 +620,6 @@ class MainController {
                     tb1FullMatch.isSelected     -> treeViewDir1.root = comparator.da1?.rootFullMatch
                     tb1DirOnly.isSelected       -> treeViewDir1.root = comparator.da1?.rootDirOnly
                 }
-
-
 
             }
 

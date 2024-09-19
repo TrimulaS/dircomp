@@ -35,7 +35,7 @@ class FileItem : File {
     override fun toString(): String {
         return """
      FileItem{Name: $name
-     Path: $path     size: ${OsUtil.sizeAdopt(length())} 
+     Path: $path     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )
      Number of same items: ${same!!.size} Number of similar items: ${similar!!.size}
      """.trimIndent() +
                 (if (same!!.size > 0) """

@@ -39,21 +39,82 @@ public class UiTreeView {
         }
     }
 
-    // Collapse the first expanded node in every branch from the root
+    // Collapse the first expanded node in every branch from the root-------------------
     public static <T> void collapseLast(TreeView<T> tv) {
-        TreeItem<T> root = tv.getRoot();
-        if (root != null) {
-            collapseLastRecursive(root);
+        TreeItem<?> treeItem = tv.getSelectionModel().getSelectedItem();
+        if(treeItem.isExpanded())collapseIfNoExpandedChildren(treeItem);
+    }
+
+    // Recursive method to collapse the first expanded node in every branch
+    public static void collapseIfNoExpandedChildren(TreeItem<?> treeItem) {
+
+        boolean allChildrenCollapsedOrLeaf = true;
+        // Check if it contains any expanded
+        for (TreeItem<?> child : treeItem.getChildren()) {
+            if(child.isExpanded() ){
+                allChildrenCollapsedOrLeaf = false;
+                collapseIfNoExpandedChildren(child);
+            }
+        }
+        if(allChildrenCollapsedOrLeaf)treeItem.setExpanded(false);
+
+
+    }
+
+
+//    // Recursive method to collapse the first expanded node in every branch
+//    private static <T> boolean collapseLastRecursive(TreeItem<T> item) {
+//        if (item.isExpanded()) {
+//            item.setExpanded(false);
+//            return true;
+//        }
+//        for (TreeItem<T> child : item.getChildren()) {
+//            if (collapseLastRecursive(child)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+    // Expand the first collapsed node in every branch from the root--------------------
+
+    public static void expandFirst(TreeView<?> tv) {
+        TreeItem<?> treeItem = tv.getSelectionModel().getSelectedItem();
+        expandVisibleNodes( treeItem);
+    }
+
+    static void expandVisibleNodes(TreeItem<?> treeItem ) {
+        // Если узел раскрыт, продолжаем анализировать вложенные узлы
+        if (treeItem.isExpanded()) {
+            for (TreeItem<?> child : treeItem.getChildren()) {
+                expandVisibleNodes(child); // Рекурсивный вызов для вложенных узлов
+            }
+        } else {
+            // Если узел свернут, раскрываем его, но не продолжаем анализ вложений
+            treeItem.setExpanded(true);
         }
     }
 
-    // Expand the first collapsed node in every branch from the root
-    public static <T> void expandLast(TreeView<T> tv) {
-        TreeItem<T> root = tv.getRoot();
-        if (root != null) {
-            expandLastRecursive(root);
-        }
-    }
+
+//    public static <T> void expandFirst1(TreeView<T> tv) {
+//        TreeItem<T> root = tv.getRoot();
+//        if (root != null) {
+//            expandFirstRecursive(root);
+//        }
+//    }
+//    // Recursive method to expand the first collapsed node in every branch
+//    private static <T> boolean expandFirstRecursive(TreeItem<T> item) {
+//        if (!item.isExpanded()) {
+//            item.setExpanded(true);
+//            return true;
+//        }
+//        for (TreeItem<T> child : item.getChildren()) {
+//            if (expandFirstRecursive(child)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     // Recursive method to collapse all nodes in the TreeItem
     private static <T> void collapseRecursive(TreeItem<T> item) {
@@ -75,32 +136,8 @@ public class UiTreeView {
         }
     }
 
-    // Recursive method to collapse the first expanded node in every branch
-    private static <T> boolean collapseLastRecursive(TreeItem<T> item) {
-        if (item.isExpanded()) {
-            item.setExpanded(false);
-            return true;
-        }
-        for (TreeItem<T> child : item.getChildren()) {
-            if (collapseLastRecursive(child)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    // Recursive method to expand the first collapsed node in every branch
-    private static <T> boolean expandLastRecursive(TreeItem<T> item) {
-        if (!item.isExpanded()) {
-            item.setExpanded(true);
-            return true;
-        }
-        for (TreeItem<T> child : item.getChildren()) {
-            if (expandLastRecursive(child)) {
-                return true;
-            }
-        }
-        return false;
-    }
+
+
 }
 

@@ -136,10 +136,12 @@ public class Comparator {
     //This Should be run in JavaFX UI --------------------------------------RunLater
     public void fillAllDir1(TreeView treeView){
         treeView.setRoot(da1.root);
+        da1.root.setExpanded(true);
         da1.configureTreeItemStyle(treeView);
     }
     public void fillAllDir2(TreeView treeView){
         treeView.setRoot(da2.root);
+        da2.root.setExpanded(true);
         da2.configureTreeItemStyle(treeView);
     }
 
