@@ -12,11 +12,7 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Comparator {
-//    TreeView treeView1;
-//    TreeView treeView2;
 
-    //FileItem largestFile, largestDirectory;
-    //FileItem largestFile = new File();
     private BeforeDirectoryParseListener beforeDirectoryParseListener;
     private BeforeCompareListener beforeCompareListener;
     private CompareProgressListener compareProgressListener;
@@ -28,11 +24,6 @@ public class Comparator {
 
     int numOfSameFolders = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
 
-    public Comparator(){
-//        this.treeView1 = treeView1;
-//        this.treeView2 = treeView2;
-
-    }
     public void processDirectories(File dir1, File dir2){
         Log.appendTextTimed("Starting processing directories");
         // Implement Listener
@@ -77,37 +68,30 @@ public class Comparator {
                 FileItem fi1 = item1.getValue();
                 FileItem fi2 = item2.getValue();
 
+
                 // Ignore File in same location:...................................................Comparison Logic
                 if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
                     if(fi1.isDirectory() && fi2.isDirectory()){
-
-                        //For directories
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
-
-                            numOfSameFolders ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
-                        }
-                    }
-
-                    if(fi1.isFile() && fi2.isFile()){
-
-                        //For files
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
-
-                            numOfSameFiles ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
-                        }
-
-//                        //For files
-//                        if(FileItem.Companion.areSame(fi1,fi2)){
-//                            numOfSameFiles ++;
-//                            fi1.same.add(fi2);
-//                            fi2.same.add(fi1);
+//
+//                        //For directories
+//                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+//
+//                            numOfSameFolders ++;
+//                            fi1.sameAdd(fi2);
+//                            fi2.sameAdd(fi1);
 //                        }
-
-
+//                    }
+//
+//                    if(fi1.isFile() && fi2.isFile()){
+//
+//                        //For files
+//                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+//
+//                            numOfSameFiles ++;
+//                            fi1.sameAdd(fi2);
+//                            fi2.sameAdd(fi1);
+//                        }
+//
                     }
                 }
                 else{

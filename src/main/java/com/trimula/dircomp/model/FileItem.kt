@@ -25,6 +25,13 @@ class FileItem : File {
         same = same ?: FXCollections.observableArrayList()
         same!!.add(fileItem)
     }
+    fun sameSize():Int{
+        return same?.size?:0
+    }
+    fun similarSize():Int{
+        return same?.size?:0
+    }
+
 //    // Метод для безопасной обработки каждого элемента
 //    fun sameForEach(action: (FileItem) -> Unit) {
 //        same?.forEach(action)
@@ -45,13 +52,13 @@ class FileItem : File {
         return """
      FileItem{Name: $name
      Path: $path     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )
-     Number of same items: ${same!!.size} Number of similar items: ${similar!!.size}
+     Number of same items: ${sameSize()} 
      """.trimIndent() +
-                (if (same!!.size > 0) """
+                (if (same!= null && same!!.size > 0) """
      Same:
      ${listToString(same!!)}
      """.trimIndent() else "")
-    }
+    }           // Number of similar items: ${similarSize()}
 
     private fun listToString(ll: List<FileItem>): String {
         val result = StringBuilder()

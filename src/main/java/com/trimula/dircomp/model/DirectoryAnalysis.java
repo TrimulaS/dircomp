@@ -11,6 +11,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import kotlin.jvm.JvmInline;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,12 +23,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DirectoryAnalysis {
     private int numTotal = 0, numDirectories =0, numFiles = 0;
 
-    public TreeItem<FileItem> root;
-    private ObservableList<FileItem> observableList = null;
 
-    //Filtered Containers:
-    private FilteredList<FileItem> filteredList = null;
+    // Stores:
+        //Tree
+    public TreeItem<FileItem> root;
+    DirectoryStatistics rootDirStat = new DirectoryStatistics();
+        //Table - statistic same to root
+    private ObservableList<FileItem> observableList = null;
+        // Filtered tree
     private TreeItem<FileItem> rootDirOnly = null;
+    DirectoryStatistics rootDirOnlyDirStat = new DirectoryStatistics();
+        //Filtered table:
+    private FilteredList<FileItem> filteredList = null;
+    DirectoryStatistics filteredListDirStat = new DirectoryStatistics();
+
+
+
+    // Inline class To store statistics for directories and filtered representation
+    class DirectoryStatistics{
+        int folders = 0, files = 0;
+        void  set(int folders, int files){
+            this.folders = folders;
+            this.files = files;
+        }
+        int total(){
+            return folders + files;
+        }
+    }
 
 
     public DirectoryAnalysis (File dir){
@@ -244,4 +266,9 @@ public class DirectoryAnalysis {
         return numFiles;
     }
 
+    // For JVM backends
+
+
 }
+
+

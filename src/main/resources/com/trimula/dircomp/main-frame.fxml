@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
@@ -7,6 +8,8 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -15,6 +18,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -22,8 +26,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
 <GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.trimula.dircomp.MainController">
 
     <columnConstraints>
@@ -35,7 +38,7 @@
 
 
 
-    <VBox prefHeight="200.0" prefWidth="100.0">
+    <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0">
         <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox>
                 <ToolBar>
@@ -45,7 +48,7 @@
                 <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
                     <VBox fx:id="paneDirectory1">
                         <HBox>
-                            <ComboBox fx:id="comboBoxDirectory1" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
+                            <ComboBox fx:id="cbDir1Path" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
                             <Button onAction="#selectDirectory1" text="Select" HBox.hgrow="NEVER" />
                         </HBox>
                         <ToolBar>
@@ -176,7 +179,7 @@
                     </VBox>
                         <VBox fx:id="paneDirectory2">
                             <HBox>
-                                <ComboBox fx:id="comboBoxDirectory2" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
+                                <ComboBox fx:id="cbDir2Path" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
                                 <Button onAction="#selectDirectory2" text="Select" HBox.hgrow="NEVER" />
                             </HBox>
 
@@ -314,21 +317,40 @@
     </VBox>
 
     <!-- Панель настроек (TabPane), по умолчанию скрыта -->
-    <TabPane fx:id="tpSettings" GridPane.rowIndex="0" GridPane.columnIndex="0"
-             GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" visible="false">
+    <TabPane fx:id="tpSettings" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <tabs>
-            <Tab text="General Settings">
-                <!-- Содержимое панели настроек -->
+         <Tab text="Settings">
+           <content>
+             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+
+                 <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                       <HBox>
+                          <children>
+                             <TextField />
+                             <Button mnemonicParsing="false" text="Button" />
+                          </children>
+                       </HBox>
+                    </children>
+                 </VBox>
+
+               </AnchorPane>
+           </content>
+         </Tab>
+            <Tab text="About">
+            <content>
+               <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                 <Label text="Label" />
+               </AnchorPane>
+            </content>
             </Tab>
         </tabs>
     </TabPane>
 
     <!-- Кнопка настроек в правом верхнем углу -->
-    <Button fx:id="bSettings" GridPane.rowIndex="0" GridPane.columnIndex="0"
-            GridPane.halignment="RIGHT" GridPane.valignment="TOP"
-            minHeight="16.0" minWidth="16.0"  prefWidth="24.0" maxHeight="24" onAction="#onSettingsClick">
+    <Button fx:id="bSettings" maxHeight="24" minHeight="16.0" minWidth="16.0" onAction="#onSettingsClick" prefWidth="24.0" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0" GridPane.valignment="TOP">
         <graphic>
-            <ImageView fx:id="ivSettings"  fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="ivSettings" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                     <Image url="@../../../icons/icoGear.png" />
                 </image>

@@ -21,11 +21,15 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 
-
+/**
+ *  Nodes : show()  hide()
+ *
+ */
 class MainController {
 
-    @FXML    lateinit var comboBoxDirectory1: ComboBox<String>
-    @FXML    lateinit var comboBoxDirectory2: ComboBox<String>
+    @FXML    lateinit var vbMainInterface : VBox
+    @FXML    lateinit var cbDir1Path: ComboBox<String>
+    @FXML    lateinit var cbDir2Path: ComboBox<String>
 
     @FXML    lateinit var treeViewDir1:     TreeView<FileItem>
     @FXML    lateinit var treeViewDir2:     TreeView<FileItem>
@@ -103,9 +107,11 @@ class MainController {
     @FXML
     private fun initialize() {
         Log.enableJavaFX()
-        //hBoxProgress.isVisible = false
+
+        hide( tpSettings )
         progressBarShow(false)
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+
 
         // Инициализация группы
         tg1DirView = ToggleGroup()
@@ -175,10 +181,10 @@ class MainController {
         if(vb2TreeView.isVisible) dir2ViewChange()       //Switch to table view
 
         //Setup for testing
-        directory1 = File("C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
-        comboBoxDirectory1.value = directory1?.absolutePath
-        directory2 = File("C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
-        comboBoxDirectory2.value = directory2?.absolutePath
+        directory1 = File("c:\\Literature")     //"C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
+        cbDir1Path.value = directory1?.absolutePath
+        directory2 = File("c:\\Literature")     //"C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        cbDir2Path.value = directory2?.absolutePath
 
 
         setupListeners()
@@ -214,7 +220,7 @@ class MainController {
         val path = DirectoryChooser().showDialog(null)
         if(path!=null){
             directory1 = path
-            comboBoxDirectory1.value = directory1?.absolutePath
+            cbDir1Path.value = directory1?.absolutePath
         }
     }
     @FXML
@@ -222,15 +228,18 @@ class MainController {
         val path = DirectoryChooser().showDialog(null)
         if(path!=null){
             directory2 = path
-            comboBoxDirectory2.value = directory2?.absolutePath
+            cbDir2Path.value = directory2?.absolutePath
         }
     }
 
     @FXML
     fun onCompareClicked() {
         initClear()
-        if (directory1 == null || directory2 == null) {
-            taStatus.appendText("Both directories need to be selected!\n")
+        directory1 = File(cbDir1Path.value)
+        directory2 = File(cbDir2Path.value)
+
+        if (directory1?.exists() != true || directory2?.exists() != true)  {
+            taStatus.appendText("Both directories need to be selected and exists!\n")
             return
         }
 
@@ -588,11 +597,13 @@ class MainController {
     @FXML fun onSettingsClick(){
         if(tpSettings.isVisible){
             hide( tpSettings )
-            ivSettings.image = Image(javaClass.getResource("/icons/icoGear").toExternalForm())
+            show( vbMainInterface )
+            ivSettings.image = Image(javaClass.getResource("/icons/icoGear.png").toExternalForm())
         }
         else{
             show( tpSettings )
-            ivSettings.image = Image(javaClass.getResource("/icons/icoBack").toExternalForm())
+            hide( vbMainInterface )
+            ivSettings.image = Image(javaClass.getResource("/icons/icoBack.png").toExternalForm())
         }
     }
 
