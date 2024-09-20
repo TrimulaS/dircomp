@@ -34,23 +34,24 @@ public class Comparator {
 
     }
     public void processDirectories(File dir1, File dir2){
+        Log.appendTextTimed("Starting processing directories");
         // Implement Listener
         if (beforeCompareListener != null) {
             Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
         }
 
         da1 = new DirectoryAnalysis(dir1);
-        Log.appendText("Directory 1:  Size: " + OsUtil.sizeAdopt(da1.root.getValue().directorySize)+ "\n" + dir1 +
+        Log.appendTextTimed("Directory 1:  Size: " + OsUtil.sizeAdopt(da1.root.getValue().directorySize)+ "\n" + dir1 +
                 "\nProcessed:  \n\tDirectories: " + da1.getNumDirectories() + "\n\tFiles: " +  da1.getNumFiles());
 
         da2 = new DirectoryAnalysis(dir2);
-        Log.appendText("\nDirectory 2:  Size: " + OsUtil.sizeAdopt(da2.root.getValue().directorySize)+ "\n" + dir2 +
+        Log.appendTextTimed("\nDirectory 2:  Size: " + OsUtil.sizeAdopt(da2.root.getValue().directorySize)+ "\n" + dir2 +
                 "\nProcessed:  \n\tDirectories: " + da2.getNumDirectories() + "\n\tFiles: " +  da2.getNumFiles());
 
 
 
         //Compare
-        Log.appendText("Starting to compare..." );
+        Log.appendTextTimed("Starting to compare..." );
         // Implement Listener
         if (beforeCompareListener != null) {
             Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
@@ -61,33 +62,16 @@ public class Comparator {
         AtomicReference<Double> lastProgress = new AtomicReference<>(-1.0);
 
         TreeItemTraverse.each(da1.root,item1 -> {
-
             counter1.incrementAndGet();
-
             double progress = (double) counter1.get() / maxIterations;
 
-            // Проверяем, изменился ли прогресс на 5%
-            if (compareProgressListener != null && (int)(progress * 100) >= (int)(lastProgress.get() * 100 + 0.1)) { // <----- +1 Delta whe to send
-                lastProgress.set(progress);  // обновляем последний прогресс через AtomicReference
+            // Sending progress when its growth more than progressDelta
+            double progressDelta = 0.1;
+            if (compareProgressListener != null && (int)(progress * 100) >= (int)(lastProgress.get() * 100 + progressDelta)) { // <----- +1 Delta whe to send
                 Platform.runLater(() -> compareProgressListener.onProgressUpdate(progress, (int) (progress * 100) + "%"));
+                lastProgress.set(progress);  // обновляем последний прогресс через AtomicReference
+
             }
-//            if (compareProgressListener != null) {
-//                Platform.runLater(() -> compareProgressListener.onProgressUpdate(counter1.get()/maxIterations, counter1.get()+" "+maxIterations+"  " + da2.getNumTotal()));
-//            }
-
-//            // Логика для обновления прогресса каждые 1% прогресса
-//            if (counter1.get() % (maxIterations / 100) == 0) {
-//                double progress = (double) counter1.get() / maxIterations;
-//
-//                // Обновляем прогресс в UI потоке, если слушатель установлен
-//                if (compareProgressListener != null) {
-//                    Platform.runLater(() -> compareProgressListener.onProgressUpdate(progress, ""));
-//                }
-//            }
-
-
-
-
 
             TreeItemTraverse.each(da2.root,item2 -> {
                 FileItem fi1 = item1.getValue();
@@ -95,18 +79,15 @@ public class Comparator {
 
                 // Ignore File in same location:...................................................Comparison Logic
                 if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
-
                     if(fi1.isDirectory() && fi2.isDirectory()){
 
                         //For directories
                         if(FileItem.Companion.areSimilar(fi1,fi2)){
 
                             numOfSameFolders ++;
-                            fi1.same.add(fi2);
-                            fi2.same.add(fi1);
+                            fi1.sameAdd(fi2);
+                            fi2.sameAdd(fi1);
                         }
-
-
                     }
 
                     if(fi1.isFile() && fi2.isFile()){
@@ -115,8 +96,8 @@ public class Comparator {
                         if(FileItem.Companion.areSimilar(fi1,fi2)){
 
                             numOfSameFiles ++;
-                            fi1.same.add(fi2);
-                            fi2.same.add(fi1);
+                            fi1.sameAdd(fi2);
+                            fi2.sameAdd(fi1);
                         }
 
 //                        //For files
@@ -140,7 +121,7 @@ public class Comparator {
         //
 
 
-        Log.appendText("Compare complete:");
+        Log.appendTextTimed("Compare complete:");
         if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: Same file or folder: " + numOfSameIntersection);
         Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
         Log.appendText("--For debug: Items in Path1: " + counter1.get());

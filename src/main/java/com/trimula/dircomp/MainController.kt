@@ -10,7 +10,10 @@ import com.trimula.dircomp.view.ContentMenu
 import com.trimula.dircomp.view.UiTreeView
 import javafx.application.Platform
 import javafx.fxml.FXML
+import javafx.scene.Node
 import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
@@ -29,10 +32,10 @@ class MainController {
     @FXML    lateinit var tableViewDir1:    TableView<FileItem>
     @FXML    lateinit var tableViewDir2:    TableView<FileItem>
 
-    @FXML    lateinit var vbTableView1:VBox
-    @FXML    lateinit var vbTableView2:VBox
+    @FXML    lateinit var vb1TableView:VBox
+    @FXML    lateinit var vb2TableView:VBox
     @FXML    lateinit var vbTreeView1:VBox
-    @FXML    lateinit var vbTreeView2:VBox
+    @FXML    lateinit var vb2TreeView:VBox
 
 
     @FXML    lateinit var taSelectedItemProperties: TextArea
@@ -51,6 +54,7 @@ class MainController {
     @FXML    lateinit var tbDir2ViewTable: ToggleButton
     @FXML    lateinit var tbDir2ViewAsMatchedTo1:  ToggleButton
 
+    @FXML    lateinit var hb1MatchTypeButtonGroup: HBox
     @FXML    lateinit var tb1All:       ToggleButton
     @FXML    lateinit var tb1FullMatch: ToggleButton
     @FXML    lateinit var tb1Similar:   ToggleButton
@@ -64,7 +68,7 @@ class MainController {
 
 
 
-    @FXML    lateinit var hbDir2MatchTypeButtonGroup: HBox
+    @FXML    lateinit var hb2MatchTypeButtonGroup: HBox
     @FXML    lateinit var tb2All:       ToggleButton
     @FXML    lateinit var tb2FullMatch: ToggleButton
     @FXML    lateinit var tb2Similar:   ToggleButton
@@ -74,6 +78,9 @@ class MainController {
     @FXML    lateinit var tb2DirAndFile:ToggleButton
     @FXML    lateinit var tb2DirOnly:   ToggleButton
     @FXML    lateinit var tb2FileOnly:  ToggleButton
+
+    @FXML    private lateinit var ivSettings: ImageView
+    @FXML    private lateinit var tpSettings: TabPane
 
     private val progressBarTextDuringCompare = "Compare in progress: "
 
@@ -165,7 +172,7 @@ class MainController {
         dir1ViewChange()
         if(!vbTreeView1.isVisible) dir1ViewChange()
         dir2ViewChange()
-        if(vbTreeView2.isVisible) dir2ViewChange()       //Switch to table view
+        if(vb2TreeView.isVisible) dir2ViewChange()       //Switch to table view
 
         //Setup for testing
         directory1 = File("C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
@@ -323,103 +330,7 @@ class MainController {
 
     }
 
-    //
-    private fun setupListener(treeView: TreeView<FileItem>) {
 
-
-        treeView.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            selectedItem?.let {
-                taSelectedItemProperties.text = selectedItem.value.toString()
-
-                //     <<--   Only for first (Second shows only equivalent FileItems)
-                if(cbSyncSelection.isSelected && treeView!=treeViewDir2){
-                    // Очищаем предыдущее выделение в treeViewDir2
-                    treeViewDir2.selectionModel.clearSelection()
-                    var isFirstSelect = true
-
-                    // Выбираем элементы из списка `same` в treeViewDir2
-                    for (fi: FileItem in selectedItem.value.same) {
-                        // Найдем элемент в treeViewDir2, соответствующий FileItem
-                        val treeItemToSelect = TreeItemTraverse.findByValue(treeViewDir2.root, fi)
-                        treeItemToSelect?.let {
-                            treeViewDir2.selectionModel.select(treeItemToSelect)
-                        }
-                    }
-                    // Properties MODE:  Second Tableview - Show properties of the first
-
-                    if (tbDir2ViewAsMatchedTo1.isSelected) {
-                        tableViewDir2.items = selectedItem.value.same
-                        if (isFirstSelect){
-                            // Scroll to this selected Item
-                        }
-                        //Log.appendText("Tried to find properties")
-                    }
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-//        // Добавление всплывающего меню
-//        treeView.setOnMouseClicked { event ->
-//            if (event.button == MouseButton.SECONDARY) {
-//                val contextMenu = ContextMenu()
-//
-//                val openInExplorer = MenuItem("Open in Explorer")
-//                openInExplorer.setOnAction {
-//                    val selectedFile = treeView.selectionModel.selectedItem?.value
-//                    selectedFile?.let {
-//                        OsUtil.openInExplorer(it)
-//                        // Полное удаление файла
-//                        //it.delete()
-//                        //Log.appendTextTimed("Deleted permanently: ${it.name}\n")
-//                    }
-//                }
-//
-//                val deleteRecycleBin = MenuItem("Delete to Recycle Bin")
-//                deleteRecycleBin.setOnAction {
-//                    val selectedFile = treeView.selectionModel.selectedItem?.value
-//                    selectedFile?.let {
-//                        // Удаление в корзину
-//                        //OsUtil.deleteToRecycleBin(it)
-//
-//                    }
-//                }
-//
-//                val deletePermanent = MenuItem("Delete Permanently")
-//                deletePermanent.setOnAction {
-//                    val selectedFile = treeView.selectionModel.selectedItem?.value
-//                    selectedFile?.let {
-//                        // Полное удаление файла
-//                        if(OsUtil.confirmDelete(it.name)) OsUtil.deleteToTmp(it)    //it.delete()
-//                        Log.appendTextTimed("Deleted permanently: ${it.name}\n")
-//                    }
-//                }
-//
-//
-//
-//                contextMenu.items.addAll(openInExplorer, deleteRecycleBin, deletePermanent)
-//                contextMenu.show(treeView, event.screenX, event.screenY)
-//            }
-//        }
-    }
-
-//    private fun syncSelectionTree(fileItem:FileItem,treeView){
-//        taSelectedItemProperties.text = fileItem.toString()
-//        if(cbSyncSelection.isSelected){
-//            var isFirst = true
-//        }
-//
-//
-//    }
 
     private fun syncSelection(fileItem:FileItem,view: Any){
         taSelectedItemProperties.text = fileItem.toString()
@@ -433,19 +344,27 @@ class MainController {
                 is TreeView<*> -> {
                     isSyncing = true
                     //Log.appendText("Target is TreeView selected: " + fileItem.name)
-                    val treeView = view as TreeView<FileItem>
+
+
+                    val treeView = view as? TreeView<FileItem> ?: return
+
                     treeView.selectionModel.clearSelection()
 
-                    // Select in treeview all the items from List    same
-                    for (fi: FileItem in fileItem.same) {
+                    // Если список same не пустой, обрабатываем его
+                    fileItem.same?.let { sameList ->
+                        var isFirst = true
 
-                        val treeItemToSelect = TreeItemTraverse.findByValue(treeView.root, fi)
-                        treeItemToSelect?.let {
-                            treeView.selectionModel.select(treeItemToSelect)
+                        sameList.forEach { fi ->
+                            val treeItemToSelect = TreeItemTraverse.findByValue(treeView.root, fi)
 
-                            if (isFirst) {
-                                treeView.scrollTo(treeView.getRow(treeItemToSelect)) // Прокрутка к элементу по индексу
-                                isFirst = false
+                            treeItemToSelect?.let {
+                                treeView.selectionModel.select(treeItemToSelect)
+
+                                // Прокрутка к первому элементу
+                                if (isFirst) {
+                                    treeView.scrollTo(treeView.getRow(treeItemToSelect))
+                                    isFirst = false
+                                }
                             }
                         }
                     }
@@ -453,23 +372,22 @@ class MainController {
 
                 is TableView<*> -> {
                     isSyncing = true
-                    val tableView = view as TableView<FileItem>
+                    val tableView = view as? TableView<FileItem>?: return
                     //Log.appendText("Target is TableView selected: " + fileItem.name)
                     tableView.selectionModel.clearSelection()
 
-                    for (fi: FileItem in fileItem.same){
-                        tableView.items.forEachIndexed { index, fi ->
-                            if ( fi.length() == fileItem.length() ) {
-//                                Log.appendText("----Table Found match" + fi.name + "   "+ index)
-                                tableView.selectionModel.select(index)
-                                if (isFirst) {
-                                    tableView.scrollTo(index)
-                                    isFirst = false
+                    fileItem.same?.let { sameList ->
+                        for (fi: FileItem in sameList){
+                            tableView.items.forEachIndexed { index, fi ->
+                                if ( fi.length() == fileItem.length() ) {
+                                    tableView.selectionModel.select(index)
+                                    if (isFirst) {
+                                        tableView.scrollTo(index)
+                                        isFirst = false
+                                    }
                                 }
                             }
-
                         }
-
                     }
                 }
             }
@@ -520,43 +438,32 @@ class MainController {
 //    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
 
 
-//    // Filters
-//    @FXML fun filter1AllClick() { treeViewDir1.root = comparator.da1.root }   //comparator.da1.getfillAllDir1(treeViewDir1)}
-//    @FXML fun filter2AllClick() { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
-//
-//    @FXML fun filter1FullMatchClick() { treeViewDir1.root = comparator.da1.rootFullMatch }    // = comparator.fillFullMatch1(treeViewDir1)
-//    @FXML fun filter2FullMatchClick() { treeViewDir2.root = comparator.da2.rootFullMatch }    // = comparator.fillFullMatch2(treeViewDir2)
-//
-//    @FXML fun tb1ViewDirOnlyClick(){ treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
-//    @FXML fun tb2ViewDirOnlyClick(){ treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
-//
+    // Filters
+    @FXML fun tb1DirAndFile()    { }   //comparator.da1.getfillAllDir1(treeViewDir1)}
+    @FXML fun tb2DirAndFile()    { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
+
+    @FXML fun tb1DirOnly()       { treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
+    @FXML fun tb2DirOnly()       { treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
+
 
     //--------------------------------------- Interface Configuration
     @FXML
     fun dir1ViewChange() {
 
         when{
-            tbDir1ViewTree.isSelected -> {
-                // Скрываем TabView и показываем TreeView
-                vbTableView1.isVisible = false
-                vbTableView1.isManaged = false
-                tb1FileOnly.isVisible = false
-                tb1FileOnly.isManaged = false
+            tbDir1ViewTree.isSelected -> {                      // Tree
+                hide ( vb1TableView )
+                hide ( tb1FileOnly )
+                hide ( hb1MatchTypeButtonGroup )
 
-                vbTreeView1.isVisible = true
-                vbTreeView1.isManaged = true
-
+                show ( vbTreeView1 )
             }
-            tbDir1ViewTable.isSelected -> {
-                // Скрываем TreeView и показываем TabView and button: fileOnly
-                vbTreeView1.isVisible = false
-                vbTreeView1.isManaged = false
+            tbDir1ViewTable.isSelected -> {                     // Table
+                hide (vbTreeView1)
 
-
-                vbTableView1.isVisible = true
-                vbTableView1.isManaged = true
-                tb1FileOnly.isVisible = true
-                tb1FileOnly.isManaged = true
+                show ( hb1MatchTypeButtonGroup )
+                show ( vb1TableView )
+                show ( tb1FileOnly )
             }
         }
         filterDir1()
@@ -566,59 +473,51 @@ class MainController {
 
         when{
             tbDir2ViewTree.isSelected -> {
-                // Скрываем TabView и показываем TreeView
-                vbTableView2.isVisible = false
-                vbTableView2.isManaged = false
-                tb2FileOnly.isVisible = false
-                tb2FileOnly.isManaged = false
+                hide ( vb2TableView )
+                hide ( tb2FileOnly )
+                hide ( hb2MatchTypeButtonGroup )
 
-                hbDir2MatchTypeButtonGroup.isVisible = true
-                hbDir2MatchTypeButtonGroup.isManaged = true
-                vbTreeView2.isVisible = true
-                vbTreeView2.isManaged = true
-
+                show ( vb2TreeView )
             }
             tbDir2ViewTable.isSelected -> {
-                // Скрываем TreeView и показываем TabView
-                vbTreeView2.isVisible = false
-                vbTreeView2.isManaged = false
+                hide ( vb2TreeView )
 
-
-                hbDir2MatchTypeButtonGroup.isVisible = true
-                hbDir2MatchTypeButtonGroup.isManaged = true
-                vbTableView2.isVisible = true
-                vbTableView2.isManaged = true
-                tb2FileOnly.isVisible = true
-                tb2FileOnly.isManaged = true
+                show ( hb2MatchTypeButtonGroup )
+                show ( vb2TableView )
+                show ( tb2FileOnly )
             }
             tbDir2ViewAsMatchedTo1.isSelected -> {
-                vbTreeView2.isVisible = false
-                vbTreeView2.isManaged = false
-                vbTreeView2.isVisible = false
-                vbTreeView2.isManaged = false
+                hide ( vb2TreeView )
+                hide ( hb2MatchTypeButtonGroup )
 
-                hbDir2MatchTypeButtonGroup.isVisible = false
-                hbDir2MatchTypeButtonGroup.isManaged = false
-
-                vbTableView2.isVisible = true
-                vbTableView2.isManaged = true
+                show ( vb2TableView )
             }
         }
         filterDir2()
 
     }
 
+    private fun hide(node: Node){
+        node.isVisible = false
+        node.isManaged = false
+    }
+
+    private fun show(node: Node){
+        node.isVisible = true
+        node.isManaged = true
+    }
+
     @FXML fun filterDir1(){
         when{
-
             // Tree
             tbDir1ViewTree.isSelected -> {
 
                 when{
-                    tb1All.isSelected           -> treeViewDir1.root = comparator.da1?.root
                     tb1DirAndFile.isSelected    -> treeViewDir1.root = comparator.da1?.root
-                    tb1FullMatch.isSelected     -> treeViewDir1.root = comparator.da1?.rootFullMatch
-                    tb1DirOnly.isSelected       -> treeViewDir1.root = comparator.da1?.rootDirOnly
+                    tb1DirOnly.isSelected       -> {
+                        treeViewDir1.root = comparator.da1?.rootDirOnly
+                        Log.appendText("Applied filter DirONLY to treeView1")
+                    }
                 }
 
             }
@@ -626,19 +525,11 @@ class MainController {
             // Table
             tbDir1ViewTable.isSelected -> {
 
-//                if(tb1All.isSelected) {
-//                    tableViewDir1.items = comparator.da1?.observableList
-//                    Log.appendText("All to Table 1")
-//                    return
-//                }
-
-                // Apply filtering based on toggle group selections
-
                 val filterMatch = when {
                     tb1All.isSelected       -> { _: FileItem -> true }
-                    tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
-                    tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
-                    tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
+                    tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
+                    tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
+                    tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                     else -> { _: FileItem -> true }
                 }
 
@@ -653,7 +544,6 @@ class MainController {
                 comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
                 tableViewDir1.items = comparator.da1.filteredList
 //                Log.appendText("filteredList to Table 1")
-
             }
         }
 
@@ -666,20 +556,12 @@ class MainController {
             tbDir2ViewTree.isSelected -> {
 
                 when{
-                    tb2All.isSelected           -> {
-                        treeViewDir2.root = comparator.da2?.root
-                        Log.appendText("Tree2 - All Filter applied")
-
-                    }
                     tb2DirAndFile.isSelected    -> treeViewDir2.root = comparator.da2?.root
-                    tb2FullMatch.isSelected     -> treeViewDir2.root = comparator.da2?.rootFullMatch
                     tb2DirOnly.isSelected       -> {
                         treeViewDir2.root = comparator.da2?.rootDirOnly
-                        Log.appendText("Tree2 - dir only Filter applied")
+                        Log.appendText("Applied filter DirONLY to treeView2")
                     }
                 }
-
-
 
             }
 
@@ -690,9 +572,9 @@ class MainController {
 
                 val filterMatch = when {
                     tb2All.isSelected       -> { _: FileItem -> true }
-                    tb2FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same.isNotEmpty() }
-                    tb2Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar.isNotEmpty() }
-                    tb2Unique.isSelected    -> { fileItem: FileItem -> fileItem.same.isEmpty() && fileItem.similar.isEmpty() }
+                    tb2FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
+                    tb2Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
+                    tb2Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                     else -> { _: FileItem -> true }
                 }
 
@@ -707,35 +589,19 @@ class MainController {
                 comparator.da2.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
                 tableViewDir2.items = comparator.da2.filteredList
 //                Log.appendText("filteredList to Table 2")
-
             }
         }
     }
-
-
-//
-//    // Function to update filter
-//    fun updateFilter() {
-//        filteredList.predicate = { fileItem ->
-//            var matchesType = true
-//            var matchesFileType = true
-//
-//            // Apply filter for Match Type
-//            when {
-//                matchesToggle.isSelected -> matchesType = fileItem.same.size > 1
-//                similarToggle.isSelected -> matchesType = fileItem.similar.size > 1
-//                uniqueToggle.isSelected -> matchesType = fileItem.same.isEmpty()
-//            }
-//
-//            // Apply filter for File Type
-//            when {
-//                directoriesOnlyToggle.isSelected -> matchesFileType = fileItem.isDirectory
-//                filesOnlyToggle.isSelected -> matchesFileType = !fileItem.isDirectory
-//            }
-//
-//            matchesType && matchesFileType
-//        }
-//    }
+    @FXML fun onSettingsClick(){
+        if(tpSettings.isVisible){
+            hide( tpSettings )
+            ivSettings.image = Image(javaClass.getResource("/icons/icoGear").toExternalForm())
+        }
+        else{
+            show( tpSettings )
+            ivSettings.image = Image(javaClass.getResource("/icons/icoBack").toExternalForm())
+        }
+    }
 
 }
 

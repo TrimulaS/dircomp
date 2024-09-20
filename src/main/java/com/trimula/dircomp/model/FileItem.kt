@@ -9,20 +9,29 @@ class FileItem : File {
     @JvmField
     var directorySize: Long = 0
 
-    @JvmField
-    var same:    ObservableList<FileItem> = FXCollections.observableArrayList()
-    var similar: ObservableList<FileItem> = FXCollections.observableArrayList()
+
+   var same:    ObservableList<FileItem>? = null    //= FXCollections.observableArrayList()
+   var similar: ObservableList<FileItem>? = null    //.observableArrayList()
 
 
     // Конструктор FileItem, используя путь к файлу
-    constructor(pathname: String) : super(pathname) {
-
-    }
+    constructor(pathname: String) : super(pathname)
 
     // Конструктор FileItem с File
-    constructor(file: File) : super(file.path) {
+    constructor(file: File) : super(file.path)
 
+//    //Block for Lists porcessing---------------------------------------------
+    fun sameAdd(fileItem: FileItem){
+        same = same ?: FXCollections.observableArrayList()
+        same!!.add(fileItem)
     }
+//    // Метод для безопасной обработки каждого элемента
+//    fun sameForEach(action: (FileItem) -> Unit) {
+//        same?.forEach(action)
+//    }
+//    fun sameSize():Int {
+//        return same?.size?:0
+//    }
 
 
 

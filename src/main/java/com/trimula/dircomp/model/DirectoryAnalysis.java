@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *      This Class comprise all the information related to Single analyzed Directory
@@ -21,26 +22,12 @@ import java.io.File;
 public class DirectoryAnalysis {
     private int numTotal = 0, numDirectories =0, numFiles = 0;
 
-
-//private int numOfSameFolders = 0,numOfSameFiles = 0, numOfSameIntersection = 0 ;
-
     public TreeItem<FileItem> root;
     private ObservableList<FileItem> observableList = null;
 
-
-
+    //Filtered Containers:
     private FilteredList<FileItem> filteredList = null;
-
-
-
-    //used in case of chosen by user
-    private TreeItem<FileItem> rootFullMatch = null;
     private TreeItem<FileItem> rootDirOnly = null;
-
-
-
-//private int sameFiles = 0, sameDirectories = 0, SimilarFiles = 0, similarDirectories = 0;
-    //private int numOfItemsInDir1 = 0, numOfItemsInDir2 = 0;
 
 
     public DirectoryAnalysis (File dir){
@@ -202,15 +189,27 @@ public class DirectoryAnalysis {
 //        }
 //    }
 
-    // Filtered TreeItems root
-    public TreeItem<FileItem> getRootFullMatch() {
-        if(rootFullMatch == null) rootFullMatch = TreeItemTraverse.filterTree(root, fileItem -> fileItem.same.size() > 0);
-        return rootFullMatch;
-    }
+//    // Filtered TreeItems root
+//    public TreeItem<FileItem> getRootFullMatch() {
+//        if(rootFullMatch == null) rootFullMatch = TreeItemTraverse.filterTree(root, fileItem -> fileItem.same.size() > 0);
+//        return rootFullMatch;
+//    }
 
 
     public TreeItem<FileItem> getRootDirOnly() {
+
         if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
+        AtomicInteger rootCount= new AtomicInteger();
+        AtomicInteger filteredCount = new AtomicInteger();
+        TreeItemTraverse.each(root, ti->{
+            rootCount.getAndIncrement();
+        });
+        TreeItemTraverse.each(root, ti->{
+            filteredCount.getAndIncrement();
+        });
+
+
+        Log.appendTextTimed("Filtering dir only: " +filteredCount.get()+ "  total: "+rootCount.get());
         return rootDirOnly;
     }
 

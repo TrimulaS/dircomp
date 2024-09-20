@@ -57,6 +57,8 @@ public class TreeItemTraverse<T> {
     public static <T> TreeItem<T> filterTree(TreeItem<T> sourceRoot, Predicate<T> filterPredicate) {
         T value = sourceRoot.getValue();
 
+
+
         // If the Current Item value not match the condition, return null
         if (!filterPredicate.test(value)) {
             return null;
