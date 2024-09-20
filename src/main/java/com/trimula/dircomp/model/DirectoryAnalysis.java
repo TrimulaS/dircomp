@@ -199,17 +199,18 @@ public class DirectoryAnalysis {
     public TreeItem<FileItem> getRootDirOnly() {
 
         if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
-        AtomicInteger rootCount= new AtomicInteger();
-        AtomicInteger filteredCount = new AtomicInteger();
-        TreeItemTraverse.each(root, ti->{
-            rootCount.getAndIncrement();
-        });
-        TreeItemTraverse.each(root, ti->{
-            filteredCount.getAndIncrement();
-        });
+//        AtomicInteger rootCount= new AtomicInteger();
+//        AtomicInteger filteredCount = new AtomicInteger();
+//        TreeItemTraverse.each(root, ti->{
+//            rootCount.getAndIncrement();
+//        });
+//        TreeItemTraverse.each(root, ti->{
+//            filteredCount.getAndIncrement();
+//        });
 
 
-        Log.appendTextTimed("Filtering dir only: " +filteredCount.get()+ "  total: "+rootCount.get());
+//        Log.appendTextTimed("Filtering dir only: " +filteredCount.get()+ "  total: "+rootCount.get());
+        rootDirOnly.setExpanded(true);
         return rootDirOnly;
     }
 

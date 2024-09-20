@@ -343,7 +343,7 @@ class MainController {
             when (view) {
                 is TreeView<*> -> {
                     isSyncing = true
-                    //Log.appendText("Target is TreeView selected: " + fileItem.name)
+                    Log.appendText("Target is TreeView selected: " + fileItem.name)
 
 
                     val treeView = view as? TreeView<FileItem> ?: return
@@ -373,7 +373,7 @@ class MainController {
                 is TableView<*> -> {
                     isSyncing = true
                     val tableView = view as? TableView<FileItem>?: return
-                    //Log.appendText("Target is TableView selected: " + fileItem.name)
+                    Log.appendText("Target is TableView selected: " + fileItem.name)
                     tableView.selectionModel.clearSelection()
 
                     fileItem.same?.let { sameList ->
@@ -514,10 +514,7 @@ class MainController {
 
                 when{
                     tb1DirAndFile.isSelected    -> treeViewDir1.root = comparator.da1?.root
-                    tb1DirOnly.isSelected       -> {
-                        treeViewDir1.root = comparator.da1?.rootDirOnly
-                        Log.appendText("Applied filter DirONLY to treeView1")
-                    }
+                    tb1DirOnly.isSelected       -> treeViewDir1.root = comparator.da1?.rootDirOnly
                 }
 
             }
@@ -557,12 +554,8 @@ class MainController {
 
                 when{
                     tb2DirAndFile.isSelected    -> treeViewDir2.root = comparator.da2?.root
-                    tb2DirOnly.isSelected       -> {
-                        treeViewDir2.root = comparator.da2?.rootDirOnly
-                        Log.appendText("Applied filter DirONLY to treeView2")
-                    }
+                    tb2DirOnly.isSelected       -> treeViewDir2.root = comparator.da2?.rootDirOnly
                 }
-
             }
 
             // Table
