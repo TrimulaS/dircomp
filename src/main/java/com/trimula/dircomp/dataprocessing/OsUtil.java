@@ -1,4 +1,5 @@
 package com.trimula.dircomp.dataprocessing;
+import com.trimula.dircomp.model.FileItem;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert;
 import java.io.File;
@@ -79,32 +80,44 @@ public class OsUtil {
     }
 
 
-    public static void deleteToRecycleBin(File file) {
-        if (file.exists()) {
-            String os = System.getProperty("os.name").toLowerCase();
-            try {
-                if (os.contains("win")) {
-                    // Windows
-                    String command = "cmd /c move \"" + file.getAbsolutePath() + "\" \"C:\\$Recycle.Bin\\\"";
-                    Runtime.getRuntime().exec(command);
-                } else if (os.contains("mac")) {
-                    // Mac
-                    String command = "mv \"" + file.getAbsolutePath() + "\" ~/.Trash/";
-                    Runtime.getRuntime().exec(command);
-                } else if (os.contains("nix") || os.contains("nux")) {
-                    // Linux
-                    String command = "mv \"" + file.getAbsolutePath() + "\" ~/.local/share/Trash/files/";
-                    Runtime.getRuntime().exec(command);
-                } else {
-                    System.out.println("Unsupported OS");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("File does not exist.");
-        }
+    /// Doesn't work!
+
+//    public static void deleteToRecycleBin(FileItem fileItem) {
+//        deleteToRecycleBin(new File(fileItem.getAbsolutePath()));
+//    }
+//
+//    public static void deleteToRecycleBin(File file) {
+//        if (file.exists()) {
+//            String os = System.getProperty("os.name").toLowerCase();
+//            try {
+//                if (os.contains("win")) {
+//                    // Windows
+//                    String command = "cmd /c move \"" + file.getAbsolutePath() + "\" \"C:\\$Recycle.Bin\\\"";
+//                    Runtime.getRuntime().exec(command);
+//                } else if (os.contains("mac")) {
+//                    // Mac
+//                    String command = "mv \"" + file.getAbsolutePath() + "\" ~/.Trash/";
+//                    Runtime.getRuntime().exec(command);
+//                } else if (os.contains("nix") || os.contains("nux")) {
+//                    // Linux
+//                    String command = "mv \"" + file.getAbsolutePath() + "\" ~/.local/share/Trash/files/";
+//                    Runtime.getRuntime().exec(command);
+//                } else {
+//                    System.out.println("Unsupported OS");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            System.out.println("File does not exist.");
+//        }
+//    }
+
+
+    public static boolean deleteToTmp(FileItem fileItem) {
+        return deleteToTmp(new File(fileItem.getAbsolutePath()));
     }
+
     // Function to test (move to tmp instead of delete)
     public static boolean deleteToTmp(File file) {
         // Определяем целевую директорию

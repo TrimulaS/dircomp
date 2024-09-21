@@ -13,7 +13,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,7 +22,7 @@ public class DataTableView {
     public static void fillTableViewWithSameFiles(TreeItem<FileItem> root, FileItem fileItem1, TableView<FileItem> targetTableView) {
         // Получаем размер целевого файла
         long fileItemSize1;
-        if(fileItem1.isDirectory())fileItemSize1 = fileItem1.directorySize;
+        if(fileItem1.isDirectory())fileItemSize1 = fileItem1.length;
             else    fileItemSize1 = fileItem1.length();
 
         // Очищаем TableView перед добавлением новых результатов
@@ -37,7 +36,7 @@ public class DataTableView {
             FileItem fileItem2 = item.getValue();
             boolean isSame = false;
             if(fileItem2.isDirectory()){
-                if(fileItemSize1==fileItem2.directorySize && fileItem1.getName().equals(fileItem2.getName())) isSame=true;
+                if(fileItemSize1==fileItem2.length && fileItem1.getName().equals(fileItem2.getName())) isSame=true;
                 //Log.appendText("Found same directory: " + fileItem2.getName());
             }
             else{
@@ -68,8 +67,8 @@ public class DataTableView {
         TableColumn<FileItem, Long> sizeBColumn = new TableColumn<>("SizeB");
         sizeBColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().length()));
 
-        TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("IsFile");
-        isFileColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isFile()));
+        TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("IsDir");
+        isFileColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDirectory()));
 
         TableColumn<FileItem, String> pathColumn = new TableColumn<>("Path");
         pathColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAbsolutePath()));
@@ -95,17 +94,8 @@ public class DataTableView {
         if(!OsUtil.confirmDelete("  " + selectedFiles.size() + " files")) return;
 
         // Удаление файлов и вывод информации о статусе
-        for (File file : selectedFiles) {
-            if (file.exists()) {
-                boolean deleted = OsUtil.deleteToTmp(file);    //file.delete();
-                if (deleted) {
-                    System.out.println("Файл удален: " + file.getAbsolutePath());
-                } else {
-                    System.out.println("Не удалось удалить файл: " + file.getAbsolutePath());
-                }
-            } else {
-                System.out.println("Файл не найден: " + file.getAbsolutePath());
-            }
+        for (FileItem fileItem : selectedFiles) {
+                boolean deleted = OsUtil.deleteToTmp(fileItem);    //fileItem.delete();
         }
 
         // Удаление выделенных строк из TableView

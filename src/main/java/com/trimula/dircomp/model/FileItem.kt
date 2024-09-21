@@ -5,21 +5,33 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import java.io.File
 
-class FileItem : File {
+class FileItem  {
     @JvmField
-    var directorySize: Long = 0
+    var length: Long = 0
+    var name = "";
+    var lastModified:Long =0
+    var absolutePath = ""
 
     var same:    ObservableList<FileItem>? = null    //= FXCollections.observableArrayList()
     var similar: ObservableList<FileItem>? = null    //.observableArrayList()
+    var isDirectory = false
 
-
-    // Конструктор FileItem, используя путь к файлу
-    constructor(pathname: String) : super(pathname)
 
     // Конструктор FileItem с File
-    constructor(file: File) : super(file.path)
+    constructor(file: File) {
+        initiation(file)
 
-//    //Block for Lists porcessing---------------------------------------------
+    }
+
+    private fun initiation(file:File){
+        this.isDirectory =      file.isDirectory
+        this.name =             file.name
+        this.lastModified =     file.lastModified()
+        this.absolutePath =     file.absolutePath
+        this.length =           file.length()
+    }
+
+//    //Block for Lists processing---------------------------------------------
     fun sameAdd(fileItem: FileItem){
         same = same ?: FXCollections.observableArrayList()
         same!!.add(fileItem)
@@ -41,16 +53,15 @@ class FileItem : File {
 
 
 
-    override fun length(): Long {
-        return if (isDirectory) directorySize
-        else super.length()
-    }
+    fun length() = length
+
+    fun lastModified() = lastModified
 
 
     override fun toString(): String {
         return """
-     FileItem{Name: $name
-     Path: $path     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )
+     Name: $name
+     Path: $absolutePath     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )
      Number of same items: ${sameSize()} 
      """.trimIndent() +
                 (if (same!= null && same!!.size > 0) """
@@ -59,23 +70,34 @@ class FileItem : File {
      """.trimIndent() else "")
     }           // Number of similar items: ${similarSize()}
 
+
     private fun listToString(ll: List<FileItem>): String {
         val result = StringBuilder()
         for (element in ll) {
-            result.append("\t" + element.absolutePath).append("\n")
+            result.append("\t" + element.absolutePath).append("\n\t")
         }
         return result.toString()
     }
 
+
+
+    //Comparing
+    fun sameTo(fileItem: FileItem): Boolean {
+//        Log.appendTextTimed("length: " + length + " = " + fileItem.length() + "   name: " + name + " = " + fileItem.name + "result: " + (length == fileItem.length() && name == fileItem.name) )
+        return length == fileItem.length() && name == fileItem.name
+    }
+
+    fun similarTo(fileItem: FileItem): Boolean {
+        return length > 0 && length == fileItem.length
+    }
+    fun isSuspected(): Boolean {
+        return length <= 16
+    }
+
+
+
     companion object {
-        fun areSame(fileItem1: FileItem, fileItem2: FileItem): Boolean {
-            return fileItem1.length() == fileItem2.length() && fileItem1.name === fileItem2.name
-        }
-        fun areSimilar(fileItem1: FileItem, fileItem2: FileItem): Boolean {
-            return fileItem1.length() == fileItem2.length()
-        }
-        fun isSuspected(fileItem: FileItem): Boolean {
-            return fileItem.length()<100
-        }
+
+
     }
 }

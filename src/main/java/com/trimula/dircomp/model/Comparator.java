@@ -1,7 +1,5 @@
 package com.trimula.dircomp.model;
 
-import com.trimula.dircomp.dataprocessing.OsUtil;
-import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
 import javafx.application.Platform;
 import javafx.scene.control.TreeView;
 import com.trimula.dircomp.dataprocessing.Log;
@@ -17,12 +15,13 @@ public class Comparator {
     private BeforeCompareListener beforeCompareListener;
     private CompareProgressListener compareProgressListener;
 
-
+    
 
     public DirectoryAnalysis da1;
     public DirectoryAnalysis da2;
 
     int numOfSameFolders = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
+    final int SAME_FILES_BUFFER_LIMIT = 20;
 
     public void processDirectories(File dir1, File dir2){
         Log.appendTextTimed("Starting processing directories");
@@ -40,86 +39,8 @@ public class Comparator {
 //                "\nProcessed:  \n\tDirectories: " + da2.rooStat.directories + "\n\tFiles: " +  da2.rooStat.files);
 //
 
-
         //Compare - tree
-        Log.appendTextTimed("Starting to compare..." );
-        // Implement Listener
-        if (beforeCompareListener != null) {
-            Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
-        }
-
-        AtomicInteger counter1 = new AtomicInteger(0);
-        double  maxIterations = da1.rooStat.getTotal();
-        AtomicReference<Double> lastProgress = new AtomicReference<>(-1.0);
-
-        TreeItemTraverse.each(da1.root,item1 -> {
-            counter1.incrementAndGet();
-            double progress = (double) counter1.get() / maxIterations;
-
-            // Sending progress when its growth more than progressDelta
-            double progressDelta = 0.1;
-            if (compareProgressListener != null && (int)(progress * 100) >= (int)(lastProgress.get() * 100 + progressDelta)) { // <----- +1 Delta whe to send
-                Platform.runLater(() -> compareProgressListener.onProgressUpdate(progress, (int) (progress * 100) + "%"));
-                lastProgress.set(progress);  // обновляем последний прогресс через AtomicReference
-
-            }
-
-            TreeItemTraverse.each(da2.root,item2 -> {
-                FileItem fi1 = item1.getValue();
-                FileItem fi2 = item2.getValue();
-
-
-                // Ignore File in same location:...................................................Comparison Logic
-                if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
-                    if(fi1.isDirectory() && fi2.isDirectory()){
-
-                        //For directories
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
-
-                            numOfSameFolders ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
-                        }
-                    }
-
-                    if(fi1.isFile() && fi2.isFile()){
-
-                        //For files
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
-
-                            numOfSameFiles ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
-                        }
-
-                    }
-                }
-                else{
-                    // This is intersection: Same file or folder in selected directories
-                    numOfSameIntersection++;
-                }
-
-            });
-        });
-
-        //
-
-
-
-
-        Log.appendTextTimed("Compare complete:");
-        if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: " + numOfSameIntersection);
-        Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
-        Log.appendText("--For debug: Items in Path1: " + counter1.get());
-        //Set style for treeview
-
-        compareObserv();
-
-    }
-
-    private void compareObserv(){
-        //Compare - tree
-        Log.appendTextTimed("Starting to compare...OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" );
+        Log.appendTextTimed("Starting to compare (ObservableLists) ..." );
         // Implement Listener
         if (beforeCompareListener != null) {
             Platform.runLater(() -> beforeCompareListener.onBeforeCompare());
@@ -141,31 +62,35 @@ public class Comparator {
 
             }
 
-            for (FileItem fi2 : da1.getObservableList() ) {
-;
+            for (FileItem fi2 : da2.getObservableList() ) {
+
 
 
                 // Ignore File in same location:...................................................Comparison Logic
+                // Suspected checked during creation of FileIem in constructor
                 if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
                     if(fi1.isDirectory() && fi2.isDirectory()){
 
                         //For directories
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+                        if(fi1.sameTo(fi2)){      //areSimilar(fi1,fi2)){
 
                             numOfSameFolders ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
+                            if(fi1.sameSize() < SAME_FILES_BUFFER_LIMIT) {
+//                                Log.appendTextTimed("Same: " + fi1.getAbsolutePath() + fi2.getAbsolutePath() + "size: " + fi1.sameSize());
+                                fi1.sameAdd(fi2);
+                            }
+                            if(fi2.sameSize() < SAME_FILES_BUFFER_LIMIT) fi2.sameAdd(fi1);
                         }
                     }
 
-                    if(fi1.isFile() && fi2.isFile()){
+                    if(!fi1.isDirectory() && !fi2.isDirectory()){
 
                         //For files
-                        if(FileItem.Companion.areSimilar(fi1,fi2)){
+                        if(fi1.sameTo(fi2)){         //areSimilar(fi1,fi2)){
 
                             numOfSameFiles ++;
-                            fi1.sameAdd(fi2);
-                            fi2.sameAdd(fi1);
+                            if(fi1.sameSize() < SAME_FILES_BUFFER_LIMIT) fi1.sameAdd(fi2);
+                            if(fi2.sameSize() < SAME_FILES_BUFFER_LIMIT) fi2.sameAdd(fi1);
                         }
 
                     }
@@ -178,21 +103,15 @@ public class Comparator {
             }
         }
 
-        //
-
-
-
-
         Log.appendTextTimed("Compare complete:");
         if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: " + numOfSameIntersection);
         Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
         Log.appendText("--For debug: Items in Path1: " + counter1.get());
         //Set style for treeview
 
+
+
     }
-
-
-
 
     //This Should be run in JavaFX UI --------------------------------------RunLater
     public void fillAllDir1(TreeView treeView){
@@ -206,60 +125,7 @@ public class Comparator {
         da2.configureTreeItemStyle(treeView);
     }
 
-    //Filters:-------------------------------------------------------------------------------------------
-//    // Full Match
-//    public void fillFullMatch1(TreeView treeView){
-//        if(rootFullMatch1==null){
-//            rootFullMatch1 = TreeItemTraverse.filterTree(root1,fileItem -> fileItem.same.size() > 0);
-//        }else{
-//            treeView.setRoot(rootFullMatch1);
-//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
-//        }
-//    }
-//    public void fillFullMatch2(TreeView treeView){
-//        if(rootFullMatch2==null){
-//            rootFullMatch2 = TreeItemTraverse.filterTree(root2,fileItem -> fileItem.same.size() > 0);
-//        }else{
-//            treeView.setRoot(rootFullMatch2);
-//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
-//        }
-//    }
-//    // Directory Only
-//    public void fillDirOnly1(TreeView treeView){
-//        if(rootDirOnly1==null)
-//            rootDirOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isDirectory);
-//        else{
-//            treeView.setRoot(rootDirOnly1);
-//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
-//        }
-//    }
-//    public void fillDirOnly2(TreeView treeView){
-//        if(rootDirOnly2==null)
-//            rootDirOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isDirectory);
-//        else{
-//            treeView.setRoot(rootDirOnly2);
-//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
-//        }
-//    }
-//    // Directory Only
-//    public void fillFileOnly1(TreeView treeView){
-//        if(rootFileOnly1==null)
-//            rootFileOnly1 = TreeItemTraverse.filterTree(root1,FileItem :: isFile);
-//        else{
-//            treeView.setRoot(rootFileOnly1);
-//            //TreeItemBuilder.configureTreeItemStyle(treeView);
-//        }
-//    }
-//    public void fillFileOnly2(TreeView treeView){
-//        if(rootFileOnly2==null)
-//            rootFileOnly2 = TreeItemTraverse.filterTree(root2,FileItem :: isFile);
-//        else{
-//            treeView.setRoot(rootFileOnly2);
-//            //DirectoryAnalysis.configureTreeItemStyle(treeView);
-//        }
-//    }
-
-    //-------------------------------------------------------------Block Of Listeners to Update UI
+     //-------------------------------------------------------------Block Of Listeners to Update UI
 
     // Beginning - before offered directories parse
     public interface BeforeDirectoryParseListener{
@@ -285,7 +151,4 @@ public class Comparator {
     public void setCompareProgressListener(CompareProgressListener listener) {
         this.compareProgressListener = listener;
     }
-
-
-
 }
