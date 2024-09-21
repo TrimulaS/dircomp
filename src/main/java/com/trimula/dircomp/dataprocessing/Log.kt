@@ -1,32 +1,20 @@
-package com.trimula.dircomp.dataprocessing
-
-//  !!!!!!!!!!! enableJavaFX()  ////////////////////////// It is enabled below :
+package com.trimula.dircomp.dataprocessing;
 
 import javafx.application.Platform
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 
 object Log {
 
-    // Определяем формат даты
-    private val dateFormat = DateTimeFormatter.ofPattern("yy.MM.dd__hh-mm-ss")
-
-    // Очередь для хранения логов
+    private val dateFormat = DateTimeFormatter.ofPattern("yy.MM.dd  HH:mm:ss")
     private val logList = ConcurrentLinkedQueue<String>()
-
-    // Слушатели для изменения логов
     private val listeners = ConcurrentLinkedQueue<LogListener>()
+    private val isJavaFX = AtomicBoolean(true)
+    private var lastLogTime: LocalDateTime? = null // Время последнего вызова
 
-    // Проверка на использование JavaFX
-    private val isJavaFX = AtomicBoolean(true)          ////////////////////////////////////////
-
-    // Счётчик для лога
-    private val counter = AtomicInteger(0)
-
-    // Метод для добавления текста в лог
     @JvmStatic
     @Synchronized
     fun appendText(text: String) {
@@ -34,28 +22,59 @@ object Log {
         notifyListeners()
     }
 
-    // Метод для добавления текста с отметкой времени
     @JvmStatic
     @Synchronized
     fun appendTextTimed(text: String) {
+        val now = LocalDateTime.now()
+
+        val timeDifference = lastLogTime?.let {
+            val duration = Duration.between(it, now)
+            formatDuration(duration)
+        } ?: ""
+
+        val timeStamp = dateFormat.format(now)
+        appendText("$timeStamp $timeDifference$text")
+
+        // Обновляем время последнего вызова
+        lastLogTime = now
+    }
+
+    // Форматирование разницы времени
+    private fun formatDuration(duration: Duration): String {
+        val seconds = duration.seconds
+        return when {
+            seconds < 1 -> "( ${duration.toMillis()} ms ) "  // Если меньше секунды, показываем в миллисекундах
+            seconds < 60 -> "( ${seconds} s ) "  // Меньше минуты, показываем в секундах
+            seconds < 3600 -> {  // Меньше часа, показываем в минутах и секундах
+                val minutes = seconds / 60
+                val remainingSeconds = seconds % 60
+                "(${minutes}m${remainingSeconds} s) "
+            }
+            else -> {  // Если больше часа
+                val hours = seconds / 3600
+                val minutes = (seconds % 3600) / 60
+                val remainingSeconds = seconds % 60
+                "( ${hours} h  ${minutes} m  ${remainingSeconds} s ) "
+            }
+        }
+    }
+    fun appendTextAndTime(text: String) {
         appendText("${dateFormat.format(LocalDateTime.now())} $text")
     }
 
-    // Метод для добавления ошибки
+
     @JvmStatic
     @Synchronized
     fun addError(text: String) {
         appendText("  ______________ Error  $text")
     }
 
-    // Получить текущие логи в виде строки
     @JvmStatic
     @Synchronized
     fun get(): String {
         return logList.joinToString(separator = "\n")
     }
 
-    // Очистить логи
     @JvmStatic
     @Synchronized
     fun clear() {
@@ -63,7 +82,6 @@ object Log {
         logList.clear()
     }
 
-    // Метод для извлечения всех логов и очистки
     @JvmStatic
     @Synchronized
     fun pop(): String {
@@ -72,49 +90,40 @@ object Log {
         return text
     }
 
-    // Метод для уведомления слушателей после изменения
     private fun notifyListeners() {
         listeners.forEach { listener ->
             if (isJavaFX.get()) {
-                // Обновление через JavaFX, если активен JavaFX UI
                 Platform.runLater {
                     listener.onChange(logList.joinToString(separator = "\n"))
                 }
             } else {
-                // Обновление через обычный вызов для Java приложений
                 listener.onChange(logList.joinToString(separator = "\n"))
             }
         }
     }
 
-    // Метод для уведомления перед очисткой
     private fun notifyBeforeClear() {
         listeners.forEach { listener ->
             listener.onBeforeClear(logList.joinToString(separator = "\n"))
         }
     }
 
-    // Добавить слушателя
     fun addListener(listener: LogListener) {
         listeners.add(listener)
     }
 
-    // Удалить слушателя
     fun removeListener(listener: LogListener) {
         listeners.remove(listener)
     }
 
-    // Включить поддержку JavaFX, когда нужно обновление через Platform.runLater
     fun enableJavaFX() {
         isJavaFX.set(true)
     }
 
-    // Отключить поддержку JavaFX
     fun disableJavaFX() {
         isJavaFX.set(false)
     }
 
-    // Интерфейс для слушателей
     interface LogListener {
         fun onChange(logText: String)
         fun onBeforeClear(logText: String)

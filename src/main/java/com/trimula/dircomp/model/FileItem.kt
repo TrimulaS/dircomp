@@ -9,9 +9,8 @@ class FileItem : File {
     @JvmField
     var directorySize: Long = 0
 
-
-   var same:    ObservableList<FileItem>? = null    //= FXCollections.observableArrayList()
-   var similar: ObservableList<FileItem>? = null    //.observableArrayList()
+    var same:    ObservableList<FileItem>? = null    //= FXCollections.observableArrayList()
+    var similar: ObservableList<FileItem>? = null    //.observableArrayList()
 
 
     // Конструктор FileItem, используя путь к файлу

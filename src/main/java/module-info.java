@@ -3,6 +3,7 @@ module com.trimula.dircomp {
     requires javafx.fxml;
     requires kotlin.stdlib;
     requires java.desktop;
+    requires jdk.compiler;
 
 
     opens com.trimula.dircomp to javafx.fxml;

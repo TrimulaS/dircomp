@@ -1,6 +1,7 @@
 package com.trimula.dircomp
 
 
+
 import com.trimula.dircomp.dataprocessing.Log
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
@@ -203,7 +204,7 @@ class MainController {
             lProgress.text = "$progressBarTextDuringCompare:  $txt  "
         }
 
-        Log.appendText("Comparator initialized")
+        Log.appendTextTimed("Comparator initialized")
 
     }
 
@@ -352,7 +353,7 @@ class MainController {
             when (view) {
                 is TreeView<*> -> {
                     isSyncing = true
-                    Log.appendText("Target is TreeView selected: " + fileItem.name)
+                    //Log.appendText("Target is TreeView selected: " + fileItem.name)
 
 
                     val treeView = view as? TreeView<FileItem> ?: return
@@ -382,7 +383,7 @@ class MainController {
                 is TableView<*> -> {
                     isSyncing = true
                     val tableView = view as? TableView<FileItem>?: return
-                    Log.appendText("Target is TableView selected: " + fileItem.name)
+                    //Log.appendText("Target is TableView selected: " + fileItem.name)
                     tableView.selectionModel.clearSelection()
 
                     fileItem.same?.let { sameList ->
