@@ -182,9 +182,9 @@ class MainController {
         if(vb2TreeView.isVisible) dir2ViewChange()       //Switch to table view
 
         //Setup for testing
-        directory1 = File("c:\\Literature")     //"C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
+        directory1 = File("C:\\tmp\\Dir1")      //"c:\\Literature")     //"C:\\tmp\\Dir1")  //"C:\\Dist\\IntelliJ") //"c:\\Literature")     // //  //("D:\\Dist\\IntelliJ\\GBTS_Exp41 migrate to StrTab")           //
         cbDir1Path.value = directory1?.absolutePath
-        directory2 = File("c:\\Literature")     //"C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
+        directory2 = File("C:\\tmp\\Dir2")      //"c:\\Literature")     //"C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         cbDir2Path.value = directory2?.absolutePath
 
 
@@ -536,6 +536,7 @@ class MainController {
                     tb1All.isSelected       -> { _: FileItem -> true }
                     tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
                     tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
+                    tb1Suspected.isSelected  -> { fileItem: FileItem -> fileItem.isSuspected() }
                     tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                     else -> { _: FileItem -> true }
                 }
@@ -577,6 +578,7 @@ class MainController {
                     tb2All.isSelected       -> { _: FileItem -> true }
                     tb2FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
                     tb2Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
+                    tb1Suspected.isSelected     -> { fileItem: FileItem -> fileItem.isSuspected() }
                     tb2Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                     else -> { _: FileItem -> true }
                 }
