@@ -47,7 +47,7 @@ public class Comparator {
         }
 
         AtomicInteger counter1 = new AtomicInteger(0);
-        double  maxIterations = da1.rooStat.getTotal();
+        double  maxIterations = da1.statistic.getTotal();
         AtomicReference<Double> lastProgress = new AtomicReference<>(-1.0);
 
         for (FileItem fi1 : da1.getObservableList() ) {

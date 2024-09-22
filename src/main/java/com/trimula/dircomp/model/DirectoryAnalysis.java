@@ -22,27 +22,32 @@ public class DirectoryAnalysis {
 
     // Stores:
         //Tree
+        //Observable list
+    // Statistics
+        //statistic
+        //filteredStatistic
+
     public TreeItem<FileItem> root;
-    DirectoryStatistics rooStat = new DirectoryStatistics();
+    public DirectoryStatistics statistic = new DirectoryStatistics();
         //Table - statistic same to root
     private ObservableList<FileItem> observableList =  FXCollections.observableArrayList();  //null;
         // Filtered tree
     private TreeItem<FileItem> rootDirOnly = null;
-    DirectoryStatistics rootDirOnlyStat = new DirectoryStatistics();
+    public DirectoryStatistics statisticDirOnly = new DirectoryStatistics();
         //Filtered table:
     private FilteredList<FileItem> filteredList = null;
-    DirectoryStatistics filteredListStat = new DirectoryStatistics();
+    public DirectoryStatistics statisticFilteredList = new DirectoryStatistics();
 
 
 
     // Inline class To store statistics for directories and filtered representation
-    class DirectoryStatistics{
-        int directories = 0, files = 0;
-        void  set(int folders, int files){
+    public class DirectoryStatistics{
+        public int directories = 0, files = 0;
+        public void  set(int folders, int files){
             this.directories = folders;
             this.files = files;
         }
-        int getTotal(){
+        public int getTotal(){
             return directories + files;
         }
     }
@@ -51,10 +56,9 @@ public class DirectoryAnalysis {
     public DirectoryAnalysis (File dir){
     root = parseDirectoryToTreeAndList(dir);
 
-
         Log.appendTextTimed("\n------------ Processed Folder: <<   " + root.getValue().getName() +  "   >>    size: " + OsUtil.sizeAdopt(root.getValue().length) + "\n" + //"  ( " + root.getValue().directorySize + " )\n" + "\n" +
                 "Path: " + root.getValue().getAbsolutePath() + "\n" +
-                "Directories: " + rooStat.directories + "\tFiles: " + rooStat.files + "\tTotal: " + rooStat.getTotal() + "\n" +
+                "Directories: " + statistic.directories + "\tFiles: " + statistic.files + "\tTotal: " + statistic.getTotal() + "\n" +
                 "....Observable list: " + observableList.size() );
 
     }
@@ -65,7 +69,6 @@ public class DirectoryAnalysis {
             return null;
         }
 
-
         // +++ Creating FileItem item +++
         FileItem fileItem = new FileItem(file);
         TreeItem<FileItem> treeItem = new TreeItem<>(fileItem);
@@ -75,12 +78,12 @@ public class DirectoryAnalysis {
 
         // it is ---File---:
         if (file.isFile()) {
-            rooStat.files ++;
+            statistic.files ++;
             return treeItem;
         }
 
         // it is ---Directory---
-        rooStat.directories++;
+        statistic.directories++;
 
         // Получаем все файлы и папки в текущей директории
         File[] files = file.listFiles();
@@ -98,7 +101,6 @@ public class DirectoryAnalysis {
         return treeItem;
 
     }
-
 
 
     public void configureTreeItemStyle(TreeView<FileItem> treeView){
@@ -157,6 +159,13 @@ public class DirectoryAnalysis {
     public TreeItem<FileItem> getRootDirOnly() {
 
         if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
+        //Calculate statistics
+//        TreeItemTraverse.each(root, ti->{
+//            rootCount.getAndIncrement();
+//        });
+
+
+
 //        AtomicInteger rootCount= new AtomicInteger();
 //        AtomicInteger filteredCount = new AtomicInteger();
 //        TreeItemTraverse.each(root, ti->{
