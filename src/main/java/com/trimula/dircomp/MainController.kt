@@ -9,6 +9,8 @@ import com.trimula.dircomp.model.DataTableView
 import com.trimula.dircomp.model.FileItem
 import com.trimula.dircomp.view.ContentMenu
 import com.trimula.dircomp.view.UiTreeView
+import com.trimula.dircomp.view.tiny.DirectoryStatusBar
+import com.trimula.dircomp.view.tiny.ToggleGroupSingleStaySelected
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.Node
@@ -63,7 +65,7 @@ class MainController {
     @FXML    lateinit var tb1All:       ToggleButton
     @FXML    lateinit var tb1FullMatch: ToggleButton
     @FXML    lateinit var tb1Similar:   ToggleButton
-    @FXML    lateinit var tb1Suspected: ToggleButton
+    @FXML    lateinit var tb1Suspect: ToggleButton
     @FXML    lateinit var tb1Unique:    ToggleButton
 
     @FXML    lateinit var tb1DirAndFile:    ToggleButton
@@ -77,28 +79,54 @@ class MainController {
     @FXML    lateinit var tb2All:       ToggleButton
     @FXML    lateinit var tb2FullMatch: ToggleButton
     @FXML    lateinit var tb2Similar:   ToggleButton
-    @FXML    lateinit var tb2Suspected: ToggleButton
+    @FXML    lateinit var tb2Suspect: ToggleButton
     @FXML    lateinit var tb2Unique:    ToggleButton
 
     @FXML    lateinit var tb2DirAndFile:ToggleButton
     @FXML    lateinit var tb2DirOnly:   ToggleButton
     @FXML    lateinit var tb2FileOnly:  ToggleButton
 
+    @FXML    lateinit var l1Total                   : Label
+    @FXML    lateinit var l1TotalFiltered           : Label
+    @FXML    lateinit var l1Directories             : Label
+    @FXML    lateinit var l1DirectoriesFiltered     : Label
+    @FXML    lateinit var l1Files                   : Label
+    @FXML    lateinit var l1FilesFiltered           : Label
+
+    @FXML    lateinit var l2Total                   : Label
+    @FXML    lateinit var l2TotalFiltered           : Label
+    @FXML    lateinit var l2Directories             : Label
+    @FXML    lateinit var l2DirectoriesFiltered     : Label
+    @FXML    lateinit var l2Files                   : Label
+    @FXML    lateinit var l2FilesFiltered           : Label
+
     @FXML    private lateinit var ivSettings: ImageView
     @FXML    private lateinit var tpSettings: TabPane
+
 
     private val progressBarTextDuringCompare = "Compare in progress: "
 
     private var directory1: File? = null
     private var directory2: File? = null
     private lateinit var comparator: Comparator
+    // labels in status bar: update in Comparator.processDirectories and after filtering
+//    private val dir1StatusBar : DiectoryStatusBar = DiectoryStatusBar(l1Files,l1FilesFiltered,l1Directories,l1DirectoriesFiltered)
+//    private val dir2StatusBar : DiectoryStatusBar = DiectoryStatusBar(l2Files,l2FilesFiltered,l2Directories,l2DirectoriesFiltered)
+    private lateinit var dir1StatusBar : DirectoryStatusBar
+    private lateinit var dir2StatusBar : DirectoryStatusBar
 
-    private lateinit var tg1DirView: ToggleGroup
-    private lateinit var tg2DirView: ToggleGroup
-    private lateinit var tg1Type: ToggleGroup
-    private lateinit var tg2Type: ToggleGroup
-    private lateinit var tg1Filter: ToggleGroup
-    private lateinit var tg2Filter: ToggleGroup
+
+
+    private lateinit var tg1DirView:    ToggleGroup
+    private lateinit var tg2DirView:    ToggleGroup
+    private lateinit var tg1Type:       ToggleGroup
+    private lateinit var tg2Type:       ToggleGroup
+    private lateinit var tg1Filter:     ToggleGroup
+    private lateinit var tg2Filter:     ToggleGroup
+//    private  val tgs1Filter = ToggleGroupSingleStaySelected (tb1All, tb1FullMatch, tb1Similar, tb1Suspect, tb1Unique)
+//    private  val tgs2Filter = ToggleGroupSingleStaySelected (tb2All, tb2FullMatch, tb2Similar, tb2Suspect, tb2Unique)
+    private lateinit var tgs1Filter : ToggleGroupSingleStaySelected
+    private lateinit var tgs2Filter : ToggleGroupSingleStaySelected
 
 
     private val isProcessing = AtomicBoolean(false)
@@ -113,6 +141,8 @@ class MainController {
         progressBarShow(false)
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
 
+        tgs1Filter = ToggleGroupSingleStaySelected (tb1All, tb1FullMatch, tb1Similar, tb1Suspect, tb1Unique)
+        tgs2Filter = ToggleGroupSingleStaySelected (tb2All, tb2FullMatch, tb2Similar, tb2Suspect, tb2Unique)
 
         // Инициализация группы
         tg1DirView = ToggleGroup()
@@ -135,20 +165,23 @@ class MainController {
         tbDir2ViewTree.isSelected = true
 
 
-        tb1All.toggleGroup          = tg1Filter
-        tb1FullMatch.toggleGroup    = tg1Filter
-        tb1Similar.toggleGroup      = tg1Filter
-        tb1Suspected.toggleGroup    = tg1Filter
-        tb1Unique.toggleGroup       = tg1Filter
-        tb1All.isSelected = true
+//        tb1All.toggleGroup          = tg1Filter
+//        tb1FullMatch.toggleGroup    = tg1Filter
+//        tb1Similar.toggleGroup      = tg1Filter
+//        tb1Suspected.toggleGroup    = tg1Filter
+//        tb1Unique.toggleGroup       = tg1Filter
+//        tb1All.isSelected = true
 
         //tbDir2ViewMatchToSelectedIn1.toggleGroup = tg2Filter
-        tb2All.toggleGroup = tg2Filter
-        tb2FullMatch.toggleGroup = tg2Filter
-        tb2Similar.toggleGroup = tg2Filter
-        tb2Suspected.toggleGroup = tg2Filter
-        tb2Unique.toggleGroup = tg2Filter
-        tb2All.isSelected = true
+//        tb2All.toggleGroup = tg2Filter
+//        tb2FullMatch.toggleGroup = tg2Filter
+//        tb2Similar.toggleGroup = tg2Filter
+//        tb2Suspected.toggleGroup = tg2Filter
+//        tb2Unique.toggleGroup = tg2Filter
+//        tb2All.isSelected = true
+
+        dir1StatusBar = DirectoryStatusBar(l1Files,l1FilesFiltered,l1Directories,l1DirectoriesFiltered, l1Total,l1TotalFiltered)
+        dir2StatusBar = DirectoryStatusBar(l2Files,l2FilesFiltered,l2Directories,l2DirectoriesFiltered, l2Total,l2TotalFiltered)
 
         tb1DirAndFile.toggleGroup       = tg1Type
         tb1DirOnly.toggleGroup          = tg1Type
@@ -161,6 +194,8 @@ class MainController {
         tb2DirAndFile.isSelected = true
 
         comparator = Comparator()
+        dir1StatusBar.reset()
+        dir2StatusBar.reset()
 
 
         //TableView Configuration
@@ -261,9 +296,12 @@ class MainController {
                     comparator.fillAllDir2(treeViewDir2)
                     //hBoxProgress.isVisible = false
                     progressBarShow(false)
+                    dir1StatusBar.update(comparator.da1.statistic.directories, comparator.da1.statistic.files)
+                    dir2StatusBar.update(comparator.da2.statistic.directories, comparator.da2.statistic.files)
                 }
             }
         }
+
     }
 
 
@@ -281,7 +319,7 @@ class MainController {
         return directory.walk().toList()
     }
 
-
+    //-----------------------------------------------------------------------------------  Functions ------------------
     private fun setupListeners(){
         // Adding Logs
         Log.addListener (object : Log.LogListener {
@@ -448,12 +486,12 @@ class MainController {
 //    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
 
 
-    // Filters
-    @FXML fun tb1DirAndFile()    { }   //comparator.da1.getfillAllDir1(treeViewDir1)}
-    @FXML fun tb2DirAndFile()    { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
 
-    @FXML fun tb1DirOnly()       { treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
-    @FXML fun tb2DirOnly()       { treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
+//    @FXML fun tb1DirAndFile()    { treeViewDir1.root = comparator.da1.root}   //comparator.da1.getfillAllDir1(treeViewDir1)}
+//    @FXML fun tb2DirAndFile()    { treeViewDir2.root = comparator.da2.root }   // = comparator.fillAllDir2(treeViewDir2)
+//
+//    @FXML fun tb1DirOnly()       { treeViewDir1.root = comparator.da1.rootDirOnly }  // = comparator.fillDirOnly1(treeViewDir1)
+//    @FXML fun tb2DirOnly()       { treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
 
 
     //--------------------------------------- Interface Configuration
@@ -517,43 +555,58 @@ class MainController {
         node.isManaged = true
     }
 
+    //......................................................................................... Filters................
     @FXML fun filterDir1(){
-        when{
-            // Tree
-            tbDir1ViewTree.isSelected -> {
 
-                when{
-                    tb1DirAndFile.isSelected    -> treeViewDir1.root = comparator.da1?.root
-                    tb1DirOnly.isSelected       -> treeViewDir1.root = comparator.da1?.rootDirOnly
+        comparator.da1?.let { da ->
+            when{
+                // Tree
+                tbDir1ViewTree.isSelected -> {
+
+                    when{
+                        tb1DirAndFile.isSelected    -> {
+                            treeViewDir1.root = da.root
+                            dir1StatusBar.update(da.statistic.directories, da.statistic.files)
+                        }
+                        tb1DirOnly.isSelected       ->{
+                            treeViewDir1.root = da.rootDirOnly
+//                            dir1StatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
+
+                        }
+                    }
+
                 }
 
-            }
+                // Table
+                tbDir1ViewTable.isSelected -> {
 
-            // Table
-            tbDir1ViewTable.isSelected -> {
+                    val filterMatch = when {
+                        tb1All.isSelected       -> { _: FileItem -> true }
+                        tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
+                        tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
+                        tb1Suspect.isSelected  ->  { fileItem: FileItem ->  fileItem.isSuspected() }
+                        tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
+                        else -> { _: FileItem -> true }
+                    }
 
-                val filterMatch = when {
-                    tb1All.isSelected       -> { _: FileItem -> true }
-                    tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
-                    tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
-                    tb1Suspected.isSelected  -> { fileItem: FileItem -> fileItem.isSuspected() }
-                    tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
-                    else -> { _: FileItem -> true }
-                }
+                    val filterType = when {
+                        tb1DirAndFile.isSelected    -> { _: FileItem -> true }
+                        tb1DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
+                        tb1FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
+                        else -> { _: FileItem -> true }
+                    }
 
-                val filterType = when {
-                    tb1DirAndFile.isSelected    -> { _: FileItem -> true }
-                    tb1DirOnly.isSelected       -> { fileItem: FileItem -> fileItem.isDirectory }
-                    tb1FileOnly.isSelected      -> { fileItem: FileItem -> !fileItem.isDirectory }
-                    else -> { _: FileItem -> true }
-                }
-
-                // Apply the combined filter
-                comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
-                tableViewDir1.items = comparator.da1.filteredList
+                    // Apply the combined filter
+                    comparator.da1.filteredList.setPredicate { fileItem -> filterMatch(fileItem) && filterType(fileItem) }
+                    tableViewDir1.items = comparator.da1.filteredList
 //                Log.appendText("filteredList to Table 1")
+                }
             }
+
+        } ?: run {
+            Log.addError("DirectoryAnalysis, not defined")
         }
+
 
 
     }
@@ -578,7 +631,7 @@ class MainController {
                     tb2All.isSelected       -> { _: FileItem -> true }
                     tb2FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
                     tb2Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
-                    tb1Suspected.isSelected     -> { fileItem: FileItem -> fileItem.isSuspected() }
+                    tb1Suspect.isSelected     -> { fileItem: FileItem -> fileItem.isSuspected() }
                     tb2Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                     else -> { _: FileItem -> true }
                 }
