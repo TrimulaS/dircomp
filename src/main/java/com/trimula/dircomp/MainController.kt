@@ -1,7 +1,5 @@
 package com.trimula.dircomp
 
-
-
 import com.trimula.dircomp.dataprocessing.Log
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
@@ -106,6 +104,8 @@ class MainController {
     @FXML    private lateinit var tpSettings: TabPane
 
 
+    @FXML    private lateinit var cbTestMode:CheckBox
+
     private val progressBarTextDuringCompare = "Compare in progress: "
 
     private var directory1: File? = null
@@ -114,8 +114,6 @@ class MainController {
 
     private lateinit var dir1StatusBar : DirectoryStatusBar
     private lateinit var dir2StatusBar : DirectoryStatusBar
-
-
 
     private lateinit var tg1DirView:    ToggleGroup
     private lateinit var tg2DirView:    ToggleGroup

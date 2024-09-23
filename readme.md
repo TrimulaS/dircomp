@@ -1,5 +1,9 @@
+![img_2.png](img_2.png)
 
-![img_1.png](img_1.png)
+
+
+
+
 - 
 - progress label - display tracing Dir (1,2) before comparing
 - add tableView
@@ -41,3 +45,4 @@ Bugs:
         });
 
 
+![img_1.png](img_1.png)

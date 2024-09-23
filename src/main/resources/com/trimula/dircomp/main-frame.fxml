@@ -37,7 +37,7 @@
 
 
 
-    <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0">
+    <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0" visible="false">
         <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox style="-fx-background-color: yellow;">
                 <ToolBar VBox.vgrow="NEVER">
@@ -343,7 +343,7 @@
     </VBox>
 
     <!-- Панель настроек (TabPane), по умолчанию скрыта -->
-    <TabPane fx:id="tpSettings" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="0">
+    <TabPane fx:id="tpSettings" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <tabs>
          <Tab text="Settings">
            <content>
@@ -351,10 +351,11 @@
 
                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <children>
-                       <HBox>
+                       <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 5;">
                           <children>
-                             <TextField />
-                             <Button mnemonicParsing="false" text="Button" />
+                              <CheckBox fx:id="cbTestMode" mnemonicParsing="false" selected="true" text="Test Mode, when files deleted it will be moved to:" />
+                             <TextField promptText="C:/tmp/tmp" />
+                             <Button mnemonicParsing="false" text="open" />
                           </children>
                        </HBox>
                     </children>

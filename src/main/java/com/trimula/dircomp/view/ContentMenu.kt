@@ -69,15 +69,17 @@ class ContentMenu {
         fun  addToTableView(tableView: TableView<FileItem>){
             val contextMenu = ContextMenu()
 
-            val miCopy = MenuItem("Copy")
+//            val miCopy = MenuItem("Copy")
+            val miOpenExplorer = MenuItem("Open in explorer")
             val miSelectAll = MenuItem("Select All")
             val miDeleteSelected = MenuItem("Delete Selected")
-            val miConvertTo = MenuItem("Convert to..")
+//            val miConvertTo = MenuItem("Convert to..")
 
             // add menu items to menu
 
 //            contextMenu.items.add(miCopy)
-//            contextMenu.items.add(SeparatorMenuItem())
+            contextMenu.items.add(miOpenExplorer)
+            contextMenu.items.add(SeparatorMenuItem())
             contextMenu.items.add(miSelectAll)
             contextMenu.items.add(SeparatorMenuItem())
             contextMenu.items.add(miDeleteSelected)
@@ -85,6 +87,7 @@ class ContentMenu {
 //            miCut.setOnAction       {tableView.cut() }
 //            miCopy.setOnAction      {     }
 //            miPaste.setOnAction     {codeArea.paste()   }
+            miOpenExplorer.setOnAction {}
             miSelectAll.setOnAction {   tableView.selectionModel.selectAll()  }
             miDeleteSelected.setOnAction {  DataTableView.deleteSelected(tableView)  }
 //            miRedo.setOnAction      {codeArea.redo() }
