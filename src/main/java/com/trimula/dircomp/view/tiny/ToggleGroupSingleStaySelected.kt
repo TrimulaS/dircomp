@@ -1,6 +1,12 @@
 package com.trimula.dircomp.view.tiny
+import com.trimula.dircomp.dataprocessing.Log
+import com.trimula.dircomp.model.DirectoryAnalysis
+import com.trimula.dircomp.model.FileItem
 import javafx.beans.value.ObservableValue
+import javafx.collections.transformation.SortedList
+import javafx.scene.control.TableView
 import javafx.scene.control.ToggleButton
+import javafx.scene.control.TreeView
 
 class ToggleGroupSingleStaySelected(vararg buttons: ToggleButton) {
     private val toggleButtons = mutableListOf<ToggleButton>()
@@ -31,4 +37,11 @@ class ToggleGroupSingleStaySelected(vararg buttons: ToggleButton) {
             }
         }
     }
+
+
+
+
 }
+
+
+

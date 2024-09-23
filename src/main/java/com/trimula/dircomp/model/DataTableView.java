@@ -81,6 +81,9 @@ public class DataTableView {
         tableView.getColumns().clear();
         tableView.getColumns().addAll(nameColumn, sizeBColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
 
+        // Привязка компаратора списка и таблицы для корректной работы сортировки
+
+
     }
 
     public static void deleteSelected(TableView<FileItem> tableView){

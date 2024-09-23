@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -38,6 +39,7 @@ public class DirectoryAnalysis {
     public DirectoryStatistics statisticDirOnly = new DirectoryStatistics();
         //Filtered table:
     private FilteredList<FileItem> filteredList = null;
+    public SortedList<FileItem> filteredSortedList = null;
     public DirectoryStatistics statisticFilteredList = new DirectoryStatistics();
 
 
@@ -205,8 +207,8 @@ public class DirectoryAnalysis {
         if (filteredList == null) {
             filteredList = new FilteredList<>(getObservableList(), fileItem -> true); // Используем лямбда для предиката
 
-            //Listener to calculate statistics when predicate updated, e.g. when filteredList.setPredicate { fileItem -> filterMatch(fileItem) )
 
+            //Listener to calculate statistics when predicate updated, e.g. when filteredList.setPredicate { fileItem -> filterMatch(fileItem) )
             filteredList.predicateProperty().addListener((observable, oldValue, newValue) -> {
 
                 statisticFilteredList.reset();
@@ -218,6 +220,9 @@ public class DirectoryAnalysis {
                     }
                 }
             });
+            // Привязка компаратора списка и таблицы для корректной работы сортировки
+            filteredSortedList = new  SortedList(filteredList);
+            //sortedList.comparatorProperty().bind(tableView.comparatorProperty())
         }
         return filteredList;
     }

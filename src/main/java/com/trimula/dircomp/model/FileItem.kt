@@ -12,8 +12,8 @@ class FileItem  {
     var lastModified:Long =0
     var absolutePath = ""
 
-    var same:    ObservableList<FileItem>? = null    //= FXCollections.observableArrayList()
-    var similar: ObservableList<FileItem>? = null    //.observableArrayList()
+    var same:    ObservableList<FileItem> =FXCollections.observableArrayList()// null    //= FXCollections.observableArrayList()
+    var similar: ObservableList<FileItem> =FXCollections.observableArrayList()// null    //.observableArrayList()
     var isDirectory = false
 
 

@@ -172,7 +172,7 @@
                     </VBox>
 
                 </StackPane>
-                    <HBox prefHeight="100.0" prefWidth="200.0">
+                    <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
 
                         <Label text=" Total: " />
                         <Label fx:id="l1Total" style="-fx-font-weight: bold;" text="?" />
@@ -314,7 +314,7 @@
 
 
                             </StackPane>
-                            <HBox prefHeight="100.0" prefWidth="200.0">
+                            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
 
                                 <Label text=" Total: " />
                                 <Label fx:id="l2Total" style="-fx-font-weight: bold;" text="?" />
