@@ -11,7 +11,6 @@ import com.trimula.dircomp.model.FileItem
 import com.trimula.dircomp.view.ContentMenu
 import com.trimula.dircomp.view.UiTreeView
 import com.trimula.dircomp.view.tiny.DirectoryStatusBar
-import com.trimula.dircomp.view.tiny.ToggleGroupSingleStaySelected
 import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.Node
@@ -54,20 +53,21 @@ class MainController {
     @FXML    lateinit var hBoxProgress: HBox
 
     @FXML    lateinit var cbSyncSelection: CheckBox
+    @FXML    lateinit var cbScrollTo: CheckBox
     @FXML    lateinit var buttonCancelProcessing: Button
 
     // These button state should use to identify view type: Tree or Table
-    @FXML    lateinit var tbDir1ViewTree: ToggleButton
-    @FXML    lateinit var tbDir1ViewTable: ToggleButton
-    @FXML    lateinit var tbDir2ViewTree: ToggleButton
-    @FXML    lateinit var tbDir2ViewTable: ToggleButton
-    @FXML    lateinit var tbDir2ViewAsMatchedTo1:  ToggleButton
+    @FXML    lateinit var tbDir1ViewTree:           ToggleButton
+    @FXML    lateinit var tbDir1ViewTable:          ToggleButton
+    @FXML    lateinit var tbDir2ViewTree:           ToggleButton
+    @FXML    lateinit var tbDir2ViewTable:          ToggleButton
+    @FXML    lateinit var tbDir2ViewAsMatchedTo1:   ToggleButton
 
     @FXML    lateinit var hb1MatchTypeButtonGroup: HBox
     @FXML    lateinit var tb1All:       ToggleButton
     @FXML    lateinit var tb1FullMatch: ToggleButton
     @FXML    lateinit var tb1Similar:   ToggleButton
-    @FXML    lateinit var tb1Suspect: ToggleButton
+    @FXML    lateinit var tb1Suspect:   ToggleButton
     @FXML    lateinit var tb1Unique:    ToggleButton
 
     @FXML    lateinit var tb1DirAndFile:    ToggleButton
@@ -78,11 +78,10 @@ class MainController {
 
 
     @FXML    lateinit var hb2MatchTypeButtonGroup: HBox
-//    @FXML    lateinit var tbDir2ViewMatchToSelectedIn1:ToggleButton
     @FXML    lateinit var tb2All:       ToggleButton
     @FXML    lateinit var tb2FullMatch: ToggleButton
     @FXML    lateinit var tb2Similar:   ToggleButton
-    @FXML    lateinit var tb2Suspect: ToggleButton
+    @FXML    lateinit var tb2Suspect:   ToggleButton
     @FXML    lateinit var tb2Unique:    ToggleButton
 
     @FXML    lateinit var tb2DirAndFile:ToggleButton
@@ -124,10 +123,11 @@ class MainController {
     private lateinit var tg2Type:       ToggleGroup
     private lateinit var tg1Filter:     ToggleGroup
     private lateinit var tg2Filter:     ToggleGroup
+
 //    private  val tgs1Filter = ToggleGroupSingleStaySelected (tb1All, tb1FullMatch, tb1Similar, tb1Suspect, tb1Unique)
 //    private  val tgs2Filter = ToggleGroupSingleStaySelected (tb2All, tb2FullMatch, tb2Similar, tb2Suspect, tb2Unique)
-    private lateinit var tgs1Filter : ToggleGroupSingleStaySelected
-    private lateinit var tgs2Filter : ToggleGroupSingleStaySelected
+//    private lateinit var tgs1Filter : ToggleGroupSingleStaySelected
+//    private lateinit var tgs2Filter : ToggleGroupSingleStaySelected
 
 
     private val isProcessing = AtomicBoolean(false)
@@ -169,7 +169,7 @@ class MainController {
         tb1All.toggleGroup          = tg1Filter
         tb1FullMatch.toggleGroup    = tg1Filter
         tb1Similar.toggleGroup      = tg1Filter
-        tb1Suspect.toggleGroup    = tg1Filter
+        tb1Suspect.toggleGroup      = tg1Filter
         tb1Unique.toggleGroup       = tg1Filter
         tb1All.isSelected = true
 
@@ -223,7 +223,6 @@ class MainController {
         cbDir1Path.value = directory1?.absolutePath
         directory2 = File("C:\\tmp\\Dir2")      //"c:\\Literature")     //"C:\\tmp\\Dir2")   //"C:\\Dist\\IntelliJ") //"c:\\Literature")     //)   //("D:\\Dist\\IntelliJ\\GBTS_Exp")     //("c:\\Inst")
         cbDir2Path.value = directory2?.absolutePath
-
 
         setupListeners()
 
@@ -344,7 +343,7 @@ class MainController {
                     when{
                         tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
                         tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
-                        tbDir2ViewAsMatchedTo1.isSelected -> tableViewDir2.items = selectedItem.value.same
+                        tbDir2ViewAsMatchedTo1.isSelected -> syncProperties(selectedItem.value)
                     }
                 }
             }
@@ -362,7 +361,13 @@ class MainController {
         tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
             if(!isSyncing){
                 selectedItem?.let {
-                    syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
+                    if (tbDir2ViewAsMatchedTo1.isSelected) {
+                        syncProperties(selectedItem)
+                    }
+                    else {
+                        syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
+                    }
+
                 }
             }
         }
@@ -370,7 +375,7 @@ class MainController {
             if(!isSyncing){
                 selectedItem?.let {
                     when{
-                        tbDir1ViewTree.isSelected -> syncSelection(selectedItem, treeViewDir1)
+                        tbDir1ViewTree.isSelected ->  syncSelection(selectedItem, treeViewDir1)
                         tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
                     }
                 }
@@ -411,7 +416,7 @@ class MainController {
                                 treeView.selectionModel.select(treeItemToSelect)
 
                                 // Прокрутка к первому элементу
-                                if (isFirst) {
+                                if (isFirst && cbScrollTo.isSelected) {
                                     treeView.scrollTo(treeView.getRow(treeItemToSelect))
                                     isFirst = false
                                 }
@@ -431,7 +436,7 @@ class MainController {
                             tableView.items.forEachIndexed { index, fi ->
                                 if ( fi.length() == fileItem.length() ) {
                                     tableView.selectionModel.select(index)
-                                    if (isFirst) {
+                                    if (isFirst && cbScrollTo.isSelected) {
                                         tableView.scrollTo(index)
                                         isFirst = false
                                     }
@@ -469,20 +474,20 @@ class MainController {
 //        else hBoxProgress.maxHeight = 0.0
     }
 
-    @FXML fun tv1CollapseAll() =  UiTreeView.collapseAll(treeViewDir1)
-    @FXML fun tv1ExpandAll() =  UiTreeView.expandAll(treeViewDir1)
+    @FXML fun tv1CollapseAll() =    UiTreeView.collapseAll(treeViewDir1)
+    @FXML fun tv1ExpandAll() =      UiTreeView.expandAll(treeViewDir1)
 
-    @FXML fun tv1CollapseLast() =  UiTreeView.collapseLast(treeViewDir1)
-    @FXML fun tv1ExpandLast() =  UiTreeView.expandFirst(treeViewDir1)
+    @FXML fun tv1CollapseLast() =   UiTreeView.collapseLast(treeViewDir1)
+    @FXML fun tv1ExpandLast() =     UiTreeView.expandFirst(treeViewDir1)
 
 //    @FXML fun tv1CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir1)
 //    @FXML fun tv1ExpandSelected() =  UiTreeView.expandSelected(treeViewDir1)
 
-    @FXML fun tv2CollapseAll() =  UiTreeView.collapseAll(treeViewDir2)
-    @FXML fun tv2ExpandAll() =  UiTreeView.expandAll(treeViewDir2)
+    @FXML fun tv2CollapseAll() =    UiTreeView.collapseAll(treeViewDir2)
+    @FXML fun tv2ExpandAll() =      UiTreeView.expandAll(treeViewDir2)
 
-    @FXML fun tv2CollapseLast() =  UiTreeView.collapseLast(treeViewDir2)
-    @FXML fun tv2ExpandLast() =  UiTreeView.expandFirst(treeViewDir2)
+    @FXML fun tv2CollapseLast() =   UiTreeView.collapseLast(treeViewDir2)
+    @FXML fun tv2ExpandLast() =     UiTreeView.expandFirst(treeViewDir2)
 
 //    @FXML fun tv2CollapseSelected() =  UiTreeView.collapseSelected(treeViewDir2)
 //    @FXML fun tv2ExpandSelected() =  UiTreeView.expandSelected(treeViewDir2)
@@ -503,7 +508,7 @@ class MainController {
         when{
             tbDir1ViewTree.isSelected -> {                      // Tree
                 hide ( vb1TableView )
-                hide ( tb1FileOnly )
+//                hide ( tb1FileOnly )
                 hide ( hb1MatchTypeButtonGroup )
 
                 show ( vbTreeView1 )
@@ -513,7 +518,7 @@ class MainController {
 
                 show ( hb1MatchTypeButtonGroup )
                 show ( vb1TableView )
-                show ( tb1FileOnly )
+//                show ( tb1FileOnly )
             }
         }
         filterDir1()
@@ -524,7 +529,7 @@ class MainController {
         when{
             tbDir2ViewTree.isSelected -> {
                 hide ( vb2TableView )
-                hide ( tb2FileOnly )
+//                hide ( tb2FileOnly )
                 hide ( hb2MatchTypeButtonGroup )
 
                 show ( vb2TreeView )
@@ -534,7 +539,7 @@ class MainController {
 
                 show ( hb2MatchTypeButtonGroup )
                 show ( vb2TableView )
-                show ( tb2FileOnly )
+//                show ( tb2FileOnly )
             }
             tbDir2ViewAsMatchedTo1.isSelected -> {
                 hide ( vb2TreeView )
@@ -560,6 +565,12 @@ class MainController {
     //......................................................................................... Filters................
 
 
+    // Mode where
+    private fun syncProperties(fileItem:FileItem){
+        val ds = DirectoryAnalysis.getStatisticFromObservableList(fileItem.same)
+        dir2StatusBar.update(ds.directories,ds.files)
+        tableViewDir2.items = fileItem.same
+    }
 
     @FXML fun filterDir1(){
         filtering(
@@ -584,6 +595,7 @@ class MainController {
             dir1StatusBar   )
     }
     @FXML fun filterDir2(){
+        if(!tbDir2ViewAsMatchedTo1.isSelected)
         filtering(
             comparator.da2,
 
@@ -640,6 +652,10 @@ class MainController {
                             treeView.root = da.rootDirOnly
                             directoryStatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
                         }
+                        fileOnly.isSelected     ->{
+                            treeView.root = da.rootSameFileOnly
+                            directoryStatusBar.updateFiltered(da.statisticSameFileOnly.directories, da.statisticSameFileOnly.files)
+                        }
                     }
                 }
 
@@ -684,7 +700,7 @@ class MainController {
 
 
                     //Show statistics
-                    directoryStatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
+                    directoryStatusBar.updateFiltered(da.statisticFilteredList.directories, da.statisticFilteredList.files)
 
                     //                Log.appendText("filteredList to Table 1")
                 }

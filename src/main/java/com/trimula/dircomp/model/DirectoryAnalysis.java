@@ -36,7 +36,10 @@ public class DirectoryAnalysis {
     // Statistics same to root
         // Filtered tree
     private TreeItem<FileItem> rootDirOnly = null;
-    public DirectoryStatistics statisticDirOnly = new DirectoryStatistics();
+    public DirectoryStatistics statisticDirOnly = null;
+
+    private TreeItem<FileItem> rootSameFileOnly = null;
+    public DirectoryStatistics statisticSameFileOnly = null;
         //Filtered table:
     private FilteredList<FileItem> filteredList = null;
     public SortedList<FileItem> filteredSortedList = null;
@@ -45,7 +48,7 @@ public class DirectoryAnalysis {
 
 
     // Inline class To store statistics for directories and filtered representation
-    public class DirectoryStatistics{
+    public static class DirectoryStatistics{
         public int directories = 0, files = 0;
 //        public void  set(int folders, int files){
 //            this.directories = folders;
@@ -164,32 +167,80 @@ public class DirectoryAnalysis {
     }
 
 
-
+    //-------------------------------------------------------------------------------------filtered Trees and Lists---------
     public TreeItem<FileItem> getRootDirOnly() {
 
-        if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
-        //Calculate statistics
-        statisticDirOnly.reset();
-        TreeItemTraverse.each(rootDirOnly, ti->{
-            if(ti.getValue().isDirectory())statisticDirOnly.directories++;
-            else statisticDirOnly.files++;
-        });
+        if(rootDirOnly == null) {
+            rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
+
+            //Calculate statistics
+            statisticDirOnly = new DirectoryStatistics();
+            TreeItemTraverse.each(rootDirOnly, ti->{
+                if(ti.getValue().isDirectory())statisticDirOnly.directories++;
+                else statisticDirOnly.files++;
+            });
+        }
 
 
 
-//        AtomicInteger rootCount= new AtomicInteger();
-//        AtomicInteger filteredCount = new AtomicInteger();
-//        TreeItemTraverse.each(root, ti->{
-//            rootCount.getAndIncrement();
-//        });
-//        TreeItemTraverse.each(root, ti->{
-//            filteredCount.getAndIncrement();
-//        });
-//        Log.appendTextTimed("Filtering dir only: " +filteredCount.get()+ "  total: "+rootCount.get());
         rootDirOnly.setExpanded(true);
         return rootDirOnly;
     }
 
+    //.......................................................................build root with same files only...........
+    public TreeItem<FileItem> getRootSameFileOnly(){
+        if(rootSameFileOnly==null){
+            rootSameFileOnly = filterTreeItemByIsMultiple(root)
+;
+            //Calculate statistics
+            statisticSameFileOnly = new DirectoryStatistics();
+            TreeItemTraverse.each(rootSameFileOnly, ti->{
+                if(ti.getValue().isDirectory())statisticSameFileOnly.directories++;
+                else statisticSameFileOnly.files++;
+            });
+        }
+        return rootSameFileOnly;
+    }
+
+
+
+    // Function to filter TreeItem<FileItem> nodes where any node or its descendants have isMultiple == true
+    private TreeItem<FileItem> filterTreeItemByIsMultiple(TreeItem<FileItem> original) {
+        // Create a new root for the filtered tree
+        TreeItem<FileItem> filteredRoot = new TreeItem<>(original.getValue());
+
+        // Recursively filter the children and build the tree
+        if (filterChildren(original, filteredRoot)) {
+            return filteredRoot; // If any valid children were added, return the filtered root
+        } else {
+            return null; // If no valid children were added and root is not valid, return null
+        }
+    }
+
+    // Helper recursive function to filter children and add to the new TreeItem
+// Returns true if the filteredNode should be kept (i.e., it has isMultiple == true or contains children that have isMultiple == true)
+    private boolean filterChildren(TreeItem<FileItem> originalNode, TreeItem<FileItem> filteredNode) {
+        boolean hasValidChild = false;
+
+        for (TreeItem<FileItem> child : originalNode.getChildren()) {
+            TreeItem<FileItem> newChild = new TreeItem<>(child.getValue());
+
+            // Recursively process the child's children
+            boolean childHasValidDescendant = filterChildren(child, newChild);
+
+            // If this child has isMultiple == true or has valid descendants, add it to the filteredNode
+            if (!child.getValue().getSame().isEmpty() || childHasValidDescendant) {
+                filteredNode.getChildren().add(newChild);
+                hasValidChild = true;  // Mark that we found a valid child
+            }
+        }
+
+        // Return true if this node has valid children or if it itself is valid
+        return !originalNode.getValue().getSame().isEmpty() || hasValidChild;
+    }
+
+
+//..............................................................................................................
 
     public ObservableList<FileItem> getObservableList() {
 //        if(observableList == null){
@@ -210,21 +261,32 @@ public class DirectoryAnalysis {
 
             //Listener to calculate statistics when predicate updated, e.g. when filteredList.setPredicate { fileItem -> filterMatch(fileItem) )
             filteredList.predicateProperty().addListener((observable, oldValue, newValue) -> {
-
-                statisticFilteredList.reset();
-                for (FileItem fi : filteredList) {
-                    if (fi.isDirectory()) {
-                        statisticFilteredList.directories++;
-                    } else {
-                        statisticFilteredList.files++;
-                    }
-                }
+                statisticFilteredList = getStatisticFromObservableList(filteredSortedList);
+//                statisticFilteredList.reset();
+//                for (FileItem fi : filteredList) {
+//                    if (fi.isDirectory()) {
+//                        statisticFilteredList.directories++;
+//                    } else {
+//                        statisticFilteredList.files++;
+//                    }
+//                }
             });
             // Привязка компаратора списка и таблицы для корректной работы сортировки
             filteredSortedList = new  SortedList(filteredList);
             //sortedList.comparatorProperty().bind(tableView.comparatorProperty())
         }
         return filteredList;
+    }
+    public static DirectoryStatistics getStatisticFromObservableList(ObservableList<FileItem> ol){
+        DirectoryStatistics ds = new DirectoryStatistics();
+        for (FileItem fi : ol) {
+            if (fi.isDirectory()) {
+                ds.directories++;
+            } else {
+                ds.files++;
+            }
+        }
+        return ds;
     }
 }
 

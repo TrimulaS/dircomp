@@ -39,12 +39,13 @@
 
     <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0">
         <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
-            <VBox>
-                <ToolBar>
+            <VBox style="-fx-background-color: yellow;">
+                <ToolBar VBox.vgrow="NEVER">
                     <CheckBox fx:id="cbSyncSelection" selected="true" text="Sync selection" />
+               <CheckBox fx:id="cbScrollTo" mnemonicParsing="false" selected="true" text="Scroll to" />
                     <Button fx:id="buttonCompare" onAction="#onCompareClicked" text="Compare" />
                 </ToolBar>
-                <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
+                <SplitPane dividerPositions="0.5" orientation="HORIZONTAL" VBox.vgrow="ALWAYS">
                     <VBox fx:id="paneDirectory1">
                         <HBox>
                             <ComboBox fx:id="cbDir1Path" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
@@ -150,7 +151,7 @@
                                 </graphic>
                             </ToggleButton>
                         </ToolBar>
-                    <StackPane>
+                    <StackPane VBox.vgrow="ALWAYS">
 
                     <VBox fx:id="vb1TableView">
                         <TableView fx:id="tableViewDir1" maxHeight="Infinity">
@@ -172,7 +173,7 @@
                     </VBox>
 
                 </StackPane>
-                    <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                    <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
 
                         <Label text=" Total: " />
                         <Label fx:id="l1Total" style="-fx-font-weight: bold;" text="?" />
@@ -292,7 +293,7 @@
                                     </graphic>
                                 </ToggleButton>
                             </ToolBar>
-                            <StackPane>
+                            <StackPane VBox.vgrow="ALWAYS">
                                 <VBox fx:id="vb2TableView">
 
                                   <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
@@ -314,7 +315,7 @@
 
 
                             </StackPane>
-                            <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                            <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
 
                                 <Label text=" Total: " />
                                 <Label fx:id="l2Total" style="-fx-font-weight: bold;" text="?" />
