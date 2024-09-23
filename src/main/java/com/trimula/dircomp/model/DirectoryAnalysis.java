@@ -3,6 +3,7 @@ package com.trimula.dircomp.model;
 import com.trimula.dircomp.dataprocessing.Log;
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -31,6 +32,7 @@ public class DirectoryAnalysis {
     public DirectoryStatistics statistic = new DirectoryStatistics();
         //Table - statistic same to root
     private ObservableList<FileItem> observableList =  FXCollections.observableArrayList();  //null;
+    // Statistics same to root
         // Filtered tree
     private TreeItem<FileItem> rootDirOnly = null;
     public DirectoryStatistics statisticDirOnly = new DirectoryStatistics();
@@ -43,18 +45,23 @@ public class DirectoryAnalysis {
     // Inline class To store statistics for directories and filtered representation
     public class DirectoryStatistics{
         public int directories = 0, files = 0;
-        public void  set(int folders, int files){
-            this.directories = folders;
-            this.files = files;
-        }
+//        public void  set(int folders, int files){
+//            this.directories = folders;
+//            this.files = files;
+//        }
         public int getTotal(){
             return directories + files;
+        }
+        public void reset(){
+            directories = 0;
+            files = 0;
         }
     }
 
     // I. Parse directory - fill up root
     public DirectoryAnalysis (File dir){
-    root = parseDirectoryToTreeAndList(dir);
+        statistic.reset();
+        root = parseDirectoryToTreeAndList(dir);
 
         Log.appendTextTimed("\n------------ Processed Folder: <<   " + root.getValue().getName() +  "   >>    size: " + OsUtil.sizeAdopt(root.getValue().length) + "\n" + //"  ( " + root.getValue().directorySize + " )\n" + "\n" +
                 "Path: " + root.getValue().getAbsolutePath() + "\n" +
@@ -160,9 +167,11 @@ public class DirectoryAnalysis {
 
         if(rootDirOnly == null) rootDirOnly = TreeItemTraverse.filterTree(root,FileItem :: isDirectory);
         //Calculate statistics
-//        TreeItemTraverse.each(root, ti->{
-//            rootCount.getAndIncrement();
-//        });
+        statisticDirOnly.reset();
+        TreeItemTraverse.each(rootDirOnly, ti->{
+            if(ti.getValue().isDirectory())statisticDirOnly.directories++;
+            else statisticDirOnly.files++;
+        });
 
 
 
@@ -190,15 +199,28 @@ public class DirectoryAnalysis {
 //        }
         return observableList;
     }
+
+    // Getter for Filtered list - if i is not requested filtered list wil not be created
     public FilteredList<FileItem> getFilteredList() {
         if (filteredList == null) {
             filteredList = new FilteredList<>(getObservableList(), fileItem -> true); // Используем лямбда для предиката
+
+            //Listener to calculate statistics when predicate updated, e.g. when filteredList.setPredicate { fileItem -> filterMatch(fileItem) )
+
+            filteredList.predicateProperty().addListener((observable, oldValue, newValue) -> {
+
+                statisticFilteredList.reset();
+                for (FileItem fi : filteredList) {
+                    if (fi.isDirectory()) {
+                        statisticFilteredList.directories++;
+                    } else {
+                        statisticFilteredList.files++;
+                    }
+                }
+            });
         }
         return filteredList;
     }
-
-
-
 }
 
 

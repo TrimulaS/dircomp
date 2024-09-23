@@ -175,14 +175,14 @@
                     <HBox prefHeight="100.0" prefWidth="200.0">
 
                         <Label text=" Total: " />
-                        <Label fx:id="l1Total" text="?" />
-                        <Label fx:id="l1TotalFiltered" text=" / ( ? )" />
+                        <Label fx:id="l1Total" style="-fx-font-weight: bold;" text="?" />
+                        <Label fx:id="l1TotalAll" text="  ( ? )" />
                         <Label text="   Folders: " />
-                        <Label fx:id="l1Directories" text="?" />
-                        <Label fx:id="l1DirectoriesFiltered" text=" / ( ? )" />
+                        <Label fx:id="l1Directories" style="-fx-font-weight: bold;" text="?" />
+                        <Label fx:id="l1DirectoriesAll" text="  ( ? )" />
                         <Label text="   Files: " />
-                        <Label fx:id="l1Files" text="?" />
-                        <Label fx:id="l1FilesFiltered" text=" / ( ? )" />
+                        <Label fx:id="l1Files" style="-fx-font-weight: bold;" text="?" />
+                        <Label fx:id="l1FilesAll" text="  ( ? )" />
 
                     </HBox>
 
@@ -317,14 +317,14 @@
                             <HBox prefHeight="100.0" prefWidth="200.0">
 
                                 <Label text=" Total: " />
-                                <Label fx:id="l2Total" text="?" />
-                                <Label fx:id="l2TotalFiltered" text=" / ( ? )" />
+                                <Label fx:id="l2Total" style="-fx-font-weight: bold;" text="?" />
+                                <Label fx:id="l2TotalAll" text="  ( ? )" />
                                 <Label text="   Folders: " />
-                                <Label fx:id="l2Directories" text="?" />
-                                <Label fx:id="l2DirectoriesFiltered" text=" / ( ? )" />
+                                <Label fx:id="l2Directories" style="-fx-font-weight: bold;" text="?" />
+                                <Label fx:id="l2DirectoriesAll" text="  ( ? )" />
                                 <Label text="   Files: " />
-                                <Label fx:id="l2Files" text="?" />
-                                <Label fx:id="l2FilesFiltered" text=" / ( ? )" />
+                                <Label fx:id="l2Files" style="-fx-font-weight: bold;" text="?" />
+                                <Label fx:id="l2FilesAll" text="  ( ? )" />
 
                             </HBox>
 

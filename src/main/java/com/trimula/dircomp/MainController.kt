@@ -86,19 +86,19 @@ class MainController {
     @FXML    lateinit var tb2DirOnly:   ToggleButton
     @FXML    lateinit var tb2FileOnly:  ToggleButton
 
-    @FXML    lateinit var l1Total                   : Label
-    @FXML    lateinit var l1TotalFiltered           : Label
-    @FXML    lateinit var l1Directories             : Label
-    @FXML    lateinit var l1DirectoriesFiltered     : Label
-    @FXML    lateinit var l1Files                   : Label
-    @FXML    lateinit var l1FilesFiltered           : Label
+    @FXML    lateinit var l1Total              : Label
+    @FXML    lateinit var l1TotalAll           : Label
+    @FXML    lateinit var l1Directories        : Label
+    @FXML    lateinit var l1DirectoriesAll     : Label
+    @FXML    lateinit var l1Files              : Label
+    @FXML    lateinit var l1FilesAll           : Label
 
-    @FXML    lateinit var l2Total                   : Label
-    @FXML    lateinit var l2TotalFiltered           : Label
-    @FXML    lateinit var l2Directories             : Label
-    @FXML    lateinit var l2DirectoriesFiltered     : Label
-    @FXML    lateinit var l2Files                   : Label
-    @FXML    lateinit var l2FilesFiltered           : Label
+    @FXML    lateinit var l2Total              : Label
+    @FXML    lateinit var l2TotalAll           : Label
+    @FXML    lateinit var l2Directories        : Label
+    @FXML    lateinit var l2DirectoriesAll     : Label
+    @FXML    lateinit var l2Files              : Label
+    @FXML    lateinit var l2FilesAll           : Label
 
     @FXML    private lateinit var ivSettings: ImageView
     @FXML    private lateinit var tpSettings: TabPane
@@ -109,9 +109,7 @@ class MainController {
     private var directory1: File? = null
     private var directory2: File? = null
     private lateinit var comparator: Comparator
-    // labels in status bar: update in Comparator.processDirectories and after filtering
-//    private val dir1StatusBar : DiectoryStatusBar = DiectoryStatusBar(l1Files,l1FilesFiltered,l1Directories,l1DirectoriesFiltered)
-//    private val dir2StatusBar : DiectoryStatusBar = DiectoryStatusBar(l2Files,l2FilesFiltered,l2Directories,l2DirectoriesFiltered)
+
     private lateinit var dir1StatusBar : DirectoryStatusBar
     private lateinit var dir2StatusBar : DirectoryStatusBar
 
@@ -180,8 +178,9 @@ class MainController {
 //        tb2Unique.toggleGroup = tg2Filter
 //        tb2All.isSelected = true
 
-        dir1StatusBar = DirectoryStatusBar(l1Files,l1FilesFiltered,l1Directories,l1DirectoriesFiltered, l1Total,l1TotalFiltered)
-        dir2StatusBar = DirectoryStatusBar(l2Files,l2FilesFiltered,l2Directories,l2DirectoriesFiltered, l2Total,l2TotalFiltered)
+        // labels in status bar: update in Comparator.processDirectories and after filtering
+        dir1StatusBar = DirectoryStatusBar(l1Files,l1FilesAll,l1Directories,l1DirectoriesAll, l1Total,l1TotalAll)
+        dir2StatusBar = DirectoryStatusBar(l2Files,l2FilesAll,l2Directories,l2DirectoriesAll, l2Total,l2TotalAll)
 
         tb1DirAndFile.toggleGroup       = tg1Type
         tb1DirOnly.toggleGroup          = tg1Type
@@ -494,7 +493,7 @@ class MainController {
 //    @FXML fun tb2DirOnly()       { treeViewDir2.root = comparator.da2.rootDirOnly }  //  = comparator.fillDirOnly2(treeViewDir2)
 
 
-    //--------------------------------------- Interface Configuration
+    //--------------------------------------------------------------- Interface Configuration--------------------------
     @FXML
     fun dir1ViewChange() {
 
@@ -570,7 +569,7 @@ class MainController {
                         }
                         tb1DirOnly.isSelected       ->{
                             treeViewDir1.root = da.rootDirOnly
-//                            dir1StatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
+                            dir1StatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
 
                         }
                     }
@@ -584,7 +583,7 @@ class MainController {
                         tb1All.isSelected       -> { _: FileItem -> true }
                         tb1FullMatch.isSelected -> { fileItem: FileItem -> fileItem.same!!.isNotEmpty() }
                         tb1Similar.isSelected   -> { fileItem: FileItem -> fileItem.similar!!.isNotEmpty() }
-                        tb1Suspect.isSelected  ->  { fileItem: FileItem ->  fileItem.isSuspected() }
+                        tb1Suspect.isSelected   -> { fileItem: FileItem -> fileItem.isSuspected() }
                         tb1Unique.isSelected    -> { fileItem: FileItem -> fileItem.same!!.isEmpty() && fileItem.similar!!.isEmpty() }
                         else -> { _: FileItem -> true }
                     }
