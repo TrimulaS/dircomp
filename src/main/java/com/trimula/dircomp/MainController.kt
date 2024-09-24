@@ -139,6 +139,7 @@ class MainController {
         hide( tpSettings )
         progressBarShow(false)
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+        if(! vbMainInterface.isVisible || tpSettings.isVisible) onSettingsClick()
 
 //        tgs1Filter = ToggleGroupSingleStaySelected (tb1All, tb1FullMatch, tb1Similar, tb1Suspect, tb1Unique)
 //        tgs2Filter = ToggleGroupSingleStaySelected (tb2All, tb2FullMatch, tb2Similar, tb2Suspect, tb2Unique)
@@ -238,7 +239,7 @@ class MainController {
             lProgress.text = "$progressBarTextDuringCompare:  $txt  "
         }
 
-        Log.appendTextTimed("Comparator initialized")
+        //Log.appendTextTimed("Comparator initialized")
 
     }
 
@@ -450,7 +451,11 @@ class MainController {
 
     }
 
-        //Changed to FindBy Value
+    @FXML fun turnTestMode() {
+        ContentMenu.isTestMode = cbTestMode.isSelected
+    }
+
+    //Changed to FindBy Value
 //    // Рекурсивная функция для поиска TreeItem по значению FileItem
 //    private fun findTreeItem(treeItem: TreeItem<FileItem>, fi: FileItem): TreeItem<FileItem>? {
 //        if (treeItem.value == fi) return treeItem
@@ -708,7 +713,7 @@ class MainController {
 
 
         } ?: run {
-            Log.addError("DirectoryAnalysis, not defined")
+            //Log.addError("DirectoryAnalysis, not defined")
         }
 
 

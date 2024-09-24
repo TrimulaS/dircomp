@@ -86,6 +86,7 @@ public class DataTableView {
 
     }
 
+    // It is working code:
     public static void deleteSelected(TableView<FileItem> tableView){
         ObservableList<FileItem> selectedFiles = tableView.getSelectionModel().getSelectedItems();
         // Проверяем, есть ли выделенные элементы
@@ -100,7 +101,6 @@ public class DataTableView {
         for (FileItem fileItem : selectedFiles) {
                 boolean deleted = OsUtil.deleteToTmp(fileItem);    //fileItem.delete();
         }
-
         // Удаление выделенных строк из TableView
         tableView.getItems().removeAll(selectedFiles);
     }

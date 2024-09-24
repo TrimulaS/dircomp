@@ -162,8 +162,6 @@ public class DirectoryAnalysis {
             }
         });
 
-
-
     }
 
 
@@ -199,6 +197,7 @@ public class DirectoryAnalysis {
                 else statisticSameFileOnly.files++;
             });
         }
+        rootSameFileOnly.setExpanded(true);
         return rootSameFileOnly;
     }
 
