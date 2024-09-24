@@ -3,7 +3,6 @@ package com.trimula.dircomp.model;
 import com.trimula.dircomp.dataprocessing.Log;
 import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -100,6 +99,7 @@ public class DirectoryAnalysis {
         // Получаем все файлы и папки в текущей директории
         File[] files = file.listFiles();
         if (files != null) {
+            if(files.length > 0)fileItem.setEmpty(false);
             for (File f : files) {
 
                 TreeItem<FileItem> childTreeItem = parseDirectoryToTreeAndList(f);
@@ -132,16 +132,24 @@ public class DirectoryAnalysis {
 
 
 
-            //Icons
-            private final ImageView fileIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_16x16.png")));
-            private final ImageView folderIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderW10_16x16.png")));
+//            //Icons
+//            private final ImageView fileIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_16x16.png")));
+//            private final ImageView folderIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderW10_16x16.png")));
+//            private final ImageView folderEmptyIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyW10_16x16.png")));
+//
+//            private final ImageView fileX2Icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_x2__16x16.png")));
+//            private final ImageView folderX2Icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderW10r_x2.png")));
+//            private final ImageView folderX2EmptyIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyW10_x2__16x16.png")));
+//
+//            private final ImageView fileX3Icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_x3__16x16.png")));
+//            private final ImageView folderX3Icon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderW10_x3__16x16.png")));
+//            private final ImageView folderX3EmptyIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyW10_x3__16x16.png")));
+//
+//            private final ImageView fileXNIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileW10_xN__16x16.png")));
+//            private final ImageView folderXNIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderW10_xN__16x16.png")));
+//            private final ImageView folderXNEmptyIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyW10_xN__16x16.png")));
 
-            private final ImageView fileMultipleIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileMultipleW10_16x16.png")));
-            private final ImageView folderMultipleIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/folderMultipleW10_16x16.png")));
-
-            private final ImageView  folderEmptyIcon= new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyW10_16x16.png")));
-            private final ImageView  folderEmptyMultipleIcon= new ImageView(new Image(getClass().getResourceAsStream("/icons/folderEmptyMultipleW10_16x16.png")));
-
+            private final ImageView fileSuspectedIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/fileSuspectedW10__16x16.png")));
 
 
             /*@Override*/
@@ -153,16 +161,14 @@ public class DirectoryAnalysis {
                 } else {
                     setText(item.getName());
                     // Устанавливаем иконки в зависимости от того, файл это или папка
-                    if (item.isDirectory()) {
-                        setGraphic(folderIcon);
-                    } else {
-                        setGraphic(fileIcon);
-                    }
+                    setGraphic(item.getIco());
                 }
             }
         });
 
     }
+
+
 
 
     //-------------------------------------------------------------------------------------filtered Trees and Lists---------
@@ -217,7 +223,7 @@ public class DirectoryAnalysis {
     }
 
     // Helper recursive function to filter children and add to the new TreeItem
-// Returns true if the filteredNode should be kept (i.e., it has isMultiple == true or contains children that have isMultiple == true)
+    // Returns true if the filteredNode should be kept (i.e., it has isMultiple == true or contains children that have isMultiple == true)
     private boolean filterChildren(TreeItem<FileItem> originalNode, TreeItem<FileItem> filteredNode) {
         boolean hasValidChild = false;
 

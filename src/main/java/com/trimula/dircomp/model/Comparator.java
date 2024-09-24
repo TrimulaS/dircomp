@@ -21,7 +21,7 @@ public class Comparator {
     public DirectoryAnalysis da2;
 
     int numOfSameFolders = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
-    final int SAME_FILES_BUFFER_LIMIT = 20;
+    public int sameListLimit = 20;
 
     public void processDirectories(File dir1, File dir2){
         Log.appendTextTimed("Starting processing directories");
@@ -75,11 +75,11 @@ public class Comparator {
                         if(fi1.sameTo(fi2)){      //areSimilar(fi1,fi2)){
 
                             numOfSameFolders ++;
-                            if(fi1.sameSize() < SAME_FILES_BUFFER_LIMIT) {
+                            if(fi1.sameSize() < sameListLimit) {
 //                                Log.appendTextTimed("Same: " + fi1.getAbsolutePath() + fi2.getAbsolutePath() + "size: " + fi1.sameSize());
                                 fi1.sameAdd(fi2);
                             }
-                            if(fi2.sameSize() < SAME_FILES_BUFFER_LIMIT) fi2.sameAdd(fi1);
+                            if(fi2.sameSize() < sameListLimit) fi2.sameAdd(fi1);
                         }
                     }
 
@@ -89,8 +89,8 @@ public class Comparator {
                         if(fi1.sameTo(fi2)){         //areSimilar(fi1,fi2)){
 
                             numOfSameFiles ++;
-                            if(fi1.sameSize() < SAME_FILES_BUFFER_LIMIT) fi1.sameAdd(fi2);
-                            if(fi2.sameSize() < SAME_FILES_BUFFER_LIMIT) fi2.sameAdd(fi1);
+                            if(fi1.sameSize() < sameListLimit) fi1.sameAdd(fi2);
+                            if(fi2.sameSize() < sameListLimit) fi2.sameAdd(fi1);
                         }
 
                     }

@@ -8,10 +8,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,6 +57,35 @@ public class DataTableView {
 
         ContentMenu.Companion.addToTableView( tableView);
 
+
+        // Колонка для иконки файлов/директорий
+        TableColumn<FileItem, Boolean> icoColumn = new TableColumn<>("Ico");
+        icoColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDirectory()));
+
+        // Настраиваем ячейки для отображения иконки
+        icoColumn.setCellFactory(column -> new TableCell<FileItem, Boolean>() {
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(Boolean isFile, boolean empty) {
+                super.updateItem(isFile, empty);
+
+                if (empty || isFile == null) {
+                    setGraphic(null);  // Убираем иконку, если строка пустая
+                } else {
+                    FileItem fileItem = getTableRow().getItem();
+                    // Подставляем иконку в зависимости от значения
+                    imageView.setImage(fileItem.getIco().getImage());
+                    imageView.setPreserveRatio(true);  // Сохраняем пропорции изображения
+                    imageView.setFitHeight(getTableRow().getHeight() - 10);  // Подгоняем под высоту строки, оставляя небольшой отступ
+                    setGraphic(imageView);  // Устанавливаем изображение в ячейку
+                }
+            }
+        });
+
+
+
+
         TableColumn<FileItem, String> nameColumn = new TableColumn<>("File Name");
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
 
@@ -79,12 +107,18 @@ public class DataTableView {
             return new SimpleStringProperty(sdf.format(new Date(cellData.getValue().lastModified())));
         });
         tableView.getColumns().clear();
-        tableView.getColumns().addAll(nameColumn, sizeBColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
+
+        icoColumn.setPrefWidth(30.0);           /// !!! Hardocoded
+        tableView.getColumns().addAll(icoColumn, nameColumn, sizeBColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
 
         // Привязка компаратора списка и таблицы для корректной работы сортировки
 
 
     }
+
+
+
+
 
     // It is working code:
     public static void deleteSelected(TableView<FileItem> tableView){

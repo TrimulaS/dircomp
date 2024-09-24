@@ -14,6 +14,7 @@ import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.Node
 import javafx.scene.control.*
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
@@ -83,7 +84,7 @@ class MainController {
     @FXML    lateinit var tb2Suspect:   ToggleButton
     @FXML    lateinit var tb2Unique:    ToggleButton
 
-    @FXML    lateinit var tb2DirAndFile:ToggleButton
+    @FXML    lateinit var tb2DirAndFile :ToggleButton
     @FXML    lateinit var tb2DirOnly:   ToggleButton
     @FXML    lateinit var tb2FileOnly:  ToggleButton
 
@@ -101,11 +102,13 @@ class MainController {
     @FXML    lateinit var l2Files              : Label
     @FXML    lateinit var l2FilesAll           : Label
 
-    @FXML    private lateinit var ivSettings: ImageView
-    @FXML    private lateinit var tpSettings: TabPane
+    @FXML    private lateinit var ivSettings : ImageView
+    @FXML    private lateinit var tpSettings : TabPane
 
 
-    @FXML    private lateinit var cbTestMode:CheckBox
+    @FXML    private lateinit var cbTestMode : CheckBox
+    @FXML    private lateinit var cbLimitSameList : CheckBox
+    @FXML    private lateinit var sSameListLimit : Spinner<Int>
 
     private val progressBarTextDuringCompare = "Compare in progress: "
 
@@ -137,7 +140,7 @@ class MainController {
     private fun initialize() {
         Log.enableJavaFX()
 
-        hide( tpSettings )
+
         progressBarShow(false)
         progressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
         if(! vbMainInterface.isVisible || tpSettings.isVisible) onSettingsClick()
@@ -225,8 +228,14 @@ class MainController {
         cbDir2Path.value = directory2?.absolutePath
 
         setupListeners()
+        // Settings
+        sSameListLimit.valueFactory = IntegerSpinnerValueFactory(0,255,20)
+        sSameListLimit.valueProperty().addListener { _, _, newValue ->
+            comparator.sameListLimit = newValue
+        }
 
         comparator = Comparator()
+        comparator.sameListLimit = sSameListLimit.value
         // Listeners to update progress during comparison:
         comparator.setBeforeDirectoryParseListener {
             lProgress.text = "Starting parsing directories..  "
@@ -239,6 +248,7 @@ class MainController {
             progressBar.progress = progress
             lProgress.text = "$progressBarTextDuringCompare:  $txt  "
         }
+
 
         //Log.appendTextTimed("Comparator initialized")
 
@@ -756,6 +766,9 @@ class MainController {
             hide( vbMainInterface )
             ivSettings.image = Image(javaClass.getResource("/icons/icoBack.png").toExternalForm())
         }
+    }
+    @FXML fun onSameListLimitChange(){
+        comparator.sameListLimit = sSameListLimit.value
     }
 
 }

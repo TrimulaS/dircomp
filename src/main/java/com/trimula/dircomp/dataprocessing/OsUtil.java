@@ -93,7 +93,7 @@ public class OsUtil {
 
 
 
-    public static boolean confirmDelete(String text) {
+    public static boolean confirmDelete (String text) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Confirmation");
         alert.setHeaderText("Are you sure you want to delete?");
