@@ -2,6 +2,7 @@ package com.trimula.dircomp.view
 
 import com.trimula.dircomp.dataprocessing.Log
 import com.trimula.dircomp.dataprocessing.OsUtil
+import com.trimula.dircomp.model.FileItem
 import javafx.scene.control.*
 import java.io.File
 
@@ -18,6 +19,7 @@ class ContentMenu {
         fun addToTreeView(treeView: TreeView<*>) {
             val contextMenu = ContextMenu()
 
+            val miOpen = MenuItem("Open")
             val miOpenExplorer = MenuItem("Open in explorer")
             val miCollapseAll = MenuItem("Collapse All")
             val miExpandAll = MenuItem("Expand All")
@@ -25,6 +27,7 @@ class ContentMenu {
             val miExpandLast = MenuItem("Expand Last")
             val miDelete = MenuItem("Delete")               // Works if only TreeView<as File>
 
+            contextMenu.items.add(miOpen)
             contextMenu.items.add(miOpenExplorer)
             contextMenu.items.add(SeparatorMenuItem())
             contextMenu.items.add(miCollapseAll)
@@ -36,12 +39,18 @@ class ContentMenu {
             contextMenu.items.add(miDelete)
 
 
+            miOpen.setOnAction {
+                val selectedItems = treeView.selectionModel.selectedItems
+                val firstSelectedItem = selectedItems.first()
+                if (selectedItems.isNotEmpty() && firstSelectedItem.value is FileItem) {
+                    OsUtil.openFile(   File((firstSelectedItem.value as FileItem).absolutePath)   )
+                }
+            }
             miOpenExplorer.setOnAction {
                 val selectedItems = treeView.selectionModel.selectedItems
                 val firstSelectedItem = selectedItems.first()
-                if (selectedItems.isNotEmpty() && firstSelectedItem.value is File) {
-                    val file:File = firstSelectedItem.value as File
-                    OsUtil.openInExplorer( file)
+                if (selectedItems.isNotEmpty() && firstSelectedItem.value is FileItem) {
+                    OsUtil.openInExplorer(   File((firstSelectedItem.value as FileItem).absolutePath)   )
                 }
             }
             miCollapseAll.setOnAction { UiTreeView.collapseAll(treeView) }
@@ -84,6 +93,7 @@ class ContentMenu {
             val contextMenu = ContextMenu()
 
 //            val miCopy = MenuItem("Copy")
+            val miOpen = MenuItem("Open")
             val miOpenExplorer = MenuItem("Open in explorer")
             val miSelectAll = MenuItem("Select All")
             val miDeleteSelected = MenuItem("Delete Selected")       // Works if only TreeView<as File>
@@ -92,6 +102,7 @@ class ContentMenu {
             // add menu items to menu
 
 //            contextMenu.items.add(miCopy)
+            contextMenu.items.add(miOpen)
             contextMenu.items.add(miOpenExplorer)
             contextMenu.items.add(SeparatorMenuItem())
             contextMenu.items.add(miSelectAll)
@@ -101,12 +112,20 @@ class ContentMenu {
 //            miCut.setOnAction       {tableView.cut() }
 //            miCopy.setOnAction      {     }
 //            miPaste.setOnAction     {codeArea.paste()   }
+
+
+            miOpen.setOnAction {
+                val selectedItems = tableView.selectionModel.selectedItems
+                val firstSelectedItem = selectedItems.first()
+                if (selectedItems.isNotEmpty() && firstSelectedItem is FileItem) {
+                    OsUtil.openFile(   File((firstSelectedItem as FileItem).absolutePath)   )
+                }
+            }
             miOpenExplorer.setOnAction {
                 val selectedItems = tableView.selectionModel.selectedItems
                 val firstSelectedItem = selectedItems.first()
-                if (selectedItems.isNotEmpty() && firstSelectedItem is File) {
-                    val file:File = firstSelectedItem
-                    OsUtil.openInExplorer( file)
+                if (selectedItems.isNotEmpty() && firstSelectedItem is FileItem) {
+                    OsUtil.openInExplorer(  File((firstSelectedItem as FileItem).absolutePath)   )
                 }
             }
             miSelectAll.setOnAction { tableView.selectionModel.selectAll() }

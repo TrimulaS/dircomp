@@ -2,6 +2,8 @@ package com.trimula.dircomp.dataprocessing;
 import com.trimula.dircomp.model.FileItem;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,34 +39,58 @@ public class OsUtil {
         return String.format("%.2f %s", size, units[unitIndex]);
     }
 
-    public static void openInExplorer(File file) throws IOException {
-        String absolutePath = file.getAbsolutePath();
-        String os = System.getProperty("os.name").toLowerCase();
-
-//        if (os.contains("win")) {
-//            // Windows
-//            if (file.isDirectory()) {
-//                new ProcessBuilder("explorer", absolutePath).start();
-//                Log.appendText("Opening Directory in Win: " + absolutePath);
-//            } else {
-//                new ProcessBuilder("explorer", "/select,", absolutePath).start();
-//                Log.appendText("Opening File in Win: " + absolutePath);
-//            }
-//        } else if (os.contains("mac")) {
-//            // macOS
-//            new ProcessBuilder("open", absolutePath).start();
-//        } else if (os.contains("nux")) {
-//            // Linux
-//            new ProcessBuilder("xdg-open", absolutePath).start();
-//        } else {
-//            throw new UnsupportedOperationException("Операционная система не поддерживается.");
-//        }
 
 
 
-
-
+    // Function to open the file using the system's default application
+    public static void openFile(File file) {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(file);
+            } else {
+                String osName = System.getProperty("os.name").toLowerCase();
+                if (osName.contains("win")) {
+                    Runtime.getRuntime().exec("explorer " + file.getAbsolutePath());
+                } else if (osName.contains("mac")) {
+                    Runtime.getRuntime().exec("open " + file.getAbsolutePath());
+                } else if (osName.contains("nix") || osName.contains("nux")) {
+                    Runtime.getRuntime().exec("xdg-open " + file.getAbsolutePath());
+                } else {
+                    System.out.println("Unsupported operating system: " + osName);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
+    // Opening file in explorer
+    public static void openInExplorer(File file) throws IOException {
+        String os = System.getProperty("os.name").toLowerCase();
+        String absolutePath = file.getAbsolutePath();
+        if (os.contains("win")) {
+            // Windows
+            if (file.isDirectory()) {
+                new ProcessBuilder("explorer", absolutePath).start();
+
+                Log.appendText("Opening Directory in Win: " + absolutePath);
+            } else {
+                new ProcessBuilder("explorer", "/select,", absolutePath).start();
+                Log.appendText("Opening File in Win: " + absolutePath);
+            }
+        } else if (os.contains("mac")) {
+            // macOS
+            new ProcessBuilder("open", absolutePath).start();
+        } else if (os.contains("nux")) {
+            // Linux
+            new ProcessBuilder("xdg-open", absolutePath).start();
+        } else {
+            throw new UnsupportedOperationException("Операционная система не поддерживается.");
+        }
+    }
+
 
 
     public static boolean confirmDelete(String text) {

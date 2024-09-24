@@ -1,6 +1,7 @@
 package com.trimula.dircomp
 
 import com.trimula.dircomp.dataprocessing.Log
+import com.trimula.dircomp.dataprocessing.OsUtil
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse
 import com.trimula.dircomp.model.Comparator
 import com.trimula.dircomp.model.DataTableView
@@ -381,6 +382,31 @@ class MainController {
             }
         }
 
+        // Double click
+        treeViewDir1.setOnMouseClicked { event ->
+            if (event.clickCount == 2 && !treeViewDir1.selectionModel.isEmpty) {
+                val selectedFile = treeViewDir1.selectionModel.selectedItem
+                OsUtil.openFile(File  (selectedFile.value.absolutePath))
+            }
+        }
+        treeViewDir2.setOnMouseClicked { event ->
+            if (event.clickCount == 2 && !treeViewDir2.selectionModel.isEmpty) {
+                val selectedFile = treeViewDir2.selectionModel.selectedItem
+                OsUtil.openFile(File  (selectedFile.value.absolutePath))
+            }
+        }
+        tableViewDir1.setOnMouseClicked { event ->
+            if (event.clickCount == 2 && !tableViewDir1.selectionModel.isEmpty) {
+                val selectedFile = tableViewDir1.selectionModel.selectedItem
+                OsUtil.openFile(File  (selectedFile.absolutePath))
+            }
+        }
+        tableViewDir2.setOnMouseClicked { event ->
+            if (event.clickCount == 2 && !tableViewDir2.selectionModel.isEmpty) {
+                val selectedFile = tableViewDir2.selectionModel.selectedItem
+                OsUtil.openFile(File  (selectedFile.absolutePath))
+            }
+        }
 
     }
 

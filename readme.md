@@ -4,7 +4,7 @@
 
 
 
-- 
+- Double click try to open
 - progress label - display tracing Dir (1,2) before comparing
 - add tableView
 - Open Path in explorer
