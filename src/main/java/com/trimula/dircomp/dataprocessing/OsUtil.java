@@ -7,14 +7,19 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 public class OsUtil {
-
+    public static String tempDeletePath = "C://tmp//tmp";
+    public static boolean isTestMode = true;
 
     public static String sizeAdopt(long sizeInBytes) {
         // Единицы измерения
@@ -145,18 +150,81 @@ public class OsUtil {
 //    }
 
 
-    public static boolean deleteToTmp(FileItem fileItem) {
-        return deleteToTmp(new File(fileItem.getAbsolutePath()));
+
+
+    //---------------------------------------------------------------------------Delete------------
+    public static boolean delete(String absolutePath) {
+        return delete(new File(absolutePath));
+    }
+    public static boolean delete(File file) {
+        if(isTestMode){
+            return deleteToTmp(file);
+        }
+        else{
+            boolean deleteResult;
+            if(file.isDirectory()){
+                deleteResult = deleteDirectory(file);
+                if(deleteResult){
+                    Log.appendTextTimed(file.getAbsolutePath() + "\t - -=directory=- permanently deleted");
+                    return deleteResult;
+                }
+                else {
+                    Log.appendTextTimed(file.getAbsolutePath() + "\t - -=directory=- not deleted ( tried to permanently delete )");
+                    return deleteResult;
+                }
+
+            }
+            else {
+                deleteResult = file.delete();
+                if(deleteResult){
+                    Log.appendTextTimed(file.getAbsolutePath() + "\t - -=file=- permanently deleted");
+                    return deleteResult;
+                }
+                else {
+                    Log.appendTextTimed(file.getAbsolutePath() + "\t - -=file=- not deleted ( tried to permanently delete )");
+                }
+                return deleteResult;
+            }
+
+        }
+
     }
 
+    // Метод для рекурсивного удаления директории и всех её содержимого
+    public static boolean deleteDirectory(File directory) {
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return false;
+        }
+
+        // Если это директория, удаляем содержимое рекурсивно
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) { // Защита от null
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        deleteDirectory(file); // Рекурсивный вызов для поддиректорий
+                    } else {
+                        file.delete(); // Удаляем файл
+                    }
+                }
+            }
+        }
+
+        // После того как все содержимое удалено, удаляем саму директорию
+        return directory.delete();
+    }
+
+    public static boolean deleteToTmp(File file){
+        return deleteToTmp(file, tempDeletePath);
+    }
     // Function to test (move to tmp instead of delete)
-    public static boolean deleteToTmp(File file) {
-        // Определяем целевую директорию
-        String targetDirectory = "C:/tmp/tmp";
+    public static boolean deleteToTmp(File file, String targetDirectory)  {
 
         // Проверяем, существует ли целевая директория, если нет, создаем её
         File directory = new File(targetDirectory);
         if (!directory.exists()) {
+            Log.appendTextTimed("Target directory for delete backup: "+ directory.getAbsolutePath() +" not exists");
             directory.mkdirs(); // Создаем директорию, если её нет
         }
 
@@ -183,14 +251,29 @@ public class OsUtil {
         }
 
         // Перемещаем файл
-        try {
-            Files.move(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Файл перемещён в: " + targetFile.getAbsolutePath());
-            return true;
-        } catch (IOException e) {
-            System.out.println("Ошибка перемещения файла: " + e.getMessage());
-            return false;
+        if(file.isFile()){
+            try {
+                Files.move(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Log.appendTextTimed(targetFile.getAbsolutePath() + "\t - deleted safely, moved to : " + tempDeletePath);
+                return true;
+            } catch (IOException e) {
+                Log.appendTextTimed(targetFile.getAbsolutePath() + "\t - (!) failed to delete: " + e.getMessage());
+                return false;
+            }
         }
+//        else{
+//            if(moveDirectory(file, "/tmp/tmp/")){
+//                Log.appendTextTimed(file.getAbsolutePath() + " - Directory is moved");
+//                return true;
+//            }
+//
+//            else{
+//                Log.appendTextTimed(file.getAbsolutePath() + " - (!) Failed to move directory");
+//                return false;
+//            }
+//
+//        }
+        return false;
     }
 
     // Метод для генерации случайной последовательности (например, хэш)
@@ -211,5 +294,89 @@ public class OsUtil {
             throw new RuntimeException("Ошибка создания хэша: " + e.getMessage());
         }
     }
+
+    //
+//    public static boolean moveDirectory(Path source, Path target) {
+//        try {
+//            // Проверяем, является ли это директорией
+//            if (Files.isDirectory(source)) {
+//                // Создаем целевую директорию, если она не существует
+//                if (!Files.exists(target)) {
+//                    Files.createDirectories(target);
+//                }
+//
+//                // Рекурсивно копируем содержимое директории
+//                Files.walk(source).forEach(sourcePath -> {
+//                    Path targetPath = target.resolve(source.relativize(sourcePath));
+//                    try {
+//                        if (Files.isDirectory(sourcePath)) {
+//                            // Если это директория, создаем её в целевой директории
+//                            if (!Files.exists(targetPath)) {
+//                                Files.createDirectories(targetPath);
+//                            }
+//                        } else {
+//                            // Если это файл, перемещаем его
+//                            Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+//                        }
+//                    } catch (IOException e) {
+//                        Log.appendTextTimed("Failed to move: " + sourcePath + " -> " + targetPath + " : " + e.getMessage());
+//                    }
+//                });
+//
+//                // Удаляем исходную директорию после перемещения всех файлов
+//                Files.delete(source);
+//
+//            } else {
+//                // Это файл, просто перемещаем его
+//                Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+//            }
+//
+//            Log.appendTextTimed("Moved: " + source.toString() + " -> " + target.toString());
+//            return true;
+//
+//        } catch (IOException e) {
+//            Log.appendTextTimed("Failed to move directory: " + e.getMessage());
+//            return false;
+//        }
+//    }
+//    public static void moveDirectory(File directory, String destinationBasePath) throws IOException {
+//        if (!directory.exists() || !directory.isDirectory()) {
+//            System.out.println("Исходная директория не существует.");
+//            return;
+//        }
+//
+//        // Проверяем, существует ли директория /tmp/tmp, если нет, создаем её
+//        File destinationBaseDir = new File(destinationBasePath);
+//        if (!destinationBaseDir.exists()) {
+//            if (destinationBaseDir.mkdirs()) {
+//                System.out.println("Директория " + destinationBasePath + " успешно создана.");
+//            } else {
+//                throw new IOException("Не удалось создать директорию: " + destinationBasePath);
+//            }
+//        }
+//
+//        // Генерируем уникальное имя для директории, если она уже существует в целевой директории
+//        File newDestinationDir = new File(destinationBaseDir, directory.getName());
+//        while (newDestinationDir.exists()) {
+//            newDestinationDir = new File(destinationBaseDir, generateNewName(directory.getName()));
+//        }
+//
+//        // Перемещаем директорию
+//        Files.move(directory.toPath(), newDestinationDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//
+//        System.out.println("Директория " + directory.getAbsolutePath() + " успешно перемещена в " + newDestinationDir.getAbsolutePath());
+//    }
+//
+//    // Метод для генерации нового имени, добавляя "_" и 3 случайных символа
+//    public static String generateNewName(String originalName) {
+//        Random random = new Random();
+//        StringBuilder newName = new StringBuilder(originalName);
+//        newName.append("_");
+//        for (int i = 0; i < 3; i++) {
+//            newName.append((char) ('a' + random.nextInt(26))); // случайная буква от 'a' до 'z'
+//        }
+//        return newName.toString();
+//    }
+
 
 }

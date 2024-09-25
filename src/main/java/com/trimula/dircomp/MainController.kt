@@ -109,6 +109,9 @@ class MainController {
     @FXML    private lateinit var cbTestMode : CheckBox
     @FXML    private lateinit var cbLimitSameList : CheckBox
     @FXML    private lateinit var sSameListLimit : Spinner<Int>
+    @FXML    private lateinit var cbTreeViewOpenOnDoubleClick: CheckBox
+    @FXML    private lateinit var cbTableViewOpenOnDoubleClick: CheckBox
+    @FXML    private lateinit var tfTempDeletePath:TextField
 
     private val progressBarTextDuringCompare = "Compare in progress: "
 
@@ -249,6 +252,8 @@ class MainController {
             lProgress.text = "$progressBarTextDuringCompare:  $txt  "
         }
 
+        // Settings Tab
+//        OsUtil.tempDeletePath = tfTempDeletePath.text
 
         //Log.appendTextTimed("Comparator initialized")
 
@@ -268,6 +273,7 @@ class MainController {
         if(path!=null){
             directory1 = path
             cbDir1Path.value = directory1?.absolutePath
+            cbDir1Path.items.add(directory1?.absolutePath)
         }
     }
     @FXML
@@ -276,6 +282,7 @@ class MainController {
         if(path!=null){
             directory2 = path
             cbDir2Path.value = directory2?.absolutePath
+            cbDir2Path.items.add(directory2?.absolutePath)
         }
     }
 
@@ -394,28 +401,32 @@ class MainController {
 
         // Double click
         treeViewDir1.setOnMouseClicked { event ->
-            if (event.clickCount == 2 && !treeViewDir1.selectionModel.isEmpty) {
-                val selectedFile = treeViewDir1.selectionModel.selectedItem
-                OsUtil.openFile(File  (selectedFile.value.absolutePath))
-            }
+            if(cbTreeViewOpenOnDoubleClick.isSelected)
+                if (event.clickCount == 2 && !treeViewDir1.selectionModel.isEmpty) {
+                    val selectedFile = treeViewDir1.selectionModel.selectedItem
+                    OsUtil.openFile(File  (selectedFile.value.absolutePath))
+                }
         }
         treeViewDir2.setOnMouseClicked { event ->
-            if (event.clickCount == 2 && !treeViewDir2.selectionModel.isEmpty) {
-                val selectedFile = treeViewDir2.selectionModel.selectedItem
-                OsUtil.openFile(File  (selectedFile.value.absolutePath))
-            }
+            if(cbTreeViewOpenOnDoubleClick.isSelected)
+                if (event.clickCount == 2 && !treeViewDir2.selectionModel.isEmpty) {
+                    val selectedFile = treeViewDir2.selectionModel.selectedItem
+                    OsUtil.openFile(File  (selectedFile.value.absolutePath))
+                }
         }
         tableViewDir1.setOnMouseClicked { event ->
-            if (event.clickCount == 2 && !tableViewDir1.selectionModel.isEmpty) {
-                val selectedFile = tableViewDir1.selectionModel.selectedItem
-                OsUtil.openFile(File  (selectedFile.absolutePath))
-            }
+            if(cbTableViewOpenOnDoubleClick.isSelected)
+                if (event.clickCount == 2 && !tableViewDir1.selectionModel.isEmpty) {
+                    val selectedFile = tableViewDir1.selectionModel.selectedItem
+                    OsUtil.openFile(File  (selectedFile.absolutePath))
+                }
         }
         tableViewDir2.setOnMouseClicked { event ->
-            if (event.clickCount == 2 && !tableViewDir2.selectionModel.isEmpty) {
-                val selectedFile = tableViewDir2.selectionModel.selectedItem
-                OsUtil.openFile(File  (selectedFile.absolutePath))
-            }
+            if(cbTableViewOpenOnDoubleClick.isSelected)
+                if (event.clickCount == 2 && !tableViewDir2.selectionModel.isEmpty) {
+                    val selectedFile = tableViewDir2.selectionModel.selectedItem
+                    OsUtil.openFile(File  (selectedFile.absolutePath))
+                }
         }
 
     }
@@ -488,7 +499,7 @@ class MainController {
     }
 
     @FXML fun turnTestMode() {
-        ContentMenu.isTestMode = cbTestMode.isSelected
+        OsUtil.isTestMode = cbTestMode.isSelected
     }
 
     //Changed to FindBy Value

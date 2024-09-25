@@ -15,8 +15,8 @@ class FileItem  {
     var absolutePath = ""
     public var isEmpty:Boolean = true
 
-    var same:    ObservableList<FileItem> =FXCollections.observableArrayList()// null    //= FXCollections.observableArrayList()
-    var similar: ObservableList<FileItem> =FXCollections.observableArrayList()// null    //.observableArrayList()
+    var same:    ObservableList<FileItem> = FXCollections.observableArrayList()// null    //= FXCollections.observableArrayList()
+    var similar: ObservableList<FileItem> = FXCollections.observableArrayList()// null    //.observableArrayList()
     var isDirectory = false
 
 
@@ -35,22 +35,23 @@ class FileItem  {
     }
 
 //    //Block for Lists processing---------------------------------------------
-    fun sameAdd(fileItem: FileItem){
-        same = same ?: FXCollections.observableArrayList()
-        same!!.add(fileItem)
-    }
-    fun sameSize():Int{
-        return same?.size?:0
-    }
-    fun similarSize():Int{
-        return same?.size?:0
-    }
+//    fun sameAdd(fileItem: FileItem){
+//        same = same ?: FXCollections.observableArrayList()
+//        same!!.add(fileItem)
+//    }
+//    fun same.size():Int{
+//        return same?.size?:0
+//    }
+    
+//    fun similarSize():Int{
+//        return same?.size?:0
+//    }
 
 //    // Метод для безопасной обработки каждого элемента
 //    fun sameForEach(action: (FileItem) -> Unit) {
 //        same?.forEach(action)
 //    }
-//    fun sameSize():Int {
+//    fun same.size():Int {
 //        return same?.size?:0
 //    }
 
@@ -65,7 +66,7 @@ class FileItem  {
         return """
      Name: $name
      Path: $absolutePath     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )      Empty: ${isEmpty}    
-     Number of same items: ${sameSize()} 
+     Number of same items: ${same.size} 
      """.trimIndent() +
                 (if (same!= null && same!!.size > 0) """
      Same:
@@ -103,19 +104,19 @@ class FileItem  {
         if (isDirectory){
             if(isEmpty){
                 return  when{   // Empty
-                    sameSize() == 0 -> ImageView(folderEmptyIcon.image)
-                    sameSize() == 1 -> ImageView(folderX2EmptyIcon.image)
-                    sameSize() == 2 -> ImageView(folderX3EmptyIcon.image)
-                    sameSize() > 2 -> ImageView(folderXNEmptyIcon.image)
+                    same.size == 0 -> ImageView(folderEmptyIcon.image)
+                    same.size == 1 -> ImageView(folderX2EmptyIcon.image)
+                    same.size == 2 -> ImageView(folderX3EmptyIcon.image)
+                    same.size > 2  -> ImageView(folderXNEmptyIcon.image)
                     else -> ImageView(folderEmptyIcon.image)
                 }
 
             }else{
                 return when{   // Not Empty
-                    sameSize() == 0 -> ImageView(folderIcon.image)
-                    sameSize() == 1 -> ImageView(folderX2Icon.image)
-                    sameSize() == 2 -> ImageView(folderX3Icon.image)
-                    sameSize() > 2 -> ImageView(folderXNIcon.image)
+                    same.size == 0 -> ImageView(folderIcon.image)
+                    same.size == 1 -> ImageView(folderX2Icon.image)
+                    same.size == 2 -> ImageView(folderX3Icon.image)
+                    same.size > 2  -> ImageView(folderXNIcon.image)
                     else -> ImageView(folderIcon.image)
                 }
 
@@ -123,10 +124,10 @@ class FileItem  {
 
         }else{
             return   when{   // File
-                sameSize() == 0 -> ImageView(fileIcon.image)
-                sameSize() == 1 -> ImageView(fileX2Icon.image)
-                sameSize() == 2 -> ImageView(fileX3Icon.image)
-                sameSize() > 2 -> ImageView(fileXNIcon.image)
+                same.size == 0 -> ImageView(fileIcon.image)
+                same.size == 1 -> ImageView(fileX2Icon.image)
+                same.size == 2 -> ImageView(fileX3Icon.image)
+                same.size > 2  -> ImageView(fileXNIcon.image)
                 else -> ImageView(fileIcon.image)
             }
 

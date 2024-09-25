@@ -14,7 +14,7 @@ import java.io.File
 
 class ContentMenu {
     companion object{
-        var isTestMode = true
+        //var isTestMode = true
 
         fun addToTreeView(treeView: TreeView<*>) {
             val contextMenu = ContextMenu()
@@ -75,13 +75,9 @@ class ContentMenu {
 
                 // Удаление файлов и вывод информации о статусе
                 selectedFiles.forEach { treeItem ->
-                    val file = treeItem.value as? File ?: return@forEach // Если не File, пропускаем итерацию
-                    if (isTestMode) {
-                        OsUtil.deleteToTmp(file)
-                    } else {
-                        file.delete()
-                    }
-                    treeItem.parent?.children?.remove(treeItem)
+                    val fileItem = treeItem.value as? FileItem ?: return@forEach // Если не File, пропускаем итерацию
+                    //try to delete it and remove it form tree
+                    if(OsUtil.delete(fileItem.absolutePath)) treeItem.parent?.children?.remove(treeItem)
                 }
             }
             treeView.contextMenu = contextMenu
@@ -146,16 +142,13 @@ class ContentMenu {
 
                 // Удаление файлов и вывод информации о статусе
                 selectedFiles.forEach { fileItem ->
-                    val file = fileItem as? File ?: return@forEach // Если не File, пропускаем итерацию
-                    if (isTestMode) {
-                        OsUtil.deleteToTmp(file)
-                    } else {
-                        file.delete()
-                    }
-//                    tableView.items.remove(fileItem)
+                    if (fileItem !is FileItem) return@forEach // Если не File, пропускаем итерацию
+                    // Tty to delete and remove it from table
+                    if(OsUtil.delete(fileItem.absolutePath))tableView.items.remove(fileItem)
+//
                 }
                 // Удаление выделенных строк из TableView
-                tableView.items.removeAll(selectedFiles)
+                //tableView.items.removeAll(selectedFiles)
             }
             tableView.contextMenu = contextMenu
         }

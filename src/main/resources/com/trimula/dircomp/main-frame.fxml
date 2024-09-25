@@ -27,7 +27,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.SpinnerValueFactory?>
 <GridPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.trimula.dircomp.MainController">
 
     <columnConstraints>
@@ -351,12 +350,12 @@
            <content>
              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 
-                 <VBox layoutX="14.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="0.0">
+                 <VBox layoutX="14.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                     <children>
                        <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-padding: 5;">
                           <children>
                               <CheckBox fx:id="cbTestMode" mnemonicParsing="false" onAction="#turnTestMode" selected="true" text="Test Mode, when files deleted it will be moved to:" />
-                              <TextField promptText="C:/tmp/tmp" />
+                              <TextField fx:id="tfTempDeletePath" promptText="C:/tmp/tmp" />
                               <Button mnemonicParsing="false" text="open" />
                           </children>
                        </HBox>
@@ -365,6 +364,12 @@
                               <CheckBox fx:id="cbLimitSameList" mnemonicParsing="false" onAction="#turnTestMode" selected="true" text="Limit Same Item list to   " />
                                <Spinner fx:id="sSameListLimit" editable="true" />
 
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="45.0" spacing="5.0" style="-fx-padding: 5;">
+                           <children>
+                              <CheckBox fx:id="cbTreeViewOpenOnDoubleClick" mnemonicParsing="false" onAction="#turnTestMode" text="TreeView: Open file on double click" />
+                              <CheckBox fx:id="cbTableViewOpenOnDoubleClick" mnemonicParsing="false" onAction="#turnTestMode" selected="true" text="TableView: Open file on double click" />
                            </children>
                         </HBox>
                     </children>

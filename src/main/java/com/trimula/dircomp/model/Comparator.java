@@ -75,11 +75,8 @@ public class Comparator {
                         if(fi1.sameTo(fi2)){      //areSimilar(fi1,fi2)){
 
                             numOfSameFolders ++;
-                            if(fi1.sameSize() < sameListLimit) {
-//                                Log.appendTextTimed("Same: " + fi1.getAbsolutePath() + fi2.getAbsolutePath() + "size: " + fi1.sameSize());
-                                fi1.sameAdd(fi2);
-                            }
-                            if(fi2.sameSize() < sameListLimit) fi2.sameAdd(fi1);
+                            if(fi1.getSame().size() < sameListLimit) fi1.getSame().add(fi2);
+                            if(fi2.getSame().size() < sameListLimit) fi2.getSame().add(fi1);
                         }
                     }
 
@@ -89,8 +86,8 @@ public class Comparator {
                         if(fi1.sameTo(fi2)){         //areSimilar(fi1,fi2)){
 
                             numOfSameFiles ++;
-                            if(fi1.sameSize() < sameListLimit) fi1.sameAdd(fi2);
-                            if(fi2.sameSize() < sameListLimit) fi2.sameAdd(fi1);
+                            if(fi1.getSame().size() < sameListLimit) fi1.getSame().add(fi2);
+                            if(fi2.getSame().size() < sameListLimit) fi2.getSame().add(fi1);
                         }
 
                     }

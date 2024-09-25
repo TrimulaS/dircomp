@@ -4,6 +4,7 @@ import com.trimula.dircomp.dataprocessing.OsUtil;
 import com.trimula.dircomp.dataprocessing.TreeItemTraverse;
 import com.trimula.dircomp.view.ContentMenu;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -95,8 +96,33 @@ public class DataTableView {
         TableColumn<FileItem, Long> sizeBColumn = new TableColumn<>("SizeB");
         sizeBColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().length()));
 
-        TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("IsDir");
+        TableColumn<FileItem, Integer> sameColumn = new TableColumn<>("Same");
+        sameColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getSame().size()).asObject());
+
+//        TableColumn<FileItem, Integer> sameColumn = new TableColumn<>("Same");
+//        sameColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getSame().size()));
+
+
+//        TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("IsDir");
+//        isFileColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDirectory()));
+
+        TableColumn<FileItem, Boolean> isFileColumn = new TableColumn<>("Type");
         isFileColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDirectory()));
+
+        // Настройка CellFactory для отображения "D" для директорий и "F" для файлов
+        isFileColumn.setCellFactory(column -> new TableCell<FileItem, Boolean>() {
+            @Override
+            protected void updateItem(Boolean isDirectory, boolean empty) {
+                super.updateItem(isDirectory, empty);
+                if (empty || isDirectory == null) {
+                    setText(null); // Пустая ячейка
+                } else {
+                    // Отображаем "D" для директорий и "F" для файлов
+                    setText(isDirectory ? "D" : "F");
+                }
+            }
+        });
+
 
         TableColumn<FileItem, String> pathColumn = new TableColumn<>("Path");
         pathColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAbsolutePath()));
@@ -108,8 +134,14 @@ public class DataTableView {
         });
         tableView.getColumns().clear();
 
-        icoColumn.setPrefWidth(30.0);           /// !!! Hardocoded
-        tableView.getColumns().addAll(icoColumn, nameColumn, sizeBColumn, sizeColumn,isFileColumn, pathColumn, lastModifiedColumn);
+        // !!! Hardcoded
+        icoColumn.setPrefWidth(30.0);
+        sameColumn.setPrefWidth(40.0);
+        sizeBColumn.setPrefWidth(40.0);
+        isFileColumn.setPrefWidth(40.0);
+        pathColumn.setPrefWidth(300.0);
+
+        tableView.getColumns().addAll(icoColumn, nameColumn, sameColumn,sizeColumn, sizeBColumn,isFileColumn, pathColumn, lastModifiedColumn);
 
         // Привязка компаратора списка и таблицы для корректной работы сортировки
 
@@ -120,22 +152,22 @@ public class DataTableView {
 
 
 
-    // It is working code:
-    public static void deleteSelected(TableView<FileItem> tableView){
-        ObservableList<FileItem> selectedFiles = tableView.getSelectionModel().getSelectedItems();
-        // Проверяем, есть ли выделенные элементы
-        if (selectedFiles.isEmpty()) {
-            System.out.println("Нет выделенных файлов для удаления.");
-            return;
-        }
-
-        if(!OsUtil.confirmDelete("  " + selectedFiles.size() + " files")) return;
-
-        // Удаление файлов и вывод информации о статусе
-        for (FileItem fileItem : selectedFiles) {
-                boolean deleted = OsUtil.deleteToTmp(fileItem);    //fileItem.delete();
-        }
-        // Удаление выделенных строк из TableView
-        tableView.getItems().removeAll(selectedFiles);
-    }
+//    // It is working code:
+//    public static void deleteSelected(TableView<FileItem> tableView){
+//        ObservableList<FileItem> selectedFiles = tableView.getSelectionModel().getSelectedItems();
+//        // Проверяем, есть ли выделенные элементы
+//        if (selectedFiles.isEmpty()) {
+//            System.out.println("Нет выделенных файлов для удаления.");
+//            return;
+//        }
+//
+//        if(!OsUtil.confirmDelete("  " + selectedFiles.size() + " files")) return;
+//
+//        // Удаление файлов и вывод информации о статусе
+//        for (FileItem fileItem : selectedFiles) {
+//                boolean deleted = OsUtil.deleteToTmp(fileItem);    //fileItem.delete();
+//        }
+//        // Удаление выделенных строк из TableView
+//        tableView.getItems().removeAll(selectedFiles);
+//    }
 }
