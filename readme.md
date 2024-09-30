@@ -2,6 +2,11 @@
 
 
 
+To Do:
+- add same statistics to staus bar
+- If sme directories - files duplicate both added
+- Compare doesn't cleared after multiple launch
+- -when delete file, exclude it from the ame list either
 
 - add colum num copies
 
@@ -12,7 +17,7 @@
 Collaps/ expand
 
 
-When deltete file, remove ot both from Tree and Observable lists
+When delete file, remove ot both from Tree and Observable lists
 Edit ComboBox text with single click - double click opens Directory open dialog
 If the same folder selected - process duplicates only ignoring files with the same path
 
