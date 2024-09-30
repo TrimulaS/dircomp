@@ -63,22 +63,20 @@ class FileItem  {
 
 
     override fun toString(): String {
-        return """
-     Name: $name
-     Path: $absolutePath     size: ${OsUtil.sizeAdopt(length())}      (  ${length()}  )      Empty: ${isEmpty}    
-     Number of same items: ${same.size} 
-     """.trimIndent() +
-                (if (same!= null && same!!.size > 0) """
-     Same:
-     ${listToString(same!!)}
-     """/*.trimIndent()*/ else "")
-    }           // Number of similar items: ${similarSize()}
+        return (
+                "$name \t\t- same items: ${same.size}\n" +
+                "size: ${OsUtil.sizeAdopt(length())} \t(  ${length()}  ) \tEmpty: ${isEmpty}\n\n" +
+                "• $absolutePath \n" +
+                "${listToString(same!!)}"
+                )
+
+    }
 
 
     private fun listToString(ll: List<FileItem>): String {
         val result = StringBuilder()
         for (element in ll) {
-            result.append("\t" + element.absolutePath).append("\n")
+            result.append("◦ " + element.absolutePath).append("\n")
         }
         return result.toString()
     }

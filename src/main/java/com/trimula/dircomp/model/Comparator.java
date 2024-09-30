@@ -68,7 +68,7 @@ public class Comparator {
 
                 // Ignore File in same location:...................................................Comparison Logic
                 // Suspected checked during creation of FileIem in constructor
-                if(fi1.getAbsolutePath()!=fi2.getAbsolutePath()) {
+                if(!fi1.getAbsolutePath().equals(fi2.getAbsolutePath())) {
                     if(fi1.isDirectory() && fi2.isDirectory()){
 
                         //For directories

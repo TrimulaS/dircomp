@@ -51,6 +51,7 @@
                         <HBox>
                             <ComboBox fx:id="cbDir1Path" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
                             <Button onAction="#selectDirectory1" text="Select" HBox.hgrow="NEVER" />
+                            <Button onAction="#copyDir1PathTo2" text="⯮" HBox.hgrow="NEVER" />
                         </HBox>
                         <ToolBar>
 
@@ -191,6 +192,7 @@
                     </VBox>
                         <VBox fx:id="paneDirectory2">
                             <HBox>
+                                <Button onAction="#copyDir2PathTo1" text="⯬" HBox.hgrow="NEVER" />
                                 <ComboBox fx:id="cbDir2Path" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
                                 <Button onAction="#selectDirectory2" text="Select" HBox.hgrow="NEVER" />
                             </HBox>

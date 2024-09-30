@@ -84,6 +84,8 @@ class ContentMenu {
 
         }
 
+
+
         //-----------------------------------------------------------------------------Table----------------------
         fun addToTableView(tableView: TableView<*>) {
             val contextMenu = ContextMenu()
@@ -118,7 +120,9 @@ class ContentMenu {
                 }
             }
             miOpenExplorer.setOnAction {
-                val selectedItems = tableView.selectionModel.selectedItems
+//                val selectedItems = tableView.selectionModel.selectedItems
+                val selectedItems = ArrayList(tableView.selectionModel.selectedItems)
+
                 val firstSelectedItem = selectedItems.first()
                 if (selectedItems.isNotEmpty() && firstSelectedItem is FileItem) {
                     OsUtil.openInExplorer(  File((firstSelectedItem as FileItem).absolutePath)   )

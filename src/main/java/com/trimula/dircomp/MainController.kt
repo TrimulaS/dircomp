@@ -267,24 +267,23 @@ class MainController {
     }
 
 
-    @FXML
-    fun selectDirectory1() {
+    @FXML     fun selectDirectory1() {
         val path = DirectoryChooser().showDialog(null)
-        if(path!=null){
-            directory1 = path
-            cbDir1Path.value = directory1?.absolutePath
-            cbDir1Path.items.add(directory1?.absolutePath)
+        path.let {
+            cbDir1Path.value = path.absolutePath
         }
     }
-    @FXML
-    fun selectDirectory2() {
+
+    @FXML     fun selectDirectory2() {
         val path = DirectoryChooser().showDialog(null)
-        if(path!=null){
-            directory2 = path
-            cbDir2Path.value = directory2?.absolutePath
-            cbDir2Path.items.add(directory2?.absolutePath)
+        path.let {
+            cbDir2Path.value = path.absolutePath
         }
     }
+
+    @FXML     fun copyDir1PathTo2() {cbDir2Path.value = cbDir1Path.value }
+    @FXML     fun copyDir2PathTo1() {cbDir1Path.value = cbDir1Path.value }
+
 
     @FXML
     fun onCompareClicked() {
@@ -338,6 +337,7 @@ class MainController {
     }
 
     //-----------------------------------------------------------------------------------  Functions ------------------
+
     private fun setupListeners(){
         // Adding Logs
         Log.addListener (object : Log.LogListener {
@@ -353,54 +353,22 @@ class MainController {
             }
         } )
 
-        // Synchronize selection Path 1 <-> 2
-        treeViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
-                        tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
-                        tbDir2ViewAsMatchedTo1.isSelected -> syncProperties(selectedItem.value)
-                    }
-                }
-            }
+        cbDir1Path.valueProperty().addListener{_,oldValue,_,->
+            cbDir1Path.items.add(oldValue)
         }
-        treeViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir1ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir1)
-                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir1)
-                    }
-                }
-            }
+        cbDir2Path.valueProperty().addListener{_,oldValue,_,->
+            cbDir2Path.items.add(oldValue)
         }
-        tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    if (tbDir2ViewAsMatchedTo1.isSelected) {
-                        syncProperties(selectedItem)
-                    }
-                    else {
-                        syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
-                    }
 
-                }
-            }
-        }
-        tableViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem ->
-            if(!isSyncing){
-                selectedItem?.let {
-                    when{
-                        tbDir1ViewTree.isSelected ->  syncSelection(selectedItem, treeViewDir1)
-                        tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
-                    }
-                }
-            }
-        }
+        // Synchronize selection Path 1 <-> 2
+        treeViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem -> treeView1_onSelect(selectedItem) }
+        treeViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem -> treeView2_onSelect(selectedItem) }
+        tableViewDir1.selectionModel.selectedItemProperty().addListener { _, _, selectedItem -> tableView1_onSelect(selectedItem) }
+        tableViewDir2.selectionModel.selectedItemProperty().addListener { _, _, selectedItem -> tableView2_onSelect(selectedItem)  }
 
         // Double click
         treeViewDir1.setOnMouseClicked { event ->
+            treeView1_onSelect(treeViewDir1.selectionModel.selectedItem)
             if(cbTreeViewOpenOnDoubleClick.isSelected)
                 if (event.clickCount == 2 && !treeViewDir1.selectionModel.isEmpty) {
                     val selectedFile = treeViewDir1.selectionModel.selectedItem
@@ -408,6 +376,7 @@ class MainController {
                 }
         }
         treeViewDir2.setOnMouseClicked { event ->
+            treeView2_onSelect(treeViewDir2.selectionModel.selectedItem)
             if(cbTreeViewOpenOnDoubleClick.isSelected)
                 if (event.clickCount == 2 && !treeViewDir2.selectionModel.isEmpty) {
                     val selectedFile = treeViewDir2.selectionModel.selectedItem
@@ -415,6 +384,7 @@ class MainController {
                 }
         }
         tableViewDir1.setOnMouseClicked { event ->
+            tableView1_onSelect(tableViewDir1.selectionModel.selectedItem)
             if(cbTableViewOpenOnDoubleClick.isSelected)
                 if (event.clickCount == 2 && !tableViewDir1.selectionModel.isEmpty) {
                     val selectedFile = tableViewDir1.selectionModel.selectedItem
@@ -422,6 +392,7 @@ class MainController {
                 }
         }
         tableViewDir2.setOnMouseClicked { event ->
+            tableView2_onSelect(tableViewDir2.selectionModel.selectedItem)
             if(cbTableViewOpenOnDoubleClick.isSelected)
                 if (event.clickCount == 2 && !tableViewDir2.selectionModel.isEmpty) {
                     val selectedFile = tableViewDir2.selectionModel.selectedItem
@@ -429,6 +400,50 @@ class MainController {
                 }
         }
 
+    }
+    private fun treeView1_onSelect(selectedItem: TreeItem<FileItem>?){
+        if(!isSyncing){
+            selectedItem?.let {
+                when{
+                    tbDir2ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir2)
+                    tbDir2ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir2)
+                    tbDir2ViewAsMatchedTo1.isSelected -> syncProperties(selectedItem.value)
+                }
+            }
+        }
+    }
+    private fun treeView2_onSelect(selectedItem: TreeItem<FileItem>?){
+        if(!isSyncing){
+            selectedItem?.let {
+                when{
+                    tbDir1ViewTree.isSelected  -> syncSelection(selectedItem.value,  treeViewDir1)
+                    tbDir1ViewTable.isSelected -> syncSelection(selectedItem.value, tableViewDir1)
+                }
+            }
+        }
+    }
+    private fun tableView1_onSelect(selectedItem: FileItem?){
+        if(!isSyncing){
+            selectedItem?.let {
+                if (tbDir2ViewAsMatchedTo1.isSelected) {
+                    syncProperties(selectedItem)
+                }
+                else {
+                    syncSelection(selectedItem,if (tbDir2ViewTree.isSelected) treeViewDir2 else tableViewDir2)
+                }
+
+            }
+        }
+    }
+    private fun tableView2_onSelect(selectedItem:  FileItem?){
+        if(!isSyncing){
+            selectedItem?.let {
+                when{
+                    tbDir1ViewTree.isSelected ->  syncSelection(selectedItem, treeViewDir1)
+                    tbDir1ViewTable.isSelected -> syncSelection(selectedItem, tableViewDir1)
+                }
+            }
+        }
     }
 
 
