@@ -102,8 +102,12 @@ public class Comparator {
         //Update statistics:
         da1.statistic.directoriesSame = numOfSameDirectories;
         da1.statistic.filesSame = numOfSameFiles;
+        da1.statistic.intersection = numOfSameIntersection;
         da2.statistic.directoriesSame = numOfSameDirectories;
         da2.statistic.filesSame = numOfSameFiles;
+        da2.statistic.intersection = numOfSameIntersection;
+        Log.appendText("Path1 " + da1.statistic.toString());
+        Log.appendText("Path2 " + da2.statistic.toString());
 
 
         Log.appendTextTimed("Compare complete:");

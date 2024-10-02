@@ -8,6 +8,7 @@ import com.trimula.dircomp.model.DataTableView
 import com.trimula.dircomp.model.DirectoryAnalysis
 import com.trimula.dircomp.model.FileItem
 import com.trimula.dircomp.view.ContentMenu
+import com.trimula.dircomp.view.RectangleChart
 import com.trimula.dircomp.view.UiTreeView
 import com.trimula.dircomp.view.tiny.DirectoryStatusBar
 import javafx.application.Platform
@@ -118,6 +119,8 @@ class MainController {
     @FXML    lateinit var l2FilesAll                : Label
     @FXML    lateinit var l2FilesAllSame            : Label
     @FXML    lateinit var l2FilesAllPostfix         : Label
+
+    @FXML    lateinit var spGraph1:ScrollPane
 
 
     @FXML    private lateinit var ivSettings : ImageView
@@ -330,6 +333,9 @@ class MainController {
                     progressBarShow(false)
                     dir1StatusBar.update(comparator.da1.statistic)
                     dir2StatusBar.update(comparator.da2.statistic)
+
+
+                    RectangleChart(spGraph1,comparator.da1.root)
                 }
             }
         }
