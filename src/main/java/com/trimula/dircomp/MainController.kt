@@ -19,6 +19,7 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import javafx.stage.DirectoryChooser
 import java.io.File
@@ -120,10 +121,12 @@ class MainController {
     @FXML    lateinit var l2FilesAllSame            : Label
     @FXML    lateinit var l2FilesAllPostfix         : Label
 
-    @FXML    lateinit var spGraph1:ScrollPane
+//    @FXML    lateinit var spGraph1:ScrollPane
+    @FXML    lateinit var gr1  : Pane
+    @FXML    lateinit var gr2  : Pane
 
 
-    @FXML    private lateinit var ivSettings : ImageView
+            @FXML    private lateinit var ivSettings : ImageView
     @FXML    private lateinit var tpSettings : TabPane
 
 
@@ -335,7 +338,8 @@ class MainController {
                     dir2StatusBar.update(comparator.da2.statistic)
 
 
-                    RectangleChart(spGraph1,comparator.da1.root)
+                    RectangleChart(gr1,comparator.da1.root)
+                    RectangleChart(gr2,comparator.da2.root)
                 }
             }
         }

@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
@@ -24,6 +23,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -40,7 +40,7 @@
 
 
     <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0">
-        <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389, 0.5" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox style="-fx-background-color: yellow;">
                 <ToolBar VBox.vgrow="NEVER">
                     <CheckBox fx:id="cbSyncSelection" selected="true" text="Sync selection" />
@@ -48,318 +48,327 @@
                     <Button fx:id="buttonCompare" onAction="#onCompareClicked" text="Compare" />
                 </ToolBar>
                 <SplitPane dividerPositions="0.5" orientation="HORIZONTAL" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="paneDirectory1">
-                        <HBox>
-                            <ComboBox fx:id="cbDir1Path" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
-                            <Button onAction="#selectDirectory1" text="Select" HBox.hgrow="NEVER" />
-                            <Button onAction="#copyDir1PathTo2" text="⯮" HBox.hgrow="NEVER" />
-                        </HBox>
-                        <ToolBar>
-
-
-                            <ToggleButton fx:id="tbDir1ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
-                               <graphic>
-                                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                           <Image url="@../../../icons/icoTree.png" />
-                                       </image>
-                                   </ImageView>
-                               </graphic>
-                            </ToggleButton>
-
-                            <ToggleButton fx:id="tbDir1ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
-                                <graphic>
-                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@../../../icons/icoTable.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                            </ToggleButton>
-
-
-                            <Separator />
-                            <HBox fx:id="hb1MatchTypeButtonGroup">
-                                <ToggleButton fx:id="tb1All" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/setA.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
+               <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                 <items>
+                          <VBox fx:id="paneDirectory1">
+                              <HBox>
+                                  <ComboBox fx:id="cbDir1Path" editable="true" maxWidth="Infinity" promptText="Select Directory 1" HBox.hgrow="ALWAYS" />
+                                  <Button onAction="#selectDirectory1" text="Select" HBox.hgrow="NEVER" />
+                                  <Button onAction="#copyDir1PathTo2" text="⯮" HBox.hgrow="NEVER" />
+                              </HBox>
+                              <ToolBar>
+      
+      
+                                  <ToggleButton fx:id="tbDir1ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
+                                     <graphic>
+                                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                 <Image url="@../../../icons/icoTree.png" />
+                                             </image>
+                                         </ImageView>
+                                     </graphic>
+                                  </ToggleButton>
+      
+                                  <ToggleButton fx:id="tbDir1ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir1ViewChange" prefHeight="24.0" prefWidth="24.0">
+                                      <graphic>
+                                          <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                              <image>
+                                                  <Image url="@../../../icons/icoTable.png" />
+                                              </image>
+                                          </ImageView>
+                                      </graphic>
+                                  </ToggleButton>
+      
+      
+                                  <Separator />
+                                  <HBox fx:id="hb1MatchTypeButtonGroup">
+                                      <ToggleButton fx:id="tb1All" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/setA.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+      
+                                      <ToggleButton fx:id="tb1FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/setAxB.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+      
+                                      <ToggleButton fx:id="tb1Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/setSimilarA.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+      
+                                      <ToggleButton fx:id="tb1Suspect" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0" text="∅">
                                 </ToggleButton>
-
-                                <ToggleButton fx:id="tb1FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/setAxB.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-
-                                <ToggleButton fx:id="tb1Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/setSimilarA.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-
-                                <ToggleButton fx:id="tb1Suspect" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0" text="∅">
-                                </ToggleButton>
-                                <ToggleButton fx:id="tb1Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/setA-B.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-                            </HBox>
-
-                            <Separator />
-                            <ToggleButton fx:id="tb1DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="34.0">
-                                <graphic>
-                                    <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@../../../icons/DirAndFile.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                            </ToggleButton>
-
-                            <ToggleButton fx:id="tb1DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                <graphic>
-                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@../../../icons/folderW10.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                            </ToggleButton>
-
-                            <ToggleButton fx:id="tb1FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
-                                <graphic>
-                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@../../../icons/fileW10.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                            </ToggleButton>
-                        </ToolBar>
-                    <StackPane VBox.vgrow="ALWAYS">
-
-                    <VBox fx:id="vb1TableView">
-                        <TableView fx:id="tableViewDir1" maxHeight="Infinity">
-                             <columns>
-                                 <TableColumn prefWidth="75.0" text="C1" />
-                                 <TableColumn prefWidth="75.0" text="C2" />
-                             </columns>
-                        </TableView>
-                    </VBox>
-
-                    <VBox fx:id="vbTreeView1">
-                        <ToolBar>
-                          <Button onAction="#tv1CollapseAll" text="《" />
-                          <Button onAction="#tv1ExpandAll" text="》" />
-                          <Button onAction="#tv1CollapseLast" text="• 〈" />
-                          <Button onAction="#tv1ExpandLast" text="• 〉" />
-                        </ToolBar>
-                        <TreeView fx:id="treeViewDir1" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
-                    </VBox>
-
-                </StackPane>
-                    <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
-
-                        <Label text=" Total: " />
-<!--                        <Label text="Same" textFill="BLUE" />-->
-<!--                        <Label text=": " />-->
-                        <Label fx:id="l1Total" style="-fx-font-weight: bold;" text=" ? /" />
-                        <Label fx:id="l1TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1TotalAll" text="  ( ? /" />
-                        <Label fx:id="l1TotalAllSame" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1TotalAllPostfix" text=" )" />
-                        <Label text="   D: " />
-                        <Label fx:id="l1Directories" style="-fx-font-weight: bold;" text="? /" />
-                        <Label fx:id="l1DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1DirectoriesAll" text="  ( ? /" />
-                        <Label fx:id="l1DirectoriesAllSame" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1DirectoriesAllPostfix" text=" )" />
-                        <Label text="   F: " />
-                        <Label fx:id="l1Files" style="-fx-font-weight: bold;" text="? /" />
-                        <Label fx:id="l1FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1FilesAll" text="  ( ? /" />
-                        <Label fx:id="l1FilesAllSame" text=" s?" textFill="BLUE" />
-                        <Label fx:id="l1FilesAllPostfix" text=" )" />
-
-                    </HBox>
-
-                    </VBox>
-                        <VBox fx:id="paneDirectory2">
-                            <HBox>
-                                <Button onAction="#copyDir2PathTo1" text="⯬" HBox.hgrow="NEVER" />
-                                <ComboBox fx:id="cbDir2Path" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
-                                <Button onAction="#selectDirectory2" text="Select" HBox.hgrow="NEVER" />
-                            </HBox>
-
-
-<!--    ................... Toolbar 2 ........................              -->
-                            <ToolBar>
-
-                                <ToggleButton fx:id="tbDir2ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/icoTree.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-
-                                <ToggleButton fx:id="tbDir2ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/icoTable.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-                                <ToggleButton fx:id="tbDir2ViewAsMatchedTo1" onAction="#dir2ViewChange" text="⯮" />
-
-                                <Separator />
-                                <HBox fx:id="hb2MatchTypeButtonGroup">
-                                    <ToggleButton fx:id="tb2All" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                        <graphic>
-                                            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="@../../../icons/setB.png" />
-                                                </image>
-                                            </ImageView>
-                                        </graphic>
-                                    </ToggleButton>
-
-                                    <ToggleButton fx:id="tb2FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                        <graphic>
-                                            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="@../../../icons/setBxA.png" />
-                                                </image>
-                                            </ImageView>
-                                        </graphic>
-                                    </ToggleButton>
-
-                                    <ToggleButton fx:id="tb2Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                        <graphic>
-                                            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="@../../../icons/setSimilarB.png" />
-                                                </image>
-                                            </ImageView>
-                                        </graphic>
-                                    </ToggleButton>
-
-                                    <ToggleButton fx:id="tb2Suspect" onAction="#filterDir2" text="∅" />
-
-                                    <ToggleButton fx:id="tb2Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                        <graphic>
-                                            <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="@../../../icons/setB-A.png" />
-                                                </image>
-                                            </ImageView>
-                                        </graphic>
-                                    </ToggleButton>
-                                </HBox>
-                                <Separator />
-
-                                <ToggleButton fx:id="tb2DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="34.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/DirAndFile.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-                                <ToggleButton fx:id="tb2DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/folderW10.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-                                <ToggleButton fx:id="tb2FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
-                                    <graphic>
-                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../icons/fileW10.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </ToggleButton>
-                            </ToolBar>
-                            <StackPane VBox.vgrow="ALWAYS">
-                                <VBox fx:id="vb2TableView">
-
-                                  <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
-                                      <columns>
-                                          <TableColumn prefWidth="75.0" text="C1" />
-                                          <TableColumn prefWidth="75.0" text="C2" />
-                                      </columns>
-                                  </TableView>
-                                </VBox>
-                                <VBox fx:id="vb2TreeView">
+                                      <ToggleButton fx:id="tb1Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/setA-B.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+                                  </HBox>
+      
+                                  <Separator />
+                                  <ToggleButton fx:id="tb1DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="34.0">
+                                      <graphic>
+                                          <ImageView fitHeight="24.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                                              <image>
+                                                  <Image url="@../../../icons/DirAndFile.png" />
+                                              </image>
+                                          </ImageView>
+                                      </graphic>
+                                  </ToggleButton>
+      
+                                  <ToggleButton fx:id="tb1DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                      <graphic>
+                                          <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                              <image>
+                                                  <Image url="@../../../icons/folderW10.png" />
+                                              </image>
+                                          </ImageView>
+                                      </graphic>
+                                  </ToggleButton>
+      
+                                  <ToggleButton fx:id="tb1FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir1" prefHeight="24.0" prefWidth="24.0">
+                                      <graphic>
+                                          <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                              <image>
+                                                  <Image url="@../../../icons/fileW10.png" />
+                                              </image>
+                                          </ImageView>
+                                      </graphic>
+                                  </ToggleButton>
+                              </ToolBar>
+                          <StackPane VBox.vgrow="ALWAYS">
+      
+                          <VBox fx:id="vb1TableView">
+                              <TableView fx:id="tableViewDir1" maxHeight="Infinity">
+                                   <columns>
+                                       <TableColumn prefWidth="75.0" text="C1" />
+                                       <TableColumn prefWidth="75.0" text="C2" />
+                                   </columns>
+                              </TableView>
+                          </VBox>
+      
+                          <VBox fx:id="vbTreeView1">
+                              <ToolBar>
+                                <Button onAction="#tv1CollapseAll" text="《" />
+                                <Button onAction="#tv1ExpandAll" text="》" />
+                                <Button onAction="#tv1CollapseLast" text="• 〈" />
+                                <Button onAction="#tv1ExpandLast" text="• 〉" />
+                              </ToolBar>
+                              <TreeView fx:id="treeViewDir1" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
+                          </VBox>
+      
+                      </StackPane>
+                          <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
+      
+                              <Label text=" Total: " />
+      <!--                        <Label text="Same" textFill="BLUE" />-->
+      <!--                        <Label text=": " />-->
+                              <Label fx:id="l1Total" style="-fx-font-weight: bold;" text=" ? /" />
+                              <Label fx:id="l1TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1TotalAll" text="  ( ? /" />
+                              <Label fx:id="l1TotalAllSame" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1TotalAllPostfix" text=" )" />
+                              <Label text="   D: " />
+                              <Label fx:id="l1Directories" style="-fx-font-weight: bold;" text="? /" />
+                              <Label fx:id="l1DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1DirectoriesAll" text="  ( ? /" />
+                              <Label fx:id="l1DirectoriesAllSame" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1DirectoriesAllPostfix" text=" )" />
+                              <Label text="   F: " />
+                              <Label fx:id="l1Files" style="-fx-font-weight: bold;" text="? /" />
+                              <Label fx:id="l1FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1FilesAll" text="  ( ? /" />
+                              <Label fx:id="l1FilesAllSame" text=" s?" textFill="BLUE" />
+                              <Label fx:id="l1FilesAllPostfix" text=" )" />
+      
+                          </HBox>
+      
+                          </VBox>
+                     <Pane fx:id="gr1" />
+                 </items>
+               </SplitPane>
+               <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                 <items>
+                              <VBox fx:id="paneDirectory2">
+                                  <HBox>
+                                      <Button onAction="#copyDir2PathTo1" text="⯬" HBox.hgrow="NEVER" />
+                                      <ComboBox fx:id="cbDir2Path" editable="true" maxWidth="Infinity" promptText="Select Directory 2" HBox.hgrow="ALWAYS" />
+                                      <Button onAction="#selectDirectory2" text="Select" HBox.hgrow="NEVER" />
+                                  </HBox>
+      
+      
+      <!--    ................... Toolbar 2 ........................              -->
                                   <ToolBar>
-                                      <Button onAction="#tv2CollapseAll" text="《" />
-                                      <Button onAction="#tv2ExpandAll" text="》" />
-                                      <Button onAction="#tv2CollapseLast" text="• 〈" />
-                                      <Button onAction="#tv2ExpandLast" text="• 〉" />
+      
+                                      <ToggleButton fx:id="tbDir2ViewTree" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/icoTree.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+      
+                                      <ToggleButton fx:id="tbDir2ViewTable" minHeight="16.0" minWidth="16.0" onAction="#dir2ViewChange" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/icoTable.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+                                      <ToggleButton fx:id="tbDir2ViewAsMatchedTo1" onAction="#dir2ViewChange" text="⯮" />
+      
+                                      <Separator />
+                                      <HBox fx:id="hb2MatchTypeButtonGroup">
+                                          <ToggleButton fx:id="tb2All" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                              <graphic>
+                                                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                      <image>
+                                                          <Image url="@../../../icons/setB.png" />
+                                                      </image>
+                                                  </ImageView>
+                                              </graphic>
+                                          </ToggleButton>
+      
+                                          <ToggleButton fx:id="tb2FullMatch" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                              <graphic>
+                                                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                      <image>
+                                                          <Image url="@../../../icons/setBxA.png" />
+                                                      </image>
+                                                  </ImageView>
+                                              </graphic>
+                                          </ToggleButton>
+      
+                                          <ToggleButton fx:id="tb2Similar" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                              <graphic>
+                                                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                      <image>
+                                                          <Image url="@../../../icons/setSimilarB.png" />
+                                                      </image>
+                                                  </ImageView>
+                                              </graphic>
+                                          </ToggleButton>
+      
+                                          <ToggleButton fx:id="tb2Suspect" onAction="#filterDir2" text="∅" />
+      
+                                          <ToggleButton fx:id="tb2Unique" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                              <graphic>
+                                                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                      <image>
+                                                          <Image url="@../../../icons/setB-A.png" />
+                                                      </image>
+                                                  </ImageView>
+                                              </graphic>
+                                          </ToggleButton>
+                                      </HBox>
+                                      <Separator />
+      
+                                      <ToggleButton fx:id="tb2DirAndFile" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="34.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/DirAndFile.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+                                      <ToggleButton fx:id="tb2DirOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/folderW10.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
+                                      <ToggleButton fx:id="tb2FileOnly" minHeight="16.0" minWidth="16.0" onAction="#filterDir2" prefHeight="24.0" prefWidth="24.0">
+                                          <graphic>
+                                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../icons/fileW10.png" />
+                                                  </image>
+                                              </ImageView>
+                                          </graphic>
+                                      </ToggleButton>
                                   </ToolBar>
-                                  <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
-                                </VBox>
-
-
-                            </StackPane>
-                            <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
-
-                                <Label text=" Total: " />
-                                <!--                        <Label text="Same" textFill="BLUE" />-->
-                                <!--                        <Label text=": " />-->
-                                <Label fx:id="l2Total" style="-fx-font-weight: bold;" text=" ? /" />
-                                <Label fx:id="l2TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2TotalAll" text="  ( ? /" />
-                                <Label fx:id="l2TotalAllSame" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2TotalAllPostfix" text=" )" />
-                                <Label text="   D: " />
-                                <Label fx:id="l2Directories" style="-fx-font-weight: bold;" text="? /" />
-                                <Label fx:id="l2DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2DirectoriesAll" text="  ( ? /" />
-                                <Label fx:id="l2DirectoriesAllSame" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2DirectoriesAllPostfix" text=" )" />
-                                <Label text="   F: " />
-                                <Label fx:id="l2Files" style="-fx-font-weight: bold;" text="? /" />
-                                <Label fx:id="l2FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2FilesAll" text="  ( ? /" />
-                                <Label fx:id="l2FilesAllSame" text=" s?" textFill="BLUE" />
-                                <Label fx:id="l2FilesAllPostfix" text=" )" />
-
-                            </HBox>
-
-                        </VBox>
+                                  <StackPane VBox.vgrow="ALWAYS">
+                                      <VBox fx:id="vb2TableView">
+      
+                                        <TableView fx:id="tableViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                                            <columns>
+                                                <TableColumn prefWidth="75.0" text="C1" />
+                                                <TableColumn prefWidth="75.0" text="C2" />
+                                            </columns>
+                                        </TableView>
+                                      </VBox>
+                                      <VBox fx:id="vb2TreeView">
+                                        <ToolBar>
+                                            <Button onAction="#tv2CollapseAll" text="《" />
+                                            <Button onAction="#tv2ExpandAll" text="》" />
+                                            <Button onAction="#tv2CollapseLast" text="• 〈" />
+                                            <Button onAction="#tv2ExpandLast" text="• 〉" />
+                                        </ToolBar>
+                                        <TreeView fx:id="treeViewDir2" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
+                                      </VBox>
+      
+      
+                                  </StackPane>
+                                  <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
+      
+                                      <Label text=" Total: " />
+                                      <!--                        <Label text="Same" textFill="BLUE" />-->
+                                      <!--                        <Label text=": " />-->
+                                      <Label fx:id="l2Total" style="-fx-font-weight: bold;" text=" ? /" />
+                                      <Label fx:id="l2TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2TotalAll" text="  ( ? /" />
+                                      <Label fx:id="l2TotalAllSame" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2TotalAllPostfix" text=" )" />
+                                      <Label text="   D: " />
+                                      <Label fx:id="l2Directories" style="-fx-font-weight: bold;" text="? /" />
+                                      <Label fx:id="l2DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2DirectoriesAll" text="  ( ? /" />
+                                      <Label fx:id="l2DirectoriesAllSame" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2DirectoriesAllPostfix" text=" )" />
+                                      <Label text="   F: " />
+                                      <Label fx:id="l2Files" style="-fx-font-weight: bold;" text="? /" />
+                                      <Label fx:id="l2FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2FilesAll" text="  ( ? /" />
+                                      <Label fx:id="l2FilesAllSame" text=" s?" textFill="BLUE" />
+                                      <Label fx:id="l2FilesAllPostfix" text=" )" />
+      
+                                  </HBox>
+      
+                              </VBox>
+                     <Pane fx:id="gr2" />
+                 </items>
+               </SplitPane>
                 </SplitPane>
             </VBox>
             <TextArea fx:id="taSelectedItemProperties" />
-         <ScrollPane fx:id="spGraph1" prefHeight="200.0" prefWidth="200.0" />
             <TextArea fx:id="taStatus" />
         </SplitPane>
         <HBox fx:id="hBoxProgress" alignment="CENTER">
