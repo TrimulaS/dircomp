@@ -20,7 +20,7 @@ public class Comparator {
     public DirectoryAnalysis da1;
     public DirectoryAnalysis da2;
 
-    int numOfSameFolders = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
+    int numOfSameDirectories = 0, numOfSameFiles = 0, numOfSameIntersection = 0;
     public int sameListLimit = 20;
 
     public void processDirectories(File dir1, File dir2){
@@ -74,7 +74,7 @@ public class Comparator {
                         //For directories
                         if(fi1.sameTo(fi2)){      //areSimilar(fi1,fi2)){
 
-                            numOfSameFolders ++;
+                            numOfSameDirectories++;
                             if(fi1.getSame().size() < sameListLimit) fi1.getSame().add(fi2);
                             if(fi2.getSame().size() < sameListLimit) fi2.getSame().add(fi1);
                         }
@@ -99,14 +99,30 @@ public class Comparator {
 
             }
         }
+        //Update statistics:
+        da1.statistic.directoriesSame = numOfSameDirectories;
+        da1.statistic.filesSame = numOfSameFiles;
+        da2.statistic.directoriesSame = numOfSameDirectories;
+        da2.statistic.filesSame = numOfSameFiles;
+
 
         Log.appendTextTimed("Compare complete:");
         if(numOfSameIntersection>0) Log.appendText("(!!!) Selected directories have intersection: " + numOfSameIntersection);
-        Log.appendText("Same folders: " + numOfSameFolders + " and files:  " + numOfSameFiles);
+        Log.appendText("Same folders: " + numOfSameDirectories + " and files:  " + numOfSameFiles);
         Log.appendText("--For debug: Items in Path1: " + counter1.get());
         //Set style for treeview
 
-
+        //Todo: Double check statistics:
+        da1.statistic.reset();
+        for (FileItem fi : da1.getObservableList() ) {
+            da1.statistic.calcForFileItem(fi);
+        }
+        da2.statistic.reset();
+        Log.appendText("Path1 " + da1.statistic.toString());
+        for (FileItem fi : da2.getObservableList() ) {
+            da2.statistic.calcForFileItem(fi);
+        }
+        Log.appendText("Path2 " + da2.statistic.toString());
 
     }
 

@@ -38,7 +38,7 @@
 
 
 
-    <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0" visible="false">
+    <VBox fx:id="vbMainInterface" prefHeight="200.0" prefWidth="100.0">
         <SplitPane dividerPositions="0.6872384937238492, 0.9051603905160389" orientation="VERTICAL" VBox.vgrow="ALWAYS">
             <VBox style="-fx-background-color: yellow;">
                 <ToolBar VBox.vgrow="NEVER">
@@ -178,14 +178,25 @@
                     <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
 
                         <Label text=" Total: " />
-                        <Label fx:id="l1Total" style="-fx-font-weight: bold;" text="?" />
-                        <Label fx:id="l1TotalAll" text="  ( ? )" />
-                        <Label text="   Folders: " />
-                        <Label fx:id="l1Directories" style="-fx-font-weight: bold;" text="?" />
-                        <Label fx:id="l1DirectoriesAll" text="  ( ? )" />
-                        <Label text="   Files: " />
-                        <Label fx:id="l1Files" style="-fx-font-weight: bold;" text="?" />
-                        <Label fx:id="l1FilesAll" text="  ( ? )" />
+<!--                        <Label text="Same" textFill="BLUE" />-->
+<!--                        <Label text=": " />-->
+                        <Label fx:id="l1Total" style="-fx-font-weight: bold;" text=" ? /" />
+                        <Label fx:id="l1TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1TotalAll" text="  ( ? /" />
+                        <Label fx:id="l1TotalAllSame" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1TotalAllPostfix" text=" )" />
+                        <Label text="   D: " />
+                        <Label fx:id="l1Directories" style="-fx-font-weight: bold;" text="? /" />
+                        <Label fx:id="l1DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1DirectoriesAll" text="  ( ? /" />
+                        <Label fx:id="l1DirectoriesAllSame" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1DirectoriesAllPostfix" text=" )" />
+                        <Label text="   F: " />
+                        <Label fx:id="l1Files" style="-fx-font-weight: bold;" text="? /" />
+                        <Label fx:id="l1FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1FilesAll" text="  ( ? /" />
+                        <Label fx:id="l1FilesAllSame" text=" s?" textFill="BLUE" />
+                        <Label fx:id="l1FilesAllPostfix" text=" )" />
 
                     </HBox>
 
@@ -321,14 +332,25 @@
                             <HBox maxHeight="100.0" style="-fx-background-color: aqua;" VBox.vgrow="NEVER">
 
                                 <Label text=" Total: " />
-                                <Label fx:id="l2Total" style="-fx-font-weight: bold;" text="?" />
-                                <Label fx:id="l2TotalAll" text="  ( ? )" />
-                                <Label text="   Folders: " />
-                                <Label fx:id="l2Directories" style="-fx-font-weight: bold;" text="?" />
-                                <Label fx:id="l2DirectoriesAll" text="  ( ? )" />
-                                <Label text="   Files: " />
-                                <Label fx:id="l2Files" style="-fx-font-weight: bold;" text="?" />
-                                <Label fx:id="l2FilesAll" text="  ( ? )" />
+                                <!--                        <Label text="Same" textFill="BLUE" />-->
+                                <!--                        <Label text=": " />-->
+                                <Label fx:id="l2Total" style="-fx-font-weight: bold;" text=" ? /" />
+                                <Label fx:id="l2TotalSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2TotalAll" text="  ( ? /" />
+                                <Label fx:id="l2TotalAllSame" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2TotalAllPostfix" text=" )" />
+                                <Label text="   D: " />
+                                <Label fx:id="l2Directories" style="-fx-font-weight: bold;" text="? /" />
+                                <Label fx:id="l2DirectoriesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2DirectoriesAll" text="  ( ? /" />
+                                <Label fx:id="l2DirectoriesAllSame" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2DirectoriesAllPostfix" text=" )" />
+                                <Label text="   F: " />
+                                <Label fx:id="l2Files" style="-fx-font-weight: bold;" text="? /" />
+                                <Label fx:id="l2FilesSame" style="-fx-font-weight: bold;" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2FilesAll" text="  ( ? /" />
+                                <Label fx:id="l2FilesAllSame" text=" s?" textFill="BLUE" />
+                                <Label fx:id="l2FilesAllPostfix" text=" )" />
 
                             </HBox>
 
@@ -346,7 +368,7 @@
     </VBox>
 
     <!-- Панель настроек (TabPane), по умолчанию скрыта -->
-    <TabPane fx:id="tpSettings" GridPane.columnIndex="0" GridPane.rowIndex="0">
+    <TabPane fx:id="tpSettings" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <tabs>
          <Tab text="Settings">
            <content>

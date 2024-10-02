@@ -88,19 +88,37 @@ class MainController {
     @FXML    lateinit var tb2DirOnly:   ToggleButton
     @FXML    lateinit var tb2FileOnly:  ToggleButton
 
-    @FXML    lateinit var l1Total              : Label
-    @FXML    lateinit var l1TotalAll           : Label
-    @FXML    lateinit var l1Directories        : Label
-    @FXML    lateinit var l1DirectoriesAll     : Label
-    @FXML    lateinit var l1Files              : Label
-    @FXML    lateinit var l1FilesAll           : Label
+    @FXML    lateinit var l1Total                   : Label
+    @FXML    lateinit var l1TotalSame               : Label
+    @FXML    lateinit var l1TotalAll                : Label
+    @FXML    lateinit var l1TotalAllSame            : Label
+    @FXML    lateinit var l1Directories             : Label
+    @FXML    lateinit var l1DirectoriesSame         : Label
+    @FXML    lateinit var l1DirectoriesAll          : Label
+    @FXML    lateinit var l1DirectoriesAllSame      : Label
+    @FXML    lateinit var l1DirectoriesAllPostfix   : Label
+    @FXML    lateinit var l1Files                   : Label
+    @FXML    lateinit var l1FilesSame               : Label
+    @FXML    lateinit var l1FilesAll                : Label
+    @FXML    lateinit var l1FilesAllSame            : Label
+    @FXML    lateinit var l1FilesAllPostfix         : Label
 
-    @FXML    lateinit var l2Total              : Label
-    @FXML    lateinit var l2TotalAll           : Label
-    @FXML    lateinit var l2Directories        : Label
-    @FXML    lateinit var l2DirectoriesAll     : Label
-    @FXML    lateinit var l2Files              : Label
-    @FXML    lateinit var l2FilesAll           : Label
+
+    @FXML    lateinit var l2Total                   : Label
+    @FXML    lateinit var l2TotalSame               : Label
+    @FXML    lateinit var l2TotalAll                : Label
+    @FXML    lateinit var l2TotalAllSame            : Label
+    @FXML    lateinit var l2Directories             : Label
+    @FXML    lateinit var l2DirectoriesSame         : Label
+    @FXML    lateinit var l2DirectoriesAll          : Label
+    @FXML    lateinit var l2DirectoriesAllSame      : Label
+    @FXML    lateinit var l2DirectoriesAllPostfix   : Label
+    @FXML    lateinit var l2Files                   : Label
+    @FXML    lateinit var l2FilesSame               : Label
+    @FXML    lateinit var l2FilesAll                : Label
+    @FXML    lateinit var l2FilesAllSame            : Label
+    @FXML    lateinit var l2FilesAllPostfix         : Label
+
 
     @FXML    private lateinit var ivSettings : ImageView
     @FXML    private lateinit var tpSettings : TabPane
@@ -188,8 +206,8 @@ class MainController {
         tb2All.isSelected = true
 
         // labels in status bar: update in Comparator.processDirectories and after filtering
-        dir1StatusBar = DirectoryStatusBar(l1Files,l1FilesAll,l1Directories,l1DirectoriesAll, l1Total,l1TotalAll)
-        dir2StatusBar = DirectoryStatusBar(l2Files,l2FilesAll,l2Directories,l2DirectoriesAll, l2Total,l2TotalAll)
+        dir1StatusBar = DirectoryStatusBar( l1Total,l1TotalSame,l1TotalAll,l1TotalAllSame,l1Directories,l1DirectoriesSame,l1DirectoriesAll,l1DirectoriesAllSame,l1DirectoriesAllPostfix, l1Files,l1FilesSame,l1FilesAll,l1FilesAllSame, l1FilesAllPostfix)
+        dir2StatusBar = DirectoryStatusBar( l2Total,l2TotalSame,l2TotalAll,l2TotalAllSame,l2Directories,l2DirectoriesSame,l2DirectoriesAll,l2DirectoriesAllSame,l2DirectoriesAllPostfix, l2Files,l2FilesSame,l2FilesAll,l2FilesAllSame, l1FilesAllPostfix)
 
         tb1DirAndFile.toggleGroup       = tg1Type
         tb1DirOnly.toggleGroup          = tg1Type
@@ -202,9 +220,6 @@ class MainController {
         tb2DirAndFile.isSelected = true
 
         comparator = Comparator()
-        dir1StatusBar.reset()
-        dir2StatusBar.reset()
-
 
         //TableView Configuration
 //        tableViewDir1.selectionModel.selectionMode = SelectionMode.MULTIPLE
@@ -313,8 +328,8 @@ class MainController {
                     comparator.fillAllDir2(treeViewDir2)
                     //hBoxProgress.isVisible = false
                     progressBarShow(false)
-                    dir1StatusBar.update(comparator.da1.statistic.directories, comparator.da1.statistic.files)
-                    dir2StatusBar.update(comparator.da2.statistic.directories, comparator.da2.statistic.files)
+                    dir1StatusBar.update(comparator.da1.statistic)
+                    dir2StatusBar.update(comparator.da2.statistic)
                 }
             }
         }
@@ -630,10 +645,10 @@ class MainController {
     //......................................................................................... Filters................
 
 
-    // Mode where
+    // Mode where second path used as same items to selected in 1
     private fun syncProperties(fileItem:FileItem){
         val ds = DirectoryAnalysis.getStatisticFromObservableList(fileItem.same)
-        dir2StatusBar.update(ds.directories,ds.files)
+        dir2StatusBar.update(ds)
         tableViewDir2.items = fileItem.same
     }
 
@@ -711,15 +726,15 @@ class MainController {
                     when{
                         dirAndFile.isSelected    -> {
                             treeView.root = da.root
-                            directoryStatusBar.update(da.statistic.directories, da.statistic.files)
+                            directoryStatusBar.update(da.statistic)
                         }
                         dirOnly.isSelected       ->{
                             treeView.root = da.rootDirOnly
-                            directoryStatusBar.updateFiltered(da.statisticDirOnly.directories, da.statisticDirOnly.files)
+                            directoryStatusBar.update(da.statisticDirOnly)
                         }
                         fileOnly.isSelected     ->{
                             treeView.root = da.rootSameFileOnly
-                            directoryStatusBar.updateFiltered(da.statisticSameFileOnly.directories, da.statisticSameFileOnly.files)
+                            directoryStatusBar.update(da.statisticSameFileOnly)
                         }
                     }
                 }
@@ -730,7 +745,7 @@ class MainController {
                     //if no filter applied:
                     if(all.isSelected && dirAndFile.isSelected){
                         tableView.items = da.observableList
-                        directoryStatusBar.update(da.statistic.directories, da.statistic.files)
+                        directoryStatusBar.update(da.statistic)
                         return
                     }
 
@@ -765,7 +780,7 @@ class MainController {
 
 
                     //Show statistics
-                    directoryStatusBar.updateFiltered(da.statisticFilteredList.directories, da.statisticFilteredList.files)
+                    directoryStatusBar.updateFiltered(da.statisticFilteredList)
 
                     //                Log.appendText("filteredList to Table 1")
                 }

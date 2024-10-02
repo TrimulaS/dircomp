@@ -46,21 +46,7 @@ public class DirectoryAnalysis {
 
 
 
-    // Inline class To store statistics for directories and filtered representation
-    public static class DirectoryStatistics{
-        public int directories = 0, files = 0;
-//        public void  set(int folders, int files){
-//            this.directories = folders;
-//            this.files = files;
-//        }
-        public int getTotal(){
-            return directories + files;
-        }
-        public void reset(){
-            directories = 0;
-            files = 0;
-        }
-    }
+
 
     // I. Parse directory - fill up root
     public DirectoryAnalysis (File dir){
@@ -87,14 +73,17 @@ public class DirectoryAnalysis {
 
         long totalSize = 0;
 
-        // it is ---File---:
-        if (file.isFile()) {
-            statistic.files ++;
-            return treeItem;
-        }
 
-        // it is ---Directory---
-        statistic.directories++;
+        statistic.calcForFileItemBeforeCompare(fileItem);
+//
+//        // it is ---File---:
+//        if (file.isFile()---) {
+//            statistic.files ++;
+//            return treeItem;
+//        }
+//
+//        // it is ---Directory---
+//        statistic.directories++;
 
         // Получаем все файлы и папки в текущей директории
         File[] files = file.listFiles();
@@ -180,8 +169,7 @@ public class DirectoryAnalysis {
             //Calculate statistics
             statisticDirOnly = new DirectoryStatistics();
             TreeItemTraverse.each(rootDirOnly, ti->{
-                if(ti.getValue().isDirectory())statisticDirOnly.directories++;
-                else statisticDirOnly.files++;
+                statisticDirOnly.calcForFileItem(ti.getValue());
             });
         }
 
@@ -199,8 +187,7 @@ public class DirectoryAnalysis {
             //Calculate statistics
             statisticSameFileOnly = new DirectoryStatistics();
             TreeItemTraverse.each(rootSameFileOnly, ti->{
-                if(ti.getValue().isDirectory())statisticSameFileOnly.directories++;
-                else statisticSameFileOnly.files++;
+                statisticSameFileOnly.calcForFileItem(ti.getValue());
             });
         }
         rootSameFileOnly.setExpanded(true);
@@ -285,11 +272,7 @@ public class DirectoryAnalysis {
     public static DirectoryStatistics getStatisticFromObservableList(ObservableList<FileItem> ol){
         DirectoryStatistics ds = new DirectoryStatistics();
         for (FileItem fi : ol) {
-            if (fi.isDirectory()) {
-                ds.directories++;
-            } else {
-                ds.files++;
-            }
+            ds.calcForFileItem(fi);
         }
         return ds;
     }

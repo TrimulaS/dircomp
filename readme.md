@@ -1,4 +1,8 @@
-![img_2.png](img_2.png)
+
+
+![img_3.png](img_3.png)
+
+
 
 
 
@@ -60,5 +64,5 @@ Done:
 ✓ Add RMB Item open in explorer
 ✘ Process FileItiem extended to File (too slow)
 - calculate directory sizes
-
+![img_2.png](img_2.png)
 ![img_1.png](img_1.png)

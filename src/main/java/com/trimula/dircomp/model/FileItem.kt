@@ -13,7 +13,7 @@ class FileItem  {
     var name = "";
     var lastModified:Long =0
     var absolutePath = ""
-    public var isEmpty:Boolean = true
+    var isEmpty:Boolean = true
 
     var same:    ObservableList<FileItem> = FXCollections.observableArrayList()// null    //= FXCollections.observableArrayList()
     var similar: ObservableList<FileItem> = FXCollections.observableArrayList()// null    //.observableArrayList()
