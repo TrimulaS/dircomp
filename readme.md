@@ -3,10 +3,13 @@
 
 
 To Do:
-- add same statistics to staus bar
+- add same statistics to status bar
 - If sme directories - files duplicate both added
 - Compare doesn't cleared after multiple launch
 - -when delete file, exclude it from the ame list either
+- add graphic representation
+- add strings for hints and titles
+
 
 - add colum num copies
 
